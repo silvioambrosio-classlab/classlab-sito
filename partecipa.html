@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Partecipa | ClassLab ODV</title>
+<meta name="description" content="Richiedi i laboratori gratuiti di ClassLab per la tua scuola o entra nel team come studente-divulgatore.">
+<meta name="theme-color" content="#14365f">
+<link rel="canonical" href="https://www.classlab.it/partecipa.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="it_IT">
+<meta property="og:site_name" content="ClassLab ODV">
+<meta property="og:title" content="Partecipa | ClassLab ODV">
+<meta property="og:description" content="Richiedi i laboratori gratuiti di ClassLab per la tua scuola o entra nel team come studente-divulgatore.">
+<meta property="og:image" content="https://www.classlab.it/assets/img/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/montserrat-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main id="contenuto">
+
+<section class="testata testata--pattern">
+  <div class="contenitore">
+    <span class="badge">Unisciti a noi</span>
+    <h1>Partecipa a ClassLab</h1>
+    <p>Porta i nostri laboratori nella tua scuola, oppure entra nel team come studente-divulgatore.</p>
+  </div>
+</section>
+
+<section class="sezione sezione--grigia" id="modulo" style="scroll-margin-top:var(--header-h)">
+  <div class="contenitore">
+    <div class="centrato" style="margin-bottom:28px">
+      <span class="badge">Partecipa come scuola</span>
+    </div>
+
+    <div class="modulo">
+      <div class="modulo__intestazione">
+        <h2>Richiedi di portare ClassLab nella tua scuola</h2>
+        <p>Compila il modulo per raccontarci le classi, i laboratori d'interesse e le giornate disponibili. L'attività è gratuita!</p>
+      </div>
+      <div class="box-info"><strong>Come funziona:</strong> l'invio del modulo non costituisce una prenotazione. Durata fissa: 2 ore per classe (3 laboratori + introduzione). Periodo disponibile: <strong data-periodo>dal 12 dicembre al 15 marzo</strong>.</div>
+
+      <div id="esito" hidden aria-live="polite"></div>
+
+      <form id="modulo-adesione" novalidate>
+        <fieldset class="passo">
+          <legend><span class="num">1</span> Contatti e istituto</legend>
+          <div class="riga">
+            <div class="campo"><label for="referente">Nome e cognome del referente <span class="obbl">*</span></label>
+              <input type="text" id="referente" name="referente" autocomplete="name" placeholder="Mario Rossi"><div class="msg-errore">Inserisci nome e cognome</div></div>
+            <div class="campo"><label for="email">Email di contatto <span class="obbl">*</span></label>
+              <input type="email" id="email" name="email" autocomplete="email" inputmode="email" placeholder="mario.rossi@scuola.edu.it"><div class="msg-errore">Inserisci un indirizzo email valido</div></div>
+          </div>
+          <div class="riga">
+            <div class="campo"><label for="telefono">Numero di telefono <span class="obbl">*</span></label>
+              <input type="tel" id="telefono" name="telefono" autocomplete="tel" inputmode="tel" placeholder="+39 …"><div class="msg-errore">Inserisci un numero di telefono valido</div></div>
+            <div class="campo"><label for="comune">Comune <span class="obbl">*</span></label>
+              <input type="text" id="comune" name="comune" autocomplete="address-level2" placeholder="Es. Trieste"><div class="msg-errore">Inserisci il comune</div></div>
+          </div>
+          <div class="campo"><label for="scuola">Scuola <span class="obbl">*</span></label>
+            <input type="text" id="scuola" name="scuola" autocomplete="organization" placeholder="Es. IC San Giovanni – Scuola Dante"><div class="msg-errore">Inserisci il nome della scuola</div></div>
+          <div class="campo" id="campo-ordine"><span class="etichetta-campo">Ordine e grado <span class="obbl">*</span></span>
+            <div class="scelte" role="radiogroup" aria-label="Ordine e grado">
+              <label class="scelta"><input type="radio" name="ordine" value="Primaria"><span>Scuola primaria</span></label>
+              <label class="scelta"><input type="radio" name="ordine" value="Secondaria di primo grado"><span>Secondaria di primo grado</span></label>
+            </div>
+            <div class="msg-errore">Scegli l'ordine di scuola</div>
+          </div>
+        </fieldset>
+
+        <fieldset class="passo" id="passo-classi" hidden>
+          <legend><span class="num">2</span> Classi e laboratori</legend>
+          <p class="box-avviso">Inserisci solo le classi che vogliono partecipare. Per ognuna indica i laboratori preferiti: cercheremo di rispettare le vostre scelte.</p>
+          <div id="elenco-classi"></div>
+          <button type="button" class="btn-aggiungi" id="aggiungi-classe">+ Aggiungi un'altra classe</button>
+        </fieldset>
+
+        <fieldset class="passo">
+          <legend><span class="num">3</span> Disponibilità e note</legend>
+          <div class="campo"><label for="giornate">Giornate disponibili <span class="obbl">*</span></label>
+            <textarea id="giornate" name="giornate" placeholder="Es. martedì e giovedì mattina, a partire da metà gennaio…"></textarea>
+            <div class="aiuto">Periodo delle attività: <span data-periodo>dal 12 dicembre al 15 marzo</span>.</div>
+            <div class="msg-errore">Indicaci almeno qualche giornata o fascia oraria</div></div>
+          <div class="campo"><label for="note">Note organizzative</label>
+            <textarea id="note" name="note" placeholder="Eventuali esigenze (aule, orari, alunni con bisogni particolari…)"></textarea></div>
+        </fieldset>
+
+        <fieldset class="passo">
+          <legend><span class="num">4</span> Privacy</legend>
+          <div class="privacy" tabindex="0" aria-label="Informativa privacy">
+            <p>I dati forniti attraverso questo modulo saranno trattati da ClassLab ODV esclusivamente per la gestione delle richieste di partecipazione al progetto, l'organizzazione delle attività con le scuole e le relative comunicazioni.</p>
+            <p>I dati saranno utilizzati internamente dal team ClassLab e conservati per il tempo necessario alla gestione del rapporto con la scuola e all'organizzazione delle attività.</p>
+            <p>Qualora fosse necessario per finalità organizzative, progettuali o di rendicontazione, alcuni dati potranno essere condivisi con gli enti partner coinvolti nelle attività di ClassLab, quali Fondazione AIRC e ICTP, limitatamente alle informazioni effettivamente necessarie. I dati non saranno ceduti a terzi per finalità commerciali o di marketing.</p>
+            <p>Il trattamento dei dati avverrà nel rispetto della normativa vigente in materia di protezione dei dati personali, incluso il Regolamento (UE) 2016/679 (GDPR).</p>
+            <p style="margin:0">Per maggiori informazioni sul trattamento dei dati personali è possibile contattare l'associazione all'indirizzo <a data-email="Privacy" href="mailto:info@classlab.it">info@classlab.it</a>.</p>
+          </div>
+          <div class="campo"><label class="check"><input type="checkbox" name="privacy" value="Acconsento"> <span><strong>Acconsento</strong> al trattamento dei dati personali. <span class="obbl">*</span></span></label>
+            <div class="msg-errore">Per inviare la richiesta serve il consenso</div></div>
+        </fieldset>
+
+        <div class="honeypot" aria-hidden="true"><label>Lascia vuoto questo campo <input type="text" name="sito_web" tabindex="-1" autocomplete="off"></label></div>
+
+        <div class="riepilogo-errori" id="riepilogo-errori" role="alert"></div>
+        <button type="submit" class="btn btn--primario invia">Invia la richiesta di adesione</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section class="sezione" id="divulgatori">
+  <div class="contenitore">
+    <div class="affiancato">
+      <div class="appare">
+        <span class="badge badge--verde">Partecipa come studente-divulgatore</span>
+        <h2>Entra nel team di ClassLab</h2>
+        <p>ClassLab esiste solo grazie agli studenti. Se sei appassionato di materie scientifiche (chimica, fisica o biologia) e vuoi metterti alla prova come divulgatore, scrivici un'email e ti contatteremo per entrare a far parte del team!</p>
+        <a class="btn btn--primario" data-email="Voglio diventare divulgatore ClassLab" href="mailto:info@classlab.it">Scrivici un'email</a>
+      </div>
+      <div class="affiancato__foto appare"><img src="assets/img/edizione-2024-25.webp" alt="Divulgatori ClassLab durante un laboratorio" loading="lazy" width="1200" height="822"></div>
+    </div>
+  </div>
+</section>
+
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/laboratori-dati.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/modulo.js"></script>
+</body>
+</html>
