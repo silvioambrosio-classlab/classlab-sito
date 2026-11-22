@@ -280,19 +280,24 @@
       '<div class="esito__icona" aria-hidden="true">✓</div>' +
       "<h2>" + (viaEmail ? "Quasi fatto!" : "Richiesta inviata con successo!") + "</h2>" +
       (viaEmail
-        ? "<p>Si è aperta un'email già compilata: <strong>premi Invia</strong> nel tuo programma di posta per completare la richiesta. Se non si apre, copia il riepilogo qui sotto e scrivi a <a href=\"mailto:" + esc(C.email) + "\">" + esc(C.email) + "</a>.</p>"
+        ? "<p>Per completare la richiesta <strong>invia l'email già compilata</strong> con Gmail, Outlook o la tua app di posta. Se la finestra si è chiusa, <a href=\"#\" data-riapri>riaprila da qui</a>, oppure copia il riepilogo qui sotto e scrivi a <strong>" + esc(C.email) + "</strong>.</p>"
         : "<p>Grazie da tutto il team ClassLab! Ti ricontatteremo presto all'indirizzo <strong>" + esc(d.email) + "</strong>." +
           (codice ? "<br>Codice della richiesta: <strong>" + esc(codice) + "</strong>" : "") + "</p>") +
       '<div class="riepilogo">' + esc(testoRiepilogo(d)) + "</div>" +
       '<p style="font-size:.9rem;color:var(--grigio)">Ricorda: l\'invio del modulo non costituisce una prenotazione.</p>' +
       '<a class="btn btn--contorno-blu" href="index.html">Torna alla home</a>';
     box.scrollIntoView({ behavior: "smooth", block: "start" });
+    var riapri = box.querySelector("[data-riapri]");
+    if (riapri) riapri.addEventListener("click", function (e) {
+      e.preventDefault(); window.ClassLabEmail(C.email, "Richiesta ClassLab – " + d.scuola, testoRiepilogo(d));
+    });
   }
 
   function inviaViaEmail(d) {
     var oggetto = "Richiesta ClassLab – " + d.scuola;
-    location.href = "mailto:" + C.email + "?subject=" + encodeURIComponent(oggetto) + "&body=" + encodeURIComponent(testoRiepilogo(d));
     mostraEsito(d, "", true);
+    if (window.ClassLabEmail) window.ClassLabEmail(C.email, oggetto, testoRiepilogo(d));
+    else location.href = "mailto:" + C.email + "?subject=" + encodeURIComponent(oggetto) + "&body=" + encodeURIComponent(testoRiepilogo(d));
   }
 
   /* ---------- Invio ---------- */
