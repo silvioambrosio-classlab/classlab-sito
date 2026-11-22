@@ -15,8 +15,8 @@ window.CLASSLAB.finanziatori = [
 window.CLASSLAB.sostenitori = [
     { nome: "Fondazione AIRC", logo: "assets/img/logo-airc.png", link: "https://www.airc.it/",
       descrizione: "Ha scelto ClassLab per portare nelle scuole un suo modulo didattico su ricerca scientifica e prevenzione: Il canestro della prevenzione." },
-    { nome: "SciFabLab – ICTP", logo: "assets/img/logo-scifablab-ictp.png", link: "http://scifablab.ictp.it/",
-      descrizione: "Il laboratorio di fabbricazione digitale dell'ICTP di Trieste, al nostro fianco nel portare la scienza ai più giovani." },
+    { nome: "ICTP FabLab", logo: "assets/img/logo-scifablab-ictp.png", link: "http://scifablab.ictp.it/",
+      descrizione: "Il laboratorio di fabbricazione digitale (SciFabLab) dell'ICTP di Trieste, al nostro fianco nel portare la scienza ai più giovani." },
     { nome: "Smart Micro Optics – DIPLE", logo: "assets/img/logo-diple.png", link: "https://smartmicrooptics.com/it/",
       descrizione: "Le lenti DIPLE trasformano uno smartphone in un vero microscopio: la scienza da osservare con i propri occhi." },
     { nome: "Liceo Scientifico Galileo Galilei", logo: "assets/img/logo-liceo-galilei.png", link: "https://www.galileitrieste.it/",

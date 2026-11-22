@@ -90,7 +90,7 @@
         '<div class="campo"><label for="' + id + '-sez">Sezione <span class="obbl">*</span></label>' +
           '<input type="text" id="' + id + '-sez" data-campo="sezione" maxlength="10" placeholder="Es. A" autocomplete="off" autocapitalize="characters">' +
           '<div class="msg-errore">Indica la sezione</div></div>' +
-        '<div class="campo"><label for="' + id + '-alunni">N. alunni</label>' +
+        '<div class="campo"><label for="' + id + '-alunni">N. studenti</label>' +
           '<input type="number" id="' + id + '-alunni" data-campo="alunni" min="1" max="40" inputmode="numeric" placeholder="Facoltativo"></div>' +
       "</div>" +
       (secondaria ?
@@ -266,7 +266,7 @@
     ];
     d.classi.forEach(function (c) {
       var labs = c.consiglio === "Sì" ? "laboratori consigliati dal team ClassLab" : [c.lab1, c.lab2, c.lab3].filter(Boolean).join(" / ");
-      r.push("• " + c.classe + (c.alunni ? " (" + c.alunni + " alunni)" : "") + " – " + c.percorso + ": " + labs);
+      r.push("• " + c.classe + (c.alunni ? " (" + c.alunni + " studenti)" : "") + " – " + c.percorso + ": " + labs);
     });
     r.push("", "Giornate disponibili: " + d.giornate);
     if (d.note) r.push("Note: " + d.note);
