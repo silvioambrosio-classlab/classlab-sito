@@ -72,7 +72,7 @@
 <script src="assets/js/laboratori-dati.js?v=8ffe1dc9"></script>
 <script src="assets/js/main.js?v=76e3aa78"></script>
 <script src="turni/config.js"></script>
-<script src="assets/js/area-team-dati.js?v=056de2aa"></script>
+<script src="assets/js/area-team-dati.js?v=de8cacfc"></script>
 <script>
 (function () {
   var CLIENT_ID = (window.TURNI_CONFIG || {}).CLIENT_ID;
@@ -101,19 +101,52 @@
     try { google.accounts.id.prompt(); } catch (e) {}
   }
 
-  function mostraHub(p) {
+  // Livelli: 1 Gestori · 2 Responsabile · 3 Operatori · 4 Fruitori · 5 Studenti FSL.
+  // Il livello arriva dal server (scheda "Ruoli"): qui serve solo a mostrare le schede giuste,
+  // i permessi veri li controllano gli script dei turni e della checklist.
+  var NOMI_LIVELLO = { 1: "Gestore", 2: "Responsabile", 3: "Operatore", 4: "Fruitore", 5: "Studente FSL" };
+
+  function chiSono(tok) {
+    var api = (window.TURNI_CONFIG || {}).API_URL;
+    if (!api) return Promise.resolve(null);
+    return fetch(api, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ token: tok, fn: "chiSono", args: [] }) })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (j && j.ok && j.dati) return j.dati;
+        if (j && j.auth) throw new Error(j.errore || "auth");
+        return null; // server non ancora aggiornato: mostra tutto (i controlli restano lato server)
+      })
+      .catch(function (e) { if (e && e.message && e.message !== "Failed to fetch") throw e; return null; });
+  }
+
+  function mostraHub(p, tok) {
     $("at-login").hidden = true; $("at-hub").hidden = false;
     $("at-ciao").textContent = "Ciao " + (p.given_name || p.name || "") + "!";
     $("at-mail").textContent = p.email || "";
     if (p.picture) { $("at-foto").src = p.picture; $("at-foto").hidden = false; }
-    var mail = String(p.email || "").toLowerCase();
+    $("at-griglia").innerHTML = '<p class="at-attesa">Caricamento…</p>';
+    chiSono(tok).then(function (io) {
+      var liv = io && io.livello ? Number(io.livello) : null;
+      if (liv) $("at-mail").textContent = (p.email || "") + " · " + (io.ruolo || NOMI_LIVELLO[liv] || "");
+      disegna(String(p.email || "").toLowerCase(), liv);
+    }, function (e) {
+      try { sessionStorage.removeItem(CHIAVE); } catch (x) {}
+      mostraLogin("Sessione scaduta: accedi di nuovo.");
+    });
+  }
+
+  function disegna(mail, liv) {
     var voci = (window.AREA_TEAM || []).filter(function (v) {
-      return !v.solo || !v.solo.length || v.solo.map(function (x) { return String(x).toLowerCase(); }).indexOf(mail) >= 0;
+      if (v.solo && v.solo.length && v.solo.map(function (x) { return String(x).toLowerCase(); }).indexOf(mail) < 0) return false;
+      if (liv && v.livelli && v.livelli.length && v.livelli.indexOf(liv) < 0) return false;
+      return true;
     });
     $("at-griglia").innerHTML = voci.map(function (v) {
       var link = String(v.link || "").trim();
       var ico = '<span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONE[v.icona] || ICONE.link) + "</svg></span>";
-      var corpo = ico + "<h2>" + esc(v.titolo) + "</h2><p>" + esc(v.descrizione) + "</p>";
+      var titolo = (liv && v.titoli && v.titoli[liv]) || v.titolo;
+      var descr = (liv && v.descrizioni && v.descrizioni[liv]) || v.descrizione;
+      var corpo = ico + "<h2>" + esc(titolo) + "</h2><p>" + esc(descr) + "</p>";
       if (!link) return '<div class="at-card off">' + corpo + '<span class="vai">In arrivo</span></div>';
       var target = v.nuovaScheda ? ' target="_blank" rel="noopener"' : "";
       return '<a class="at-card" href="' + esc(link) + '"' + target + ">" + corpo + '<span class="vai">Apri' + (v.nuovaScheda ? " ↗" : " →") + "</span></a>";
@@ -124,7 +157,7 @@
     var p = payload(r.credential);
     if (p.hd !== DOMINIO) { mostraLogin("Puoi accedere solo con un account @" + DOMINIO + "."); return; }
     try { sessionStorage.setItem(CHIAVE, r.credential); } catch (e) {}
-    mostraHub(p);
+    mostraHub(p, r.credential);
   }
 
   $("at-esci").onclick = function () {
