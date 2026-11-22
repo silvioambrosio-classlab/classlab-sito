@@ -355,19 +355,37 @@ function costruisci(d){
     if(senza) u.avvisi.unshift(senza+(senza===1?' classe':' classi')+' senza esperienze indicate nei turni: il materiale verrà calcolato quando saranno inserite');
 
     // Kit: classi sovrapposte → kit separati, in sequenza → stesso kit. Gli strumenti condivisi NON stanno nei kit.
-    u.kit = assegnaKit(u.sessioni).map((k,i) => {
-      const tot = new Map();
-      k.sessioni.forEach(s => s.fab.forEach((x,nome) => {
-        if(x.m.condiviso) return;
-        const t = tot.get(nome) || {m:x.m, qta:0};
-        t.qta = x.m.max ? Math.max(t.qta, x.q) : t.qta + x.q;     // regola Max: 1 per kit
-        tot.set(nome, t);
-      }));
-      const voci = [...tot.values()].map(t => ({nome:t.m.nome, ubic:t.m.ubic, qta:t.qta, note:t.m.note, anticipo:t.m.anticipo, key:u.key+'|kit'+(i+1)+'|'+t.m.nome}))
-        .sort((a,b) => ordUbic(a.ubic)-ordUbic(b.ubic) || a.ubic.localeCompare(b.ubic) || a.nome.localeCompare(b.nome,'it'));
-      const team = [...new Set(k.sessioni.flatMap(s=>s.team).flatMap(splitNomi))];
-      return { n:i+1, sessioni:k.sessioni, team, voci };
+    // KIT PER ESPERIMENTO: un kit per ogni esperimento della giornata.
+    // Classi che fanno lo stesso esperimento in contemporanea → kit separati; una dopo l'altra → stesso kit (somma).
+    const ordine = cat.attivita;
+    const esperimenti = [...new Set(u.sessioni.flatMap(s => s.labCodici.map(l=>l.codice).filter(Boolean)))];
+    const primoInizio = cod => Math.min(...u.sessioni.filter(s=>s.labCodici.some(l=>l.codice===cod)).map(s=>s.t?s.t.da:9999));
+    esperimenti.sort((x,y) => primoInizio(x)-primoInizio(y) || ordine.indexOf(x)-ordine.indexOf(y));
+    u.kit = [];
+    esperimenti.forEach(cod => {
+      const lab = cat.labs.find(l=>l.codice===cod);
+      const linee = assegnaKit(u.sessioni.filter(s => s.labCodici.some(l=>l.codice===cod)));
+      linee.forEach((k,i) => {
+        const voci = cat.mat.filter(m => m.per[cod] && !m.condiviso && !m.max).map(m => ({
+          nome:m.nome, ubic:m.ubic, qta:m.per[cod]*k.sessioni.length, note:m.note, anticipo:m.anticipo,
+          key:u.key+'|esp|'+cod+'|'+(i+1)+'|'+m.nome
+        })).sort((a,b) => ordUbic(a.ubic)-ordUbic(b.ubic) || a.ubic.localeCompare(b.ubic) || a.nome.localeCompare(b.nome,'it'));
+        const team = [...new Set(k.sessioni.flatMap(s=>s.team).flatMap(splitNomi))];
+        u.kit.push({ n:u.kit.length+1, esp:cod, nome:cod, nomeLungo:(lab?lab.nome:cod), copia:i+1, copie:linee.length, sessioni:k.sessioni, team, voci });
+      });
     });
+
+    // Materiale comune (regola Max: guanti, carta assorbente…): 1 per classe in parallelo, non ripetuto in ogni kit
+    const linee = assegnaKit(u.sessioni);
+    const com = new Map();
+    linee.forEach(k => {
+      const perLinea = new Map();
+      k.sessioni.forEach(s => s.fab.forEach((x,nome) => { if(x.m.max && !x.m.condiviso) perLinea.set(nome, {m:x.m, q:Math.max((perLinea.get(nome)||{q:0}).q, x.q)}); }));
+      perLinea.forEach((v,nome) => { const c = com.get(nome) || {m:v.m, qta:0}; c.qta += v.q; com.set(nome, c); });
+    });
+    u.comuni = [...com.values()].map(c => ({nome:c.m.nome, ubic:c.m.ubic, qta:c.qta, note:c.m.note, anticipo:0, key:u.key+'|com|'+c.m.nome}))
+      .sort((a,b) => ordUbic(a.ubic)-ordUbic(b.ubic) || a.nome.localeCompare(b.nome,'it'));
+    u.parallele = linee.length;
 
     // Strumenti condivisi: prelievo unico, quanti ne servono nello stesso momento (come nella Checklist)
     const cond = new Map();
@@ -383,13 +401,13 @@ function costruisci(d){
 
     // Da comprare / da preparare fresche: totale della giornata (somma dei kit)
     const prep = new Map();
-    u.kit.flatMap(k=>k.voci).filter(v => v.anticipo>0 || /prepar|compra/i.test(v.ubic)).forEach(v => {
+    u.kit.flatMap(k=>k.voci.map(v=>({...v, kitNome: k.nome+(k.copie>1?' '+k.copia:'')}))).filter(v => v.anticipo>0 || /prepar|compra/i.test(v.ubic)).forEach(v => {
       const p = prep.get(v.nome) || {nome:v.nome, ubic:v.ubic, qta:0, note:v.note, perKit:[], key:u.key+'|prep|'+v.nome,
         scad: v.anticipo>0 ? new Date(u.data.getFullYear(), u.data.getMonth(), u.data.getDate()-v.anticipo) : null};
-      p.qta += v.qta; p.perKit.push(v.qta); prep.set(v.nome, p);
+      p.qta += v.qta; p.perKit.push(v.qta); (p.perNome=p.perNome||[]).push(v.kitNome+': '+numFmt(v.qta)); prep.set(v.nome, p);
     });
     u.prep = [...prep.values()].sort((a,b) => ordUbic(a.ubic)-ordUbic(b.ubic) || a.nome.localeCompare(b.nome,'it'));
-    u.tutte = u.prep.concat(u.condivisi, u.kit.flatMap(k=>k.voci));
+    u.tutte = u.prep.concat(u.condivisi, u.comuni, u.kit.flatMap(k=>k.voci));
   });
   return uscite;
 }
@@ -445,18 +463,19 @@ function viewUscite(){
     const kitHTML = u.kit.map(k => {
       const kmio = chi && haPersona(k.team, chi);
       return `<div class="blk ${kmio?'mio':''}">
-        <div class="bh"><b>Kit ${k.n}</b>${kmio?`<span class="badge mio">${S.persona&&S.persona!==S.io?'Kit di '+esc(S.persona):'Il tuo kit'}</span>`:''}<span class="t">${esc(k.team.join(' · ')||'Team')}</span>${contatore(k.voci)}${tuttiBtn(k.voci)}</div>
-        <div class="cls">${k.sessioni.map(s => `<div><span class="o">${esc(s.orario)}</span> <b>${esc(s.classe||'—')}</b>${u.scuole.length>1?` <span class="o">· ${esc(s.scuolaBreve)}</span>`:''} ${s.labCodici.length ? s.labCodici.map(l=>`<span class="lab ${l.codice?'':'unk'}">${esc(l.testo)}</span>`).join('') : '<span class="lab unk">da definire</span>'}</div>`).join('')}</div>
-        ${k.voci.length ? perUbic(k.voci) : '<p class="hint" style="margin:6px 0 0">Nessun materiale in catalogo per queste esperienze.</p>'}
+        <div class="bh"><b>Kit ${esc(k.nome)}</b>${k.copie>1?`<span class="badge fis">${k.copia} di ${k.copie}</span>`:''}${kmio?`<span class="badge mio">${S.persona&&S.persona!==S.io?esc(S.persona):'Tu'}</span>`:''}<span class="t">${esc(k.nomeLungo)}</span>${k.voci.length?contatore(k.voci)+tuttiBtn(k.voci):''}</div>
+        <div class="cls">${k.sessioni.map(s => `<div><span class="o">${esc(s.orario)}</span> <b>${esc(s.classe||'—')}</b>${u.scuole.length>1?` <span class="o">· ${esc(s.scuolaBreve)}</span>`:''} <span class="o">· ${esc(s.team.flatMap(splitNomi).join(', ')||'Team')}</span></div>`).join('')}</div>
+        ${k.voci.length ? perUbic(k.voci) : '<p class="hint" style="margin:6px 0 0">Nessun materiale in catalogo per questo esperimento.</p>'}
       </div>`;}).join('');
+    const comHTML = u.comuni.length ? `<div class="blk cond wide"><div class="bh"><b>Materiale comune</b><span class="t">1 per classe in parallelo (${u.parallele}) · non ripetuto nei kit</span>${contatore(u.comuni)}${tuttiBtn(u.comuni)}</div>${perUbic(u.comuni)}</div>` : '';
     const prepHTML = u.prep.length ? `<div class="blk prep wide"><div class="bh"><b>Prima dell'uscita</b><span class="t">da comprare o preparare fresco · totale di tutti i kit</span>${contatore(u.prep)}${tuttiBtn(u.prep)}</div>
       ${u.prep.map(p => { const late = p.scad && !fatto(p.key) && giorni(p.scad, oggi())<0;
-        return voce(p, `${p.scad?`<span class="pill ${late?'late':'prep'}">entro ${fmt(p.scad)}</span>`:''}<span class="nt">${esc(p.ubic)}${p.perKit.length>1?' · '+p.perKit.map((q,i)=>'kit '+(i+1)+': '+numFmt(q)).join(', '):''}</span>`); }).join('')}</div>` : '';
+        return voce(p, `${p.scad?`<span class="pill ${late?'late':'prep'}">entro ${fmt(p.scad)}</span>`:''}<span class="nt">${esc(p.ubic)}${p.perNome&&p.perNome.length>1?' · '+p.perNome.join(', '):''}</span>`); }).join('')}</div>` : '';
     const condHTML = u.condivisi.length ? `<div class="blk cond wide"><div class="bh"><b>Strumenti condivisi</b><span class="t">da prendere una volta a inizio giornata · quanti ne servono nello stesso momento</span>${contatore(u.condivisi)}${tuttiBtn(u.condivisi)}</div>${perUbic(u.condivisi)}</div>` : '';
     return head + `<div class="day ${past?'past':''} ${mio?'mia':''} ${open?'open':''}" data-u="${esc(u.key)}">
       <div class="dh" data-apri="${esc(u.key)}">
         <div class="date"><small>${GG[u.data.getDay()]}</small><b>${u.data.getDate()}</b><small>${MM[u.data.getMonth()]}</small></div>
-        <div class="dt"><h3>${esc(u.scuola)}</h3><div class="sub">${mio?`<span class="badge mio">${S.persona&&S.persona!==S.io?esc(S.persona):'Ci sei'}</span>`:''}${u.area==='FISICA'?'<span class="badge fis">Fisica</span>':''}${u.sessioni.length} ${u.sessioni.length===1?'classe':'classi'} · ${u.kit.length} kit · ${quando(u.data)}${u.avvisi.length?' · ⚠️':''}</div></div>
+        <div class="dt"><h3>${esc(u.scuola)}</h3><div class="sub">${mio?`<span class="badge mio">${S.persona&&S.persona!==S.io?esc(S.persona):'Ci sei'}</span>`:''}${u.area==='FISICA'?'<span class="badge fis">Fisica</span>':''}${u.sessioni.length} ${u.sessioni.length===1?'classe':'classi'} · ${u.kit.length} kit esperimento · ${quando(u.data)}${u.avvisi.length?' · ⚠️':''}</div></div>
         <div class="ring ${ok===tot&&tot?'ok':''}" style="--p:${pct}"><span>${ok===tot&&tot?'✓':pct+'%'}</span></div>
         <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 6 6 6-6 6"/></svg>
       </div>
@@ -464,7 +483,7 @@ function viewUscite(){
         ${u.note.map(n=>`<div class="note">📌 ${esc(n)}</div>`).join('')}
         ${u.avvisi.map(n=>`<div class="note bad">⚠️ ${esc(n)}</div>`).join('')}
         <div class="azioni"><button class="btn small" data-stampa="${esc(u.key)}">🖨️ Stampa la checklist</button></div>
-        <div class="grid">${prepHTML}${condHTML}${kitHTML}</div>
+        <div class="grid">${prepHTML}${condHTML}${comHTML}${kitHTML}</div>
       </div></div>`;
   }).join('');
 }
@@ -487,7 +506,7 @@ function viewPrep(){
 
 function viewTotali(){
   const list = visibili(), agg = new Map();
-  list.forEach(u => u.kit.forEach(k => k.voci.forEach(v => {
+  list.forEach(u => u.kit.concat([{voci:u.comuni}]).forEach(k => k.voci.forEach(v => {
     const a = agg.get(v.nome) || {nome:v.nome, ubic:v.ubic, qta:0, usi:new Set()};
     a.qta += v.qta; a.usi.add(u.scuola+' '+u.data.getDate()+'/'+(u.data.getMonth()+1)); agg.set(v.nome,a);
   })));
