@@ -72,7 +72,7 @@ window.CLASSLAB_LABORATORI = [
   },
   {
     titolo: "I processi digestivi",
-    descrizione: "Simula la digestione e scopri come gli enzimi scompongono i cibi nel nostro organismo.",
+    descrizione: "Ricostruisci con materiali di tutti i giorni il viaggio del cibo nel nostro corpo: dalla bocca allo stomaco fino all'intestino.",
     immagine: "https://lh3.googleusercontent.com/d/1oZk4TtaR3gSRJ1GJ1FKJZI3bgBOKVU_m=s800",
     consigliato: "",
     perChi: ["primaria-4", "primaria-5", "secondaria"],
