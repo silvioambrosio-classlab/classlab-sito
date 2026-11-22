@@ -66,7 +66,7 @@
       '<div class="footer__fondo"><span>© ' + new Date().getFullYear() + " " + esc(C.nome) + " – Tutti i diritti riservati</span>" +
       "<span>Codice fiscale " + esc(C.codiceFiscale) + "</span><span>Codice RUNTS " + esc(C.codiceRUNTS) + "</span>" +
       "<span>Sede legale: " + esc(C.sedeLegale) + "</span>" +
-      '<a class="footer__team" href="turni.html" rel="nofollow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Area team</a>' +
+      '<a class="footer__team" href="area-team.html" rel="nofollow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Area team</a>' +
       "</div></div></footer>";
   }
 

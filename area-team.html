@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Area team | ClassLab ODV</title>
+<meta name="description" content="Area riservata al team ClassLab.">
+<meta name="theme-color" content="#14365f">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://www.classlab.it/area-team.html">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/montserrat-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/style.css?v=9f8dd0fa">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+  .at-login #gbtn{display:flex;justify-content:center;margin-top:8px;min-height:44px}
+  .at-errore{color:#b42318;font-size:.9rem;min-height:1.2em;margin-top:14px}
+  .at-hub{max-width:980px;margin:0 auto}
+  .at-testa{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:28px}
+  .at-testa img{width:52px;height:52px;border-radius:50%;border:2px solid #fff;box-shadow:var(--ombra)}
+  .at-testa h1{font-size:clamp(1.5rem,3.6vw,2rem);margin:0}
+  .at-testa p{margin:2px 0 0;color:var(--grigio)}
+  .at-esci{margin-left:auto;background:none;border:1px solid var(--bordo);border-radius:999px;padding:8px 16px;font:inherit;font-size:.9rem;color:var(--grigio);cursor:pointer}
+  .at-esci:hover{border-color:var(--blu);color:var(--blu)}
+  .at-griglia{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+  .at-card{display:flex;flex-direction:column;gap:10px;background:#fff;border:1px solid var(--bordo);border-radius:20px;padding:24px;text-decoration:none;color:var(--testo);box-shadow:var(--ombra);transition:transform .15s,border-color .15s}
+  a.at-card:hover{transform:translateY(-3px);border-color:var(--blu)}
+  .at-card .ico{width:48px;height:48px;border-radius:14px;background:var(--cielo);color:var(--blu);display:grid;place-items:center}
+  .at-card .ico svg{width:26px;height:26px}
+  .at-card h2{font-size:1.15rem;margin:4px 0 0;color:var(--inchiostro)}
+  .at-card p{margin:0;color:var(--grigio);font-size:.95rem;flex:1}
+  .at-card .vai{font-weight:600;color:var(--blu);font-size:.92rem}
+  .at-card.off{opacity:.6;box-shadow:none}
+  .at-card.off .vai{color:var(--grigio)}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body data-senza-partner>
+<div id="site-header"></div>
+<main id="contenuto">
+<section class="sezione sezione--grigia" style="min-height:60vh">
+  <div class="contenitore">
+
+    <!-- Accesso -->
+    <div class="area-team at-login" id="at-login" hidden>
+      <div class="area-team__icona" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
+      <span class="badge">Area riservata</span>
+      <h1 style="font-size:clamp(1.6rem,4vw,2.2rem)">Area team</h1>
+      <p>Accedi con il tuo account Google <strong>@classlab.it</strong>.</p>
+      <div id="gbtn"></div>
+      <p class="at-errore" id="at-errore" aria-live="polite"></p>
+    </div>
+
+    <!-- Strumenti -->
+    <div class="at-hub" id="at-hub" hidden>
+      <div class="at-testa">
+        <img id="at-foto" alt="" hidden>
+        <div><h1 id="at-ciao">Area team</h1><p id="at-mail"></p></div>
+        <button class="at-esci" id="at-esci" type="button">Esci</button>
+      </div>
+      <div class="at-griglia" id="at-griglia"></div>
+    </div>
+
+  </div>
+</section>
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/config.js?v=b9c1aa66"></script>
+<script src="assets/js/partner-dati.js?v=9b2dbdbc"></script>
+<script src="assets/js/laboratori-dati.js?v=f34671e9"></script>
+<script src="assets/js/main.js?v=area1"></script>
+<script src="turni/config.js"></script>
+<script src="assets/js/area-team-dati.js"></script>
+<script>
+(function () {
+  var CLIENT_ID = (window.TURNI_CONFIG || {}).CLIENT_ID;
+  var DOMINIO = "classlab.it";
+  var CHIAVE = "turniToken"; // stessa sessione del gestionale turni: niente doppio accesso
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
+
+  var ICONE = {
+    calendario: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+    checklist: '<path d="M9 6h11M9 12h11M9 18h11"/><path d="m3 6 1.5 1.5L7 5M3 12l1.5 1.5L7 11M3 18l1.5 1.5L7 17"/>',
+    documento: '<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h6"/>',
+    cartella: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+    foglio: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/>',
+    link: '<path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/>'
+  };
+
+  function payload(tok) {
+    try { return JSON.parse(decodeURIComponent(escape(atob(tok.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))))); } catch (e) { return {}; }
+  }
+  function valido(tok) { var p = tok && payload(tok); return p && p.exp && p.exp * 1000 > Date.now() + 60000 && p.hd === DOMINIO; }
+
+  function mostraLogin(msg) {
+    $("at-hub").hidden = true; $("at-login").hidden = false;
+    $("at-errore").textContent = msg || "";
+    try { google.accounts.id.prompt(); } catch (e) {}
+  }
+
+  function mostraHub(p) {
+    $("at-login").hidden = true; $("at-hub").hidden = false;
+    $("at-ciao").textContent = "Ciao " + (p.given_name || p.name || "") + "!";
+    $("at-mail").textContent = p.email || "";
+    if (p.picture) { $("at-foto").src = p.picture; $("at-foto").hidden = false; }
+    var mail = String(p.email || "").toLowerCase();
+    var voci = (window.AREA_TEAM || []).filter(function (v) {
+      return !v.solo || !v.solo.length || v.solo.map(function (x) { return String(x).toLowerCase(); }).indexOf(mail) >= 0;
+    });
+    $("at-griglia").innerHTML = voci.map(function (v) {
+      var link = String(v.link || "").trim();
+      var ico = '<span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONE[v.icona] || ICONE.link) + "</svg></span>";
+      var corpo = ico + "<h2>" + esc(v.titolo) + "</h2><p>" + esc(v.descrizione) + "</p>";
+      if (!link) return '<div class="at-card off">' + corpo + '<span class="vai">In arrivo</span></div>';
+      var target = v.nuovaScheda ? ' target="_blank" rel="noopener"' : "";
+      return '<a class="at-card" href="' + esc(link) + '"' + target + ">" + corpo + '<span class="vai">Apri' + (v.nuovaScheda ? " ↗" : " →") + "</span></a>";
+    }).join("");
+  }
+
+  function onCredenziale(r) {
+    var p = payload(r.credential);
+    if (p.hd !== DOMINIO) { mostraLogin("Puoi accedere solo con un account @" + DOMINIO + "."); return; }
+    try { sessionStorage.setItem(CHIAVE, r.credential); } catch (e) {}
+    mostraHub(p);
+  }
+
+  $("at-esci").onclick = function () {
+    try { sessionStorage.removeItem(CHIAVE); google.accounts.id.disableAutoSelect(); } catch (e) {}
+    mostraLogin("");
+  };
+
+  function avvia() {
+    if (!CLIENT_ID) { $("at-login").hidden = false; $("at-errore").textContent = "Manca il CLIENT_ID in turni/config.js."; return; }
+    if (!window.google || !google.accounts || !google.accounts.id) { setTimeout(avvia, 100); return; }
+    google.accounts.id.initialize({ client_id: CLIENT_ID, callback: onCredenziale, hd: DOMINIO, auto_select: true, cancel_on_tap_outside: false });
+    google.accounts.id.renderButton($("gbtn"), { theme: "outline", size: "large", text: "signin_with", shape: "pill", locale: "it" });
+    var tok = null; try { tok = sessionStorage.getItem(CHIAVE); } catch (e) {}
+    if (valido(tok)) onCredenziale({ credential: tok }); else mostraLogin("");
+  }
+  avvia();
+})();
+</script>
+</body>
+</html>
