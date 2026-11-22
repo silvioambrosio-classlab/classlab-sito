@@ -24,8 +24,8 @@ window.AREA_TEAM = [
   {
     titolo: "Checklist materiali",
     descrizione: "Kit e materiali da preparare per ogni uscita, aggiornati dai turni.",
-    link: "",   // ← incolla qui l'URL dell'app web "ClassLab · Materiali" (finisce con /exec)
+    link: "/materiali/",
     icona: "checklist",
-    nuovaScheda: true
+    nuovaScheda: false
   }
 ];

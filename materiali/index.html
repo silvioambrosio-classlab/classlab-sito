@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Materiali · ClassLab</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14365f">
+<link rel="icon" href="../assets/img/favicon.png">
+<link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+<link rel="preload" href="../assets/fonts/montserrat-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+  @font-face{font-family:"Montserrat";src:url("../assets/fonts/montserrat-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:swap}
+  :root{
+    --navy:#14365f; --blu:#0b77b8; --cielo:#e3f2fc; --verde:#3a9a4a; --verde-soft:#e7f5ea; --arancio:#f29a2e;
+    --bg:#f6f9fc; --card:#fff; --ink:#0f172a; --testo:#334155; --muted:#64748b; --line:#e2e8f0;
+    --warn:#9a5b00; --warn-bg:#fff4e0; --bad:#b42318; --bad-bg:#fdecea; --r:14px;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;font-family:"Montserrat",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--testo);font-size:15px;line-height:1.45}
+  button,select,input{font:inherit}
+  .hidden{display:none!important}
+  .wrap{max-width:1020px;margin:0 auto;padding:0 16px}
+
+  /* login */
+  #login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  #login .card{background:#fff;border:1px solid var(--line);border-radius:22px;max-width:400px;width:100%;padding:32px 24px;text-align:center;box-shadow:0 10px 30px rgba(20,54,95,.08)}
+  #login img{width:84px;height:84px;border-radius:20px}
+  #login h1{font-size:23px;margin:14px 0 6px;color:var(--ink)}
+  #login p{color:var(--muted);margin:0 0 22px}
+  #gbtn{display:flex;justify-content:center;min-height:44px}
+  #loginErr{color:var(--bad);font-size:14px;margin-top:14px;min-height:1em}
+  #login a{color:var(--blu);font-size:14px}
+
+  /* barra */
+  header.top{position:sticky;top:0;z-index:5;background:var(--navy);color:#fff}
+  .bar{display:flex;align-items:center;gap:12px;padding:12px 0 6px}
+  .bar a.back{color:#fff;opacity:.8;text-decoration:none;font-size:14px;white-space:nowrap}
+  .bar h1{font-size:18px;margin:0;flex:1;color:#fff}
+  .bar h1 small{opacity:.7;font-weight:500;margin-left:6px}
+  .who{font-size:13px;text-align:right;opacity:.9}
+  .who button{background:rgba(255,255,255,.14);border:0;color:#fff;border-radius:999px;padding:4px 10px;margin-left:6px;cursor:pointer}
+  .tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+  .tab{border:0;background:none;padding:10px 12px;color:#fff;opacity:.72;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;font-weight:600}
+  .tab.on{opacity:1;border-bottom-color:var(--arancio)}
+  .tab .n{display:inline-block;min-width:20px;padding:0 6px;border-radius:10px;background:rgba(255,255,255,.2);font-size:12px;margin-left:5px;text-align:center}
+  .tab .n.warn{background:var(--arancio);color:#fff}
+
+  main.wrap{padding-top:16px;padding-bottom:70px}
+  .tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+  .tools select{padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);max-width:100%}
+  .tools .agg{margin-left:auto;font-size:12.5px;color:var(--muted);display:flex;gap:8px;align-items:center}
+  .btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:7px 12px;cursor:pointer;color:var(--ink)}
+  .btn:hover{border-color:#c4ccd8}
+  .btn.small{padding:4px 10px;font-size:13px}
+  .btn.prim{background:var(--blu);border-color:var(--blu);color:#fff}
+  .hint{color:var(--muted);font-size:13.5px;margin:0 0 12px}
+  .month{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:22px 0 8px;font-weight:700}
+
+  /* uscita */
+  .day{background:var(--card);border:1px solid var(--line);border-radius:var(--r);margin-bottom:10px;overflow:hidden}
+  .day.past{opacity:.6}
+  .day.mia{border-color:#9cc9e8;box-shadow:0 0 0 1px #9cc9e8}
+  .dh{display:flex;gap:12px;align-items:center;padding:12px 14px;cursor:pointer;user-select:none}
+  .date{min-width:54px;text-align:center;border-radius:12px;background:var(--cielo);color:var(--navy);padding:5px 4px;line-height:1.1}
+  .date b{display:block;font-size:21px}
+  .date small{font-size:11px;text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+  .dt{flex:1;min-width:0}
+  .dt h3{margin:0;font-size:16px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dt .sub{font-size:13px;color:var(--muted);margin-top:2px}
+  .badge{display:inline-block;font-size:11.5px;font-weight:700;border-radius:999px;padding:1px 8px;margin-right:4px}
+  .badge.mio{background:var(--cielo);color:var(--blu)}
+  .badge.fis{background:#eef0fb;color:#3949ab}
+  .ring{--p:0;width:44px;height:44px;border-radius:50%;background:conic-gradient(var(--verde) calc(var(--p)*1%),var(--line) 0);display:grid;place-items:center;flex:none}
+  .ring span{width:34px;height:34px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--ink)}
+  .ring.ok span{background:var(--verde);color:#fff;font-size:16px}
+  .chev{color:var(--muted);transition:transform .15s;flex:none}
+  .day.open .chev{transform:rotate(90deg)}
+  .db{display:none;border-top:1px solid var(--line);padding:12px 14px 16px}
+  .day.open .db{display:block}
+  .note{padding:8px 12px;border-radius:10px;background:var(--warn-bg);color:var(--warn);font-size:13.5px;margin-bottom:8px}
+  .note.bad{background:var(--bad-bg);color:var(--bad)}
+  .azioni{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  .grid{display:grid;gap:12px}
+  @media (min-width:780px){.grid{grid-template-columns:repeat(auto-fill,minmax(360px,1fr))}.blk.wide{grid-column:1/-1}}
+  .blk{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff}
+  .blk.prep{background:#fffaf1;border-color:#f3dfb8}
+  .blk.cond{background:#f4f9fe;border-color:#cfe4f4}
+  .blk.mio{border-color:var(--blu);box-shadow:0 0 0 1px var(--blu)}
+  .bh{display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line);padding-bottom:7px;margin-bottom:6px;flex-wrap:wrap}
+  .bh b{color:var(--navy);font-size:15px}
+  .bh .t{color:var(--muted);font-size:12.5px;flex:1}
+  .bh .c{font-size:12.5px;font-weight:700;color:var(--muted)}
+  .bh .c.ok{color:var(--verde)}
+  .cls{font-size:13.5px;display:grid;gap:3px;margin:2px 0 6px}
+  .cls .o{color:var(--muted);font-variant-numeric:tabular-nums}
+  .lab{display:inline-block;background:var(--cielo);color:var(--navy);border-radius:999px;padding:0 8px;margin:1px 2px 1px 0;font-size:12px}
+  .lab.unk{background:var(--bad-bg);color:var(--bad)}
+  h5{margin:10px 0 2px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+  label.it{display:flex;gap:10px;align-items:flex-start;padding:8px 4px;border-radius:8px;cursor:pointer;border-bottom:1px solid #f1f4f8}
+  label.it:last-child{border-bottom:0}
+  label.it:active{background:#f3f7fb}
+  label.it input{width:20px;height:20px;margin:1px 0 0;accent-color:var(--verde);flex:none}
+  .it .nm{flex:1;color:var(--ink)}
+  .it .q{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap;color:var(--ink);min-width:28px;text-align:right}
+  .it .nt{display:block;color:var(--muted);font-size:12px}
+  .it .who{display:block;color:var(--verde);font-size:11.5px}
+  .it.ok .nm,.it.ok .q{color:#9aa6b6;text-decoration:line-through}
+  .pill{display:inline-block;font-size:11px;border-radius:999px;padding:0 7px;margin-left:6px;font-weight:700;vertical-align:1px}
+  .pill.prep{background:var(--warn-bg);color:var(--warn)} .pill.late{background:var(--bad-bg);color:var(--bad)}
+
+  .list{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:4px 12px}
+  .empty{text-align:center;color:var(--muted);padding:44px 10px}
+  table.tot{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+  .tot th,.tot td{padding:9px 12px;text-align:left;border-top:1px solid var(--line);font-size:14px;vertical-align:top}
+  .tot th{background:#fafcfe;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-top:0}
+  .tot td.n{text-align:right;font-weight:700;white-space:nowrap}
+  .tot small{color:var(--muted)}
+  .tot tr.ub td{background:#f3f7fb;font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--navy)}
+  .cat{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+  .cat .blk h4{margin:0 0 2px;color:var(--ink)}
+  .cat ul{margin:8px 0 0;padding-left:18px;font-size:13.5px}
+  .cat li span{color:var(--muted)}
+  a{color:var(--blu)}
+  #busy{position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--arancio),transparent);background-size:200% 100%;animation:b 1s linear infinite;z-index:20;display:none}
+  @keyframes b{to{background-position:-200% 0}}
+  .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#1f2937;color:#fff;padding:10px 16px;border-radius:999px;font-size:13.5px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:30;max-width:90vw;text-align:center}
+  .toast.show{opacity:.95}
+
+  @media (max-width:600px){.blk.prep .bh .t,.blk.cond .bh .t{flex-basis:100%;order:5;font-size:12px}.dh{gap:10px;padding:12px}}
+  /* stampa: solo l'uscita scelta */
+  @media print{
+    header.top,.tools,.azioni,.toast,#busy,.chev,.ring{display:none!important}
+    body{background:#fff;font-size:12px}
+    .day{display:none;border:0}
+    .day.stampa{display:block}
+    .day.stampa .db{display:block;border:0;padding:0}
+    .grid{grid-template-columns:1fr 1fr;gap:8px}
+    .blk{break-inside:avoid}
+    label.it{padding:3px 0}
+    .month{display:none}
+  }
+</style>
+</head>
+<body>
+<div id="busy"></div>
+
+<section id="login" class="hidden">
+  <div class="card">
+    <img src="../turni/icona-192.png" alt="">
+    <h1>Materiali ClassLab</h1>
+    <p>Accedi con il tuo account Google <b>@classlab.it</b> per vedere i kit da preparare.</p>
+    <div id="gbtn"></div>
+    <div id="loginErr"></div>
+    <p style="margin:18px 0 0"><a href="../area-team.html">← Torna all'area team</a></p>
+  </div>
+</section>
+
+<div id="app" class="hidden">
+  <header class="top">
+    <div class="wrap">
+      <div class="bar">
+        <a class="back" href="../area-team.html" title="Area team">←</a>
+        <h1>Materiali<small>ClassLab</small></h1>
+        <div class="who" id="who"></div>
+      </div>
+      <nav class="tabs" id="tabs"></nav>
+    </div>
+  </header>
+  <main class="wrap" id="main"></main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="../turni/config.js"></script>
+<script src="config.js"></script>
+<script>
+/* =====================================================================
+   CLASSLAB · MATERIALI — pagina dell'area team
+   Legge turni + catalogo dall'API (Apps Script), calcola kit e materiali qui.
+   ===================================================================== */
+const API_URL = (window.MATERIALI_CONFIG || {}).API_URL;
+const CLIENT_ID = (window.TURNI_CONFIG || {}).CLIENT_ID;
+const DOMINIO = 'classlab.it';
+const S = { io:'', data:null, uscite:[], stato:{}, tab:'uscite', range:'30', area:'TUTTE', persona:'', aperte:new Set(), token:null, utente:null };
+
+/* ========= Utilità ========= */
+const MESI = {gen:0,feb:1,mar:2,apr:3,mag:4,giu:5,lug:6,ago:7,set:8,ott:9,nov:10,dic:11,jan:0,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,dec:11};
+const GG = ['Dom','Lun','Mar','Mer','Gio','Ven','Sab'];
+const MM = ['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm = s => String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'');
+const oggi = () => { const d = new Date(); d.setHours(0,0,0,0); return d; };
+const giorni = (a,b) => Math.round((a-b)/86400000);
+const iso = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const fmt = d => GG[d.getDay()]+' '+d.getDate()+' '+MM[d.getMonth()];
+const quando = d => { const n = giorni(d, oggi()); return n===0?'oggi':n===1?'domani':n===-1?'ieri':n>0?'tra '+n+' giorni':n*-1+' giorni fa'; };
+const numFmt = n => (Math.round(n*10)/10).toLocaleString('it-IT');
+
+function parseData(s, annoInizio){
+  const m = /^\s*(\d{1,2})\s*[-\/. ]\s*([a-zA-Z]{3,}|\d{1,2})\.?(?:\s*[-\/. ]\s*(\d{2,4}))?\s*$/.exec(s||'');
+  if(!m) return null;
+  const mese = /^\d+$/.test(m[2]) ? (+m[2]-1) : MESI[m[2].slice(0,3).toLowerCase()];
+  if(mese===undefined || mese<0 || mese>11) return null;
+  const anno = m[3] ? (+m[3]<100 ? 2000 + +m[3] : +m[3]) : (mese>=7 ? annoInizio : annoInizio+1);
+  return new Date(anno, mese, +m[1]);
+}
+
+/* ========= Lettura del gestionale turni =========
+   Struttura attesa (come nel foglio di Giulio):
+   riga data:   A=data  B=scuola  C/F/I/L…=orario della fascia
+   riga team:   sotto ogni fascia, due nomi (es. "Davide" "Giulio")
+   riga classe: sotto ogni fascia, "1C: Foglie-Epiteliali-Batteri"
+   più coppie team/classe nello stesso blocco = classi in parallelo. */
+function leggiScheda(valori, area, annoInizio){
+  const out = []; let b = null, staff = null;
+  const push = (c, classe, labs, incerto) => out.push({
+    area, data:b.data, scuola:b.scuola, orario:b.orari[c]||'', col:c,
+    team: staff ? [staff[c], staff[c+1]].filter(x=>x && x!=='-') : [],
+    classe, labs, incerto, note:b.note
+  });
+  const chiudiStaff = () => {
+    if(staff && b) Object.keys(b.orari).map(Number).forEach(c => { if(staff[c]) push(c,'',[],false); });
+    staff = null;
+  };
+  for(const raw of valori){
+    const row = (raw||[]).map(x => String(x ?? '').trim());
+    const d = parseData(row[0], annoInizio);
+    if(d){
+      chiudiStaff();
+      b = { data:d, scuola:row[1]||'(scuola?)', orari:{}, note:[] };
+      for(let c=2;c<row.length;c+=3) if(/\d/.test(row[c]||'')) b.orari[c] = row[c];
+      continue;
+    }
+    if(!b) continue;
+    const cols = Object.keys(b.orari).map(Number);
+    if(row[0]) b.note.push(row[0]);
+    const isClasse = c => /^[^:]{1,15}:/.test(row[c]||'');
+    if(cols.some(isClasse)){
+      cols.forEach(c => {
+        const t = row[c]||'';
+        if(isClasse(c)){
+          const i = t.indexOf(':');
+          const resto = t.slice(i+1);
+          const labs = resto.split(/\s*[-–,\/+]\s*/).map(x=>x.replace(/\(\?\)|\?/g,'').trim()).filter(Boolean);
+          push(c, t.slice(0,i).trim(), labs, /\?/.test(resto));
+        } else if(staff && staff[c]) push(c,'',[],false);
+      });
+      staff = null;
+    } else if(cols.some(c => row[c])){
+      chiudiStaff(); staff = row;
+    }
+  }
+  chiudiStaff();
+  return out;
+}
+
+/* ========= Catalogo (stessa struttura della Checklist) ========= */
+function catalogo(d){
+  const labs = d.laboratori.map(r => ({codice:r[0], nome:r[1]||r[0], chiavi:[r[0], ...String(r[2]||'').split(',')].map(norm).filter(Boolean), area:r[3]||'', attiva: !/^n/i.test(String(r[4]||'SI').trim())}));
+  const h = (d.materiali[0]||[]).map(x => String(x||'').trim());
+  const colAnt = h.findIndex(x => /anticipo/i.test(x));
+  const colNote = h.findIndex(x => /^note/i.test(x));
+  const attCols = []; for(let i=4;i<h.length;i++) if(h[i] && i!==colAnt && i!==colNote) attCols.push(i);
+  const num = v => parseFloat(String(v||'').replace(',','.')) || 0;
+  const mat = d.materiali.slice(1).filter(r => r[1] && String(r[1]).trim()).map(r => {
+    const per = {}; attCols.forEach(i => { const q = num(r[i]); if(q>0) per[h[i]] = q; });
+    return { ubic:String(r[0]||'').trim(), nome:String(r[1]).trim(), condiviso:/^s/i.test(r[2]||''), max:/max/i.test(r[3]||''),
+             per, anticipo: colAnt>=0 ? Math.round(num(r[colAnt])) : 0, note: colNote>=0 ? r[colNote] : '' };
+  });
+  const riconosci = t => {
+    const n = norm(t); if(!n) return null;
+    let l = labs.find(l => norm(l.codice)===n);
+    if(!l) l = labs.find(l => l.chiavi.some(k => n.startsWith(k) || (n.length>=4 && k.startsWith(n))));
+    return l ? l.codice : null;
+  };
+  const attiva = cod => { const l = labs.find(l=>l.codice===cod); return !l || l.attiva; };
+  return {labs, mat, attivita: attCols.map(i=>h[i]), riconosci, attiva};
+}
+const ORDINE_UBIC = ['DA COMPRARE','Da preparare fresche','Frigo','Freezer','Armadio','Scaffalatura','Magazzino'];
+const ordUbic = u => { const i = ORDINE_UBIC.findIndex(x => x.toLowerCase()===String(u).toLowerCase()); return i<0 ? 99 : i; };
+
+/* Orari "08:00-10:00", "12-14", "10:0-12:00" → minuti */
+function orario(t){
+  const m = /(\d{1,2})(?:[:.](\d{1,2}))?\s*[-–]\s*(\d{1,2})(?:[:.](\d{1,2}))?/.exec(t||'');
+  if(!m) return null;
+  return { da: +m[1]*60 + (+m[2]||0), a: +m[3]*60 + (+m[4]||0) };
+}
+
+/* Materiale per UNA classe: dentro la classe le esperienze si sommano, salvo Max/Condiviso */
+function fabbisognoClasse(s, cat){
+  const att = [...new Set(s.labCodici.map(l=>l.codice).filter(Boolean))];
+  const out = new Map();
+  cat.mat.forEach(m => {
+    const v = att.map(a => m.per[a]||0).filter(q => q>0);
+    if(!v.length) return;
+    out.set(m.nome, { m, q: (m.max||m.condiviso) ? Math.max(...v) : v.reduce((a,b)=>a+b,0), att: att.filter(a=>m.per[a]) });
+  });
+  return out;
+}
+
+/* Kit: classi sovrapposte → kit diversi; classi in sequenza → stesso kit */
+function assegnaKit(sessioni){
+  const conOrario = sessioni.map(s => ({s, t: orario(s.orario)}));
+  conOrario.sort((a,b) => (a.t?a.t.da:9999)-(b.t?b.t.da:9999) || a.s.col-b.s.col);
+  const kit = [];
+  conOrario.forEach(({s,t}) => {
+    let k = null;
+    if(t){
+      const liberi = kit.filter(k => k.fine!==null && k.fine <= t.da);
+      const team = s.team.join('+');
+      k = liberi.find(k => k.sessioni[k.sessioni.length-1].team.join('+')===team) || liberi.sort((a,b)=>a.fine-b.fine)[0] || null;
+    }
+    if(!k){ k = {sessioni:[], fine:null}; kit.push(k); }
+    k.sessioni.push(s); k.fine = t ? t.a : null;
+  });
+  return kit;
+}
+
+const MESI_L = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+
+
+/* ========= Costruzione uscite, kit e strumenti condivisi ========= */
+function costruisci(d){
+  const cat = catalogo(d);
+  const sess = d.schede.flatMap(s => leggiScheda(s.valori, s.area, d.annoInizio));
+  const map = new Map();
+  sess.forEach(s => {
+    s.labCodici = s.labs.map(t => ({testo:t, codice:cat.riconosci(t)}));
+    s.t = orario(s.orario);
+    // Stesso giorno e stessa città = un'unica uscita (es. due scuole a Padova): materiale e strumenti in comune
+    const citta = (/\(([^)]+)\)\s*$/.exec(s.scuola) || [,'Trieste'])[1].trim();
+    s.scuolaBreve = s.scuola.replace(/\s*\([^)]*\)\s*$/, '').trim();
+    const k = iso(s.data)+'|'+s.area+'|'+norm(citta);
+    if(!map.has(k)) map.set(k, {key:k, data:s.data, area:s.area, citta, scuole:[], sessioni:[], note:[]});
+    const u = map.get(k); u.sessioni.push(s);
+    if(!u.scuole.includes(s.scuola)) u.scuole.push(s.scuola);
+    s.note.forEach(n => { if(!u.note.includes(n)) u.note.push(n); });
+  });
+  const uscite = [...map.values()]
+    .filter(u => u.sessioni.some(s => !s.labCodici.length || s.labCodici.some(l => !l.codice || cat.attiva(l.codice))))
+    .sort((a,b) => a.data-b.data || a.scuole[0].localeCompare(b.scuole[0]));
+  uscite.forEach(u => { u.scuola = u.scuole.length>1 ? u.sessioni.map(s=>s.scuolaBreve).filter((x,i,a)=>a.indexOf(x)===i).join(' + ')+' ('+u.citta+')' : u.scuole[0]; });
+  S.areeAttive = new Set(uscite.map(u=>u.area));
+  uscite.forEach(u => {
+    u.avvisi = []; let senza = 0;
+    u.sessioni.forEach(s => {
+      if(!s.labs.length) senza++;
+      if(s.incerto) u.avvisi.push(s.classe+': c\'è un "?" nelle esperienze, da confermare');
+      s.labCodici.filter(l=>!l.codice).forEach(l => u.avvisi.push('Esperienza non riconosciuta: "'+l.testo+'" ('+s.classe+') — aggiungi la parola nel foglio Laboratori'));
+      if(!s.t) u.avvisi.push((s.classe||'Una classe')+': orario "'+s.orario+'" non leggibile, messa in un kit a parte');
+      s.fab = fabbisognoClasse(s, cat);
+    });
+    if(senza) u.avvisi.unshift(senza+(senza===1?' classe':' classi')+' senza esperienze indicate nei turni: il materiale verrà calcolato quando saranno inserite');
+
+    // Kit: classi sovrapposte → kit separati, in sequenza → stesso kit. Gli strumenti condivisi NON stanno nei kit.
+    u.kit = assegnaKit(u.sessioni).map((k,i) => {
+      const tot = new Map();
+      k.sessioni.forEach(s => s.fab.forEach((x,nome) => {
+        if(x.m.condiviso) return;
+        const t = tot.get(nome) || {m:x.m, qta:0};
+        t.qta = x.m.max ? Math.max(t.qta, x.q) : t.qta + x.q;     // regola Max: 1 per kit
+        tot.set(nome, t);
+      }));
+      const voci = [...tot.values()].map(t => ({nome:t.m.nome, ubic:t.m.ubic, qta:t.qta, note:t.m.note, anticipo:t.m.anticipo, key:u.key+'|kit'+(i+1)+'|'+t.m.nome}))
+        .sort((a,b) => ordUbic(a.ubic)-ordUbic(b.ubic) || a.ubic.localeCompare(b.ubic) || a.nome.localeCompare(b.nome,'it'));
+      const team = [...new Set(k.sessioni.flatMap(s=>s.team).flatMap(splitNomi))];
+      return { n:i+1, sessioni:k.sessioni, team, voci };
+    });
+
+    // Strumenti condivisi: prelievo unico, quanti ne servono nello stesso momento (come nella Checklist)
+    const cond = new Map();
+    cat.mat.filter(m => m.condiviso).forEach(m => {
+      const conT = u.sessioni.filter(s => s.t && s.fab.has(m.nome)), senzaT = u.sessioni.filter(s => !s.t && s.fab.has(m.nome));
+      if(!conT.length && !senzaT.length) return;
+      let picco = 0;
+      conT.forEach(a => { const q = conT.filter(b => b.t.da <= a.t.da && a.t.da < b.t.a).reduce((x,b)=>x+b.fab.get(m.nome).q, 0); picco = Math.max(picco, q); });
+      picco += senzaT.reduce((x,b)=>x+b.fab.get(m.nome).q, 0);
+      cond.set(m.nome, {nome:m.nome, ubic:m.ubic, qta:picco, note:m.note, key:u.key+'|cond|'+m.nome});
+    });
+    u.condivisi = [...cond.values()].sort((a,b) => ordUbic(a.ubic)-ordUbic(b.ubic) || a.nome.localeCompare(b.nome,'it'));
+
+    // Da comprare / da preparare fresche: totale della giornata (somma dei kit)
+    const prep = new Map();
+    u.kit.flatMap(k=>k.voci).filter(v => v.anticipo>0 || /prepar|compra/i.test(v.ubic)).forEach(v => {
+      const p = prep.get(v.nome) || {nome:v.nome, ubic:v.ubic, qta:0, note:v.note, perKit:[], key:u.key+'|prep|'+v.nome,
+        scad: v.anticipo>0 ? new Date(u.data.getFullYear(), u.data.getMonth(), u.data.getDate()-v.anticipo) : null};
+      p.qta += v.qta; p.perKit.push(v.qta); prep.set(v.nome, p);
+    });
+    u.prep = [...prep.values()].sort((a,b) => ordUbic(a.ubic)-ordUbic(b.ubic) || a.nome.localeCompare(b.nome,'it'));
+    u.tutte = u.prep.concat(u.condivisi, u.kit.flatMap(k=>k.voci));
+  });
+  return uscite;
+}
+
+/* ========= Persone ========= */
+function splitNomi(t){ return String(t||'').split(/\s*\+\s*/).map(x=>x.trim()).filter(x => x && x!=='-' && x.toUpperCase()!=='C' && !/^[A-Z]\d+$/.test(x)); }
+const eqNome = (a,b) => { const x = norm(a), y = norm(b); return !!x && !!y && (x===y || (Math.min(x.length,y.length)>=4 && (x.startsWith(y)||y.startsWith(x)) && Math.abs(x.length-y.length)>=2)); };
+const haPersona = (lista, p) => lista.some(n => eqNome(n, p));
+function nomiTeam(){ const s = new Map(); S.uscite.forEach(u => u.sessioni.forEach(x => x.team.flatMap(splitNomi).forEach(n => { const k = norm(n); if(!s.has(k)) s.set(k, n); }))); return [...s.values()].sort((a,b)=>a.localeCompare(b,'it')); }
+const nomeBreve = email => { const p = String(email||'').split('@')[0].split('.')[0]; return p ? p[0].toUpperCase()+p.slice(1) : ''; };
+
+/* ========= Filtri ========= */
+function visibili(){
+  const t = oggi();
+  return S.uscite.filter(u => {
+    if(S.area!=='TUTTE' && u.area!==S.area) return false;
+    if(S.persona && !u.sessioni.some(s => haPersona(s.team.flatMap(splitNomi), S.persona))) return false;
+    const n = giorni(u.data, t);
+    if(S.range==='past') return n<0;
+    if(n<0) return false;
+    return S.range==='all' || n <= +S.range;
+  }).sort((a,b) => S.range==='past' ? b.data-a.data : a.data-b.data);
+}
+
+/* ========= Render ========= */
+const fatto = k => !!(S.stato[k] && S.stato[k].fatto);
+const conta = arr => [arr.filter(v=>fatto(v.key)).length, arr.length];
+function voce(v, extra){
+  const ok = fatto(v.key), st = S.stato[v.key];
+  return `<label class="it ${ok?'ok':''}"><input type="checkbox" data-k="${esc(v.key)}" ${ok?'checked':''}>
+    <span class="nm">${esc(v.nome)}${extra||''}${v.note?`<span class="nt">${esc(v.note)}</span>`:''}${ok && st && st.da ? `<span class="who">✓ ${esc(nomeBreve(st.da))} · ${esc(st.quando)}</span>`:''}</span>
+    <span class="q">${numFmt(v.qta)}</span></label>`;
+}
+function perUbic(voci, extra){
+  const g = new Map(); voci.forEach(v => { if(!g.has(v.ubic)) g.set(v.ubic, []); g.get(v.ubic).push(v); });
+  return [...g.entries()].map(([ub, arr]) => `<h5>${esc(ub||'—')}</h5>${arr.map(v=>voce(v, extra&&extra(v))).join('')}`).join('');
+}
+function contatore(arr){ const [a,b] = conta(arr); return `<span class="c ${a===b&&b?'ok':''}">${a}/${b}</span>`; }
+function tuttiBtn(arr){ const [a,b] = conta(arr); return b ? `<button class="btn small" data-tutti="${esc(arr.map(v=>v.key).join('\n'))}" data-val="${a===b?'0':'1'}">${a===b?'Togli spunte':'Segna tutto'}</button>` : ''; }
+
+function viewUscite(){
+  const list = visibili();
+  if(!list.length) return `<div class="empty">Nessuna uscita ${S.persona?'per '+esc(S.persona)+' ':''}nel periodo scelto.</div>`;
+  let mese = '';
+  return list.map(u => {
+    const [ok,tot] = conta(u.tutte), pct = tot ? Math.round(ok/tot*100) : 0;
+    const past = giorni(u.data, oggi())<0;
+    const chi = S.persona || S.io;
+    const mio = chi && u.sessioni.some(s => haPersona(s.team.flatMap(splitNomi), chi));
+    const m = MESI_L[u.data.getMonth()]+' '+u.data.getFullYear();
+    const head = m!==mese ? `<div class="month">${m}</div>` : ''; mese = m;
+    const open = S.aperte.has(u.key);
+    const kitHTML = u.kit.map(k => {
+      const kmio = chi && haPersona(k.team, chi);
+      return `<div class="blk ${kmio?'mio':''}">
+        <div class="bh"><b>Kit ${k.n}</b>${kmio?`<span class="badge mio">${S.persona&&S.persona!==S.io?'Kit di '+esc(S.persona):'Il tuo kit'}</span>`:''}<span class="t">${esc(k.team.join(' · ')||'Team')}</span>${contatore(k.voci)}${tuttiBtn(k.voci)}</div>
+        <div class="cls">${k.sessioni.map(s => `<div><span class="o">${esc(s.orario)}</span> <b>${esc(s.classe||'—')}</b>${u.scuole.length>1?` <span class="o">· ${esc(s.scuolaBreve)}</span>`:''} ${s.labCodici.length ? s.labCodici.map(l=>`<span class="lab ${l.codice?'':'unk'}">${esc(l.testo)}</span>`).join('') : '<span class="lab unk">da definire</span>'}</div>`).join('')}</div>
+        ${k.voci.length ? perUbic(k.voci) : '<p class="hint" style="margin:6px 0 0">Nessun materiale in catalogo per queste esperienze.</p>'}
+      </div>`;}).join('');
+    const prepHTML = u.prep.length ? `<div class="blk prep wide"><div class="bh"><b>Prima dell'uscita</b><span class="t">da comprare o preparare fresco · totale di tutti i kit</span>${contatore(u.prep)}${tuttiBtn(u.prep)}</div>
+      ${u.prep.map(p => { const late = p.scad && !fatto(p.key) && giorni(p.scad, oggi())<0;
+        return voce(p, `${p.scad?`<span class="pill ${late?'late':'prep'}">entro ${fmt(p.scad)}</span>`:''}<span class="nt">${esc(p.ubic)}${p.perKit.length>1?' · '+p.perKit.map((q,i)=>'kit '+(i+1)+': '+numFmt(q)).join(', '):''}</span>`); }).join('')}</div>` : '';
+    const condHTML = u.condivisi.length ? `<div class="blk cond wide"><div class="bh"><b>Strumenti condivisi</b><span class="t">da prendere una volta a inizio giornata · quanti ne servono nello stesso momento</span>${contatore(u.condivisi)}${tuttiBtn(u.condivisi)}</div>${perUbic(u.condivisi)}</div>` : '';
+    return head + `<div class="day ${past?'past':''} ${mio?'mia':''} ${open?'open':''}" data-u="${esc(u.key)}">
+      <div class="dh" data-apri="${esc(u.key)}">
+        <div class="date"><small>${GG[u.data.getDay()]}</small><b>${u.data.getDate()}</b><small>${MM[u.data.getMonth()]}</small></div>
+        <div class="dt"><h3>${esc(u.scuola)}</h3><div class="sub">${mio?`<span class="badge mio">${S.persona&&S.persona!==S.io?esc(S.persona):'Ci sei'}</span>`:''}${u.area==='FISICA'?'<span class="badge fis">Fisica</span>':''}${u.sessioni.length} ${u.sessioni.length===1?'classe':'classi'} · ${u.kit.length} kit · ${quando(u.data)}${u.avvisi.length?' · ⚠️':''}</div></div>
+        <div class="ring ${ok===tot&&tot?'ok':''}" style="--p:${pct}"><span>${ok===tot&&tot?'✓':pct+'%'}</span></div>
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 6 6 6-6 6"/></svg>
+      </div>
+      <div class="db">
+        ${u.note.map(n=>`<div class="note">📌 ${esc(n)}</div>`).join('')}
+        ${u.avvisi.map(n=>`<div class="note bad">⚠️ ${esc(n)}</div>`).join('')}
+        <div class="azioni"><button class="btn small" data-stampa="${esc(u.key)}">🖨️ Stampa la checklist</button></div>
+        <div class="grid">${prepHTML}${condHTML}${kitHTML}</div>
+      </div></div>`;
+  }).join('');
+}
+
+function prepItems(){
+  const t = oggi();
+  return S.uscite.filter(u => giorni(u.data,t)>=0 && (S.area==='TUTTE'||u.area===S.area))
+    .flatMap(u => u.prep.map(p => ({...p, usc:u, quando: p.scad || u.data}))).sort((a,b) => a.quando-b.quando);
+}
+function viewPrep(){
+  const items = prepItems();
+  if(!items.length) return `<div class="empty">Niente da comprare o preparare per le prossime uscite.</div>`;
+  const by = new Map();
+  items.forEach(v => { const k = iso(v.quando)+(v.scad?'s':'u')+v.usc.scuola; if(!by.has(k)) by.set(k, []); by.get(k).push(v); });
+  return `<p class="hint">Cosa comprare o preparare fresco prima di ogni uscita, con il totale di tutti i kit. Quando definirete le tempistiche, compilate "Anticipo (giorni)" nel foglio Materiali e comparirà la scadenza.</p>` +
+    [...by.values()].map(arr => { const v0 = arr[0], n = giorni(v0.quando, oggi());
+      return `<div class="month" style="text-transform:none;letter-spacing:0;font-size:14px;color:var(--ink)">${v0.scad?'Entro ':''}${fmt(v0.quando)} · ${esc(v0.usc.scuola)} <span class="pill prep">${quando(v0.quando)}</span></div>
+      <div class="list">${arr.map(v => voce(v, `<span class="nt">${esc(v.ubic)}${v.perKit.length>1?' · '+v.perKit.length+' kit':''}</span>`)).join('')}</div>`; }).join('');
+}
+
+function viewTotali(){
+  const list = visibili(), agg = new Map();
+  list.forEach(u => u.kit.forEach(k => k.voci.forEach(v => {
+    const a = agg.get(v.nome) || {nome:v.nome, ubic:v.ubic, qta:0, usi:new Set()};
+    a.qta += v.qta; a.usi.add(u.scuola+' '+u.data.getDate()+'/'+(u.data.getMonth()+1)); agg.set(v.nome,a);
+  })));
+  const rows = [...agg.values()].sort((a,b)=>ordUbic(a.ubic)-ordUbic(b.ubic) || a.ubic.localeCompare(b.ubic) || a.nome.localeCompare(b.nome,'it'));
+  if(!rows.length) return `<div class="empty">Niente nel periodo scelto.</div>`;
+  let ub = null;
+  return `<p class="hint">Totale dei materiali dei kit per le ${list.length} uscite del periodo e della persona scelti (strumenti condivisi esclusi): utile per gli acquisti e per controllare le scorte.</p>
+    <table class="tot"><tr><th>Materiale</th><th style="text-align:right">Totale</th><th>Uscite</th></tr>
+    ${rows.map(r => { const h = r.ubic!==ub ? `<tr class="ub"><td colspan="3">${esc(r.ubic||'—')}</td></tr>` : ''; ub = r.ubic;
+      return h+`<tr><td>${esc(r.nome)}</td><td class="n">${numFmt(r.qta)}</td><td><small>${esc([...r.usi].join(', '))}</small></td></tr>`; }).join('')}</table>`;
+}
+
+function viewCatalogo(){
+  const cat = catalogo(S.data);
+  return `<p class="hint">Quantità <b>per classe</b>. Si modificano nel <a href="${esc(S.data.urlCatalogo)}" target="_blank" rel="noopener">foglio Materiali</a>; i turni vengono da <a href="${esc(S.data.urlTurni)}" target="_blank" rel="noopener">Turni ClassLab 26</a>.</p>
+  <div class="cat">${cat.labs.filter(l=>l.attiva).map(l => { const m = cat.mat.filter(x=>x.per[l.codice]); return `<div class="blk"><h4>${esc(l.nome)}</h4><div class="hint" style="margin:0">Nei turni: ${esc(l.chiavi.join(', '))}</div>
+    <ul>${m.map(x=>`<li>${esc(x.nome)} <span>— ${numFmt(x.per[l.codice])}${x.condiviso?' · condiviso':''}${x.max?' · 1 per kit':''}</span></li>`).join('') || '<li><span>nessun materiale</span></li>'}</ul></div>`; }).join('')}</div>`;
+}
+
+function render(){
+  if(!S.data) return;
+  const urg = prepItems().filter(v => !fatto(v.key) && giorni(v.quando, oggi())<=3).length;
+  const tabs = [['uscite','Uscite', visibili().length, ''], ['prep','Da preparare', urg, urg?'warn':''], ['totali','Totali','',''], ['catalogo','Catalogo','','']];
+  document.getElementById('tabs').innerHTML = tabs.map(([k,t,n,c]) => `<button class="tab ${S.tab===k?'on':''}" data-tab="${k}">${t}${n!==''?`<span class="n ${c}">${n}</span>`:''}</button>`).join('');
+  const nomi = nomiTeam(), fis = S.areeAttive && S.areeAttive.has('FISICA') && S.areeAttive.size>1;
+  if(!fis) S.area = 'TUTTE';
+  const tools = S.tab==='catalogo' ? '' : `<div class="tools">
+    <select id="persona" aria-label="Persona"><option value="">Tutto il team</option>${S.io?`<option value="${esc(S.io)}" ${S.persona===S.io?'selected':''}>Solo le mie uscite</option>`:''}${nomi.filter(n=>n!==S.io).map(n=>`<option ${n===S.persona?'selected':''}>${esc(n)}</option>`).join('')}</select>
+    ${S.tab!=='prep' ? `<select id="range" aria-label="Periodo">${[['7','Prossimi 7 giorni'],['14','Prossimi 14 giorni'],['30','Prossimi 30 giorni'],['all','Tutte le prossime'],['past','Passate']].map(([v,t])=>`<option value="${v}" ${S.range===v?'selected':''}>${t}</option>`).join('')}</select>` : ''}
+    ${fis ? `<select id="area"><option value="TUTTE">Tutte le aree</option><option value="BIO" ${S.area==='BIO'?'selected':''}>Biologia</option><option value="FISICA" ${S.area==='FISICA'?'selected':''}>Fisica</option></select>` : ''}
+    <span class="agg">Turni letti alle ${esc((S.data.aggiornato||'').split(' ')[1]||'')}<button class="btn small" id="aggiorna">↻</button></span></div>`;
+  const v = S.tab==='uscite' ? viewUscite() : S.tab==='prep' ? viewPrep() : S.tab==='totali' ? viewTotali() : viewCatalogo();
+  document.getElementById('main').innerHTML = tools + v;
+}
+
+/* ========= Login (stesso del gestionale turni) ========= */
+function payload(tok){ try { return JSON.parse(decodeURIComponent(escape(atob(tok.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))))); } catch(e){ return {}; } }
+function tokenValido(tok){ const p = tok && payload(tok); return p && p.exp && p.exp*1000 > Date.now() + 60000 && p.hd === DOMINIO; }
+function mostraLogin(msg){
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('login').classList.remove('hidden');
+  document.getElementById('loginErr').textContent = msg || '';
+  try { google.accounts.id.prompt(); } catch(e){}
+}
+function onCredenziale(r){
+  const p = payload(r.credential);
+  if(p.hd !== DOMINIO){ mostraLogin('Puoi accedere solo con un account @'+DOMINIO+'.'); return; }
+  S.token = r.credential; S.utente = p;
+  try { sessionStorage.setItem('turniToken', S.token); } catch(e){}
+  document.getElementById('login').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  document.getElementById('who').innerHTML = 'Ciao <b>'+esc(p.given_name||'')+'</b><button id="esci">Esci</button>';
+  try { const c = JSON.parse(localStorage.getItem('matCache')||'null'); if(c && !S.data) usaDati(c, true); } catch(e){}
+  carica();
+}
+function esci(){ S.token = null; try { sessionStorage.removeItem('turniToken'); google.accounts.id.disableAutoSelect(); } catch(e){} mostraLogin(''); }
+function avviaLogin(){
+  if(window.DEMO){ S.utente = {given_name:'Silvio'}; document.getElementById('app').classList.remove('hidden'); document.getElementById('who').innerHTML='Ciao <b>Silvio</b> <span style="opacity:.7">(anteprima)</span>'; usaDati(window.DEMO); return; }
+  if(!API_URL){ document.getElementById('login').classList.remove('hidden'); document.getElementById('gbtn').innerHTML=''; document.getElementById('loginErr').textContent='La checklist non è ancora collegata: manca l\'indirizzo API in materiali/config.js.'; return; }
+  if(!window.google || !google.accounts || !google.accounts.id){ setTimeout(avviaLogin, 100); return; }
+  google.accounts.id.initialize({ client_id: CLIENT_ID, callback: onCredenziale, hd: DOMINIO, auto_select: true, cancel_on_tap_outside: false });
+  google.accounts.id.renderButton(document.getElementById('gbtn'), { theme:'outline', size:'large', text:'signin_with', shape:'pill', locale:'it' });
+  let tok = null; try { tok = sessionStorage.getItem('turniToken'); } catch(e){}
+  if(tokenValido(tok)) onCredenziale({ credential: tok }); else mostraLogin('');
+}
+
+/* ========= Server ========= */
+async function call(fn, ...args){
+  if(window.DEMO) return fn==='segnaMolti' ? args[0].map(k=>({chiave:k, fatto:args[1], da:'silvio.ambrosio@classlab.it', quando:'ora'})) : null;
+  if(!tokenValido(S.token)){ mostraLogin('Sessione scaduta: accedi di nuovo.'); throw new Error('Sessione scaduta'); }
+  document.getElementById('busy').style.display = 'block';
+  try {
+    const r = await fetch(API_URL, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify({ token:S.token, fn, args }) });
+    const j = await r.json();
+    if(!j.ok){ if(j.auth) mostraLogin(j.errore); throw new Error(j.errore); }
+    return j.dati;
+  } finally { document.getElementById('busy').style.display = 'none'; }
+}
+function usaDati(d, daCache){
+  S.data = d; S.stato = d.stato || {}; S.uscite = costruisci(d);
+  if(S.utente && S.utente.given_name){ const n = nomiTeam().find(x => eqNome(x, S.utente.given_name)); S.io = n || ''; }
+  if(S.persona===''){ try { S.persona = localStorage.getItem('matPersona') || ''; } catch(e){} }
+  if(!S.aperte.size){ const prima = visibili()[0]; if(prima) S.aperte.add(prima.key); }
+  render();
+}
+async function carica(silenzioso){
+  try { const d = await call('getData'); try { localStorage.setItem('matCache', JSON.stringify(d)); } catch(e){} usaDati(d); }
+  catch(e){ if(!silenzioso) toast('Non riesco a leggere i dati: '+e.message); }
+}
+async function spunta(chiavi, val){
+  const prima = chiavi.map(k => [k, S.stato[k]]);
+  chiavi.forEach(k => S.stato[k] = {fatto:val, da:'', quando:''}); render();
+  try { const r = await call('segnaMolti', chiavi, val); (r||[]).forEach(x => S.stato[x.chiave] = x); render(); }
+  catch(e){ prima.forEach(([k,v]) => { if(v) S.stato[k] = v; else delete S.stato[k]; }); render(); toast('Non salvato: '+e.message); }
+}
+
+/* ========= Eventi ========= */
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-tab],[data-apri],[data-tutti],[data-stampa],#aggiorna,#esci');
+  if(!t) return;
+  if(t.dataset.tab){ S.tab = t.dataset.tab; render(); window.scrollTo(0,0); }
+  else if(t.dataset.apri){ const k = t.dataset.apri; S.aperte.has(k) ? S.aperte.delete(k) : S.aperte.add(k); t.parentElement.classList.toggle('open'); }
+  else if(t.dataset.tutti !== undefined){ spunta(t.dataset.tutti.split('\n'), t.dataset.val==='1'); }
+  else if(t.dataset.stampa){ const d = t.closest('.day'); d.classList.add('stampa'); window.print(); setTimeout(()=>d.classList.remove('stampa'), 500); }
+  else if(t.id==='aggiorna'){ toast('Aggiorno dai turni…'); carica(); }
+  else if(t.id==='esci'){ esci(); }
+});
+document.addEventListener('change', e => {
+  const k = e.target.dataset && e.target.dataset.k;
+  if(k){ spunta([k], e.target.checked); return; }
+  if(e.target.id==='persona'){ S.persona = e.target.value; try { localStorage.setItem('matPersona', S.persona); } catch(x){} render(); }
+  if(e.target.id==='range'){ S.range = e.target.value; render(); }
+  if(e.target.id==='area'){ S.area = e.target.value; render(); }
+});
+let tt; function toast(m){ const t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(tt); tt = setTimeout(()=>t.classList.remove('show'), 2600); }
+setInterval(() => { if(!document.hidden && S.token) carica(true); }, 3*60*1000);
+document.addEventListener('visibilitychange', () => { if(!document.hidden && S.token && S.data) carica(true); });
+avviaLogin();
+</script>
+</body>
+</html>
