@@ -27,5 +27,13 @@ window.AREA_TEAM = [
     link: "/materiali/",
     icona: "checklist",
     nuovaScheda: false
+  },
+  {
+    titolo: "Documenti e formazione",
+    descrizione: "Vademecum di formazione, slide, materiale informativo e didattico da scaricare.",
+    // Cartella Drive "ClassLab – Documenti team" (visibile solo agli account @classlab.it)
+    link: "https://drive.google.com/drive/folders/1PlU9SU753qZs7WpU_YqbwblF3vd8h_jM",
+    icona: "cartella",
+    nuovaScheda: true
   }
 ];
