@@ -491,3 +491,15 @@ a:hover > .partner-link svg, .partner-link:hover svg { transform: translateX(4px
 @media (max-width: 520px) { .email-aiuto { bottom: calc(12px + env(safe-area-inset-bottom)); } .email-aiuto__testo { flex-basis: 100%; } }
 .membro__carica { font-size: .86rem; font-weight: 700; color: var(--navy); line-height: 1.4; margin: 6px 0 2px; }
 .membro__carica + .membro__ruolo { color: var(--grigio); }
+
+/* ---------- Area team ---------- */
+.footer__team { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; color: #8ea3bd !important; text-decoration: none; opacity: .75; transition: opacity .2s ease; }
+.footer__team:hover { opacity: 1; color: #fff !important; }
+.footer__team svg { width: 14px; height: 14px; }
+@media (max-width: 760px) { .footer__team { margin-left: 0; } }
+.area-team { max-width: 520px; margin: 0 auto; text-align: center; background: #fff; border: 1px solid var(--bordo); border-radius: 24px; box-shadow: var(--ombra); padding: clamp(28px, 6vw, 48px); }
+.area-team__icona { width: 72px; height: 72px; border-radius: 50%; background: var(--cielo); color: var(--blu); display: grid; place-items: center; margin: 0 auto 18px; }
+.area-team__icona svg { width: 34px; height: 34px; }
+.area-team p { color: var(--grigio); }
+.area-team .stato { font-size: .9rem; margin: 18px 0 0; }
+[hidden] { display: none !important; }

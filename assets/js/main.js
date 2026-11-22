@@ -65,7 +65,25 @@
       "</div>" +
       '<div class="footer__fondo"><span>© ' + new Date().getFullYear() + " " + esc(C.nome) + " – Tutti i diritti riservati</span>" +
       "<span>Codice fiscale " + esc(C.codiceFiscale) + "</span><span>Codice RUNTS " + esc(C.codiceRUNTS) + "</span>" +
-      "<span>Sede legale: " + esc(C.sedeLegale) + "</span></div></div></footer>";
+      "<span>Sede legale: " + esc(C.sedeLegale) + "</span>" +
+      '<a class="footer__team" href="turni.html" rel="nofollow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Area team</a>' +
+      "</div></div></footer>";
+  }
+
+  /* ---------- Area team (pagina turni.html) ---------- */
+  var boxTurni = document.getElementById("area-team");
+  if (boxTurni) {
+    var url = (C.gestionaleTurni || "").trim();
+    var btn = document.getElementById("apri-turni");
+    var stato = document.getElementById("stato-turni");
+    if (url) {
+      btn.href = url;
+      btn.hidden = false;
+      stato.textContent = "Ti stiamo portando al gestionale turni…";
+      if (!/[?&]resta\b/.test(location.search)) setTimeout(function () { location.href = url; }, 900);
+    } else {
+      stato.textContent = "Il link al gestionale non è ancora stato impostato (config.js → gestionaleTurni).";
+    }
   }
 
   /* ---------- Comportamento menu ---------- */
