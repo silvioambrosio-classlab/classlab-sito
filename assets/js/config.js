@@ -14,6 +14,7 @@ window.CLASSLAB = {
      (vedi GUIDA, passo 2). Finché è vuoto, il modulo prepara
      un'email precompilata da inviare a mano a info@classlab.it.      */
   moduloEndpoint: "https://script.google.com/macros/s/AKfycbwI0Rm-mk4guzrum9im0l33TbN-W6tUUrPbOKFvMiIb72H5QIUlNViLICZ2IqxTaypLEQ/exec",
+   gestionaleTurni: "https://script.google.com/macros/s/AKfycby6FpmUMQUF2AbGRPQj7nTzzxkhwkMtBife1WvF5B89fu5Gn1_iYHuON6ODYdf1BYHX/exec",
 
   /* Periodo in cui si svolgono le attività (compare nel modulo) */
   periodoAttivita: "dal 12 dicembre al 15 marzo",
