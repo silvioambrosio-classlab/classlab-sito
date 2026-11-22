@@ -108,21 +108,6 @@
   .stat .v{font-size:22px;font-weight:700}
   .stat .l{font-size:13px;color:var(--muted)}
   .legend{display:flex;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin:8px 0 0}
-  .pk-tit{font-size:16px;margin:22px 0 4px}
-  .pk-nota{color:var(--muted);font-size:14px;margin:4px 0 10px}
-  .pk-date{list-style:none;margin:0;padding:0}
-  .pk-date li{padding:8px 0;border-top:1px solid var(--line)}
-  .pk-date li:first-child{border-top:0}
-  .pk-turni{color:var(--muted);font-size:13px;margin-top:2px}
-  .pk-mat{color:var(--muted);font-size:13px;font-weight:400}
-  .pk-rip{background:var(--aff-soft);color:var(--aff-ink);border-radius:6px;padding:1px 6px;font-size:12px}
-  .pk-mio{border-color:var(--fsl);border-width:2px}
-  .pk-avviso{border-color:var(--aff);border-width:2px}
-  .pk-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-  .pk-head h3{margin:0;font-size:15px}
-  .pk-req{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:6px 0}
-  .pk-az{display:flex;gap:6px}
-  .panel h2{font-size:15px;margin:0 0 8px}
   .panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin-bottom:14px}
   .panel h2{font-size:15px;margin:0 0 10px}
   .form{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;align-items:end}
@@ -265,10 +250,8 @@ function nomeMateria(id){ const m = (S.dati.materie||[]).find(x => x.id === id);
 /* ---------- render ---------- */
 function render(){
   const d = S.dati, u = d.utente;
-  document.getElementById('materia').hidden = !!d.fsl;
-  if (d.fsl) return renderFsl();
   document.getElementById('who').innerHTML = u.nome
-    ? 'Ciao <b>'+esc(u.nome)+'</b>' + (u.organizzatore ? ' · organizzatore' : '')
+    ? 'Ciao <b>'+esc(u.nome)+'</b>' + (u.organizzatore ? ' · organizzatore' : u.solaLettura ? ' · sola visualizzazione' : '')
     : esc(u.email || 'Account non riconosciuto');
 
   const selM = document.getElementById('materia');
@@ -298,47 +281,6 @@ function render(){
   else if (S.tab === 'aff') main.innerHTML = viewFiltro(t => daAffiancare(t).length > 0, 'Nessuno studente FSL da affiancare.', 'Studenti FSL alla prima uscita: serve uno di noi in più che li affianchi.');
   else if (S.tab === 'gest') main.innerHTML = viewGestione();
   else if (S.tab === 'giorn') main.innerHTML = viewGiornate();
-}
-
-/* ---------- studenti FSL: pacchetti e scambi ---------- */
-function elencoDate(p){
-  return '<ul class="pk-date">' + p.date.map(x => `<li><b>${esc(dataLunga(x.data))}</b> · ${esc(x.scuola)} <span class="pk-mat">${esc(x.materia)}</span>`
-    + (x.riprogrammare ? ' <span class="pk-rip">da riprogrammare</span>' : '')
-    + (x.turni && x.turni.length ? `<div class="pk-turni">${x.turni.map(t => esc(t.orario) + (t.classe ? ' (' + esc(t.classe) + ')' : '')).join(' · ')}</div>` : '')
-    + '</li>').join('') + '</ul>';
-}
-function renderFsl(){
-  const d = S.dati, u = d.utente;
-  document.getElementById('who').innerHTML = 'Ciao <b>'+esc(u.nome || '')+'</b> · studente FSL';
-  document.getElementById('tabs').innerHTML = '';
-  const main = document.getElementById('main');
-  const inAttesa = d.scambi || [];
-  const conMe = nome => inAttesa.find(s => eqNome(s.da, nome) || eqNome(s.a, nome));
-  let h = '';
-  const ricevute = inAttesa.filter(s => s.ricevuta), inviate = inAttesa.filter(s => !s.ricevuta);
-  if (ricevute.length) h += `<div class="panel pk-avviso"><h2>Richieste di scambio per te</h2>${ricevute.map(s => `
-    <div class="pk-req"><div><b>${esc(s.da)}</b> ti propone uno scambio <span class="pk-mat">${esc(s.note || '')}</span></div>
-    <div class="pk-az"><button class="btn primary small" data-accetta="${esc(s.id)}" data-chi="${esc(s.da)}">Accetta</button>
-    <button class="btn small danger" data-rifiuta="${esc(s.id)}">Rifiuta</button></div></div>`).join('')}</div>`;
-  if (inviate.length) h += `<div class="panel"><h2>Le tue proposte in attesa</h2>${inviate.map(s => `
-    <div class="pk-req"><div>A <b>${esc(s.a)}</b> <span class="pk-mat">${esc(s.note || '')}</span> · in attesa di risposta</div>
-    <div class="pk-az"><button class="btn small ghost" data-ritira="${esc(s.id)}">Ritira</button></div></div>`).join('')}</div>`;
-
-  h += '<div class="panel pk-mio"><h2>' + (d.mio ? `Il tuo pacchetto: Pacchetto ${d.mio.numero}` : 'Il tuo pacchetto') + '</h2>';
-  h += d.mio ? `<p class="pk-nota">${d.mio.date.length} ${d.mio.date.length === 1 ? 'data' : 'date'} in programma.</p>` + elencoDate(d.mio)
-             : '<p class="pk-nota">Non risulti ancora assegnato a nessuna data futura. Se ti sembra un errore scrivi ai gestori.</p>';
-  h += '</div>';
-
-  h += `<h2 class="pk-tit">Pacchetti degli altri studenti</h2>
-    <p class="pk-nota">Puoi scambiare il tuo pacchetto intero (tutte le date) con quello di un altro studente. Lo scambio avviene solo quando l'altro accetta: a quel punto il foglio turni si aggiorna e i gestori ricevono una mail.</p>`;
-  if (!(d.altri || []).length) h += '<div class="empty">Nessun altro pacchetto al momento.</div>';
-  h += (d.altri || []).map(p => {
-    const s = conMe(p.nome);
-    const az = !d.mio ? '' : s ? `<span class="pk-mat">${s.ricevuta ? 'Ti ha proposto uno scambio' : 'Proposta inviata'}</span>`
-      : `<button class="btn small" data-scambia="${esc(p.nome)}" data-num="${p.numero}">Proponi scambio</button>`;
-    return `<div class="panel pk-altro"><div class="pk-head"><h3>Pacchetto ${p.numero} <span class="pk-mat">${esc(p.nome)}</span></h3>${az}</div>${elencoDate(p)}</div>`;
-  }).join('');
-  main.innerHTML = h;
 }
 
 function viewMiei(){
@@ -491,16 +433,16 @@ function chipHtml(g, t, p, mioTurno){
   const futuro = futura(g);
 
   if (p.tipo === 'affiancare'){
-    const btn = !G && n && futuro && !g.riprogrammare && !mioTurno ? `<button data-prendi="${key}" data-ora="${esc(t.orario)}" data-day="${g.data}">Affianco io</button>` : '';
+    const btn = !G && n && !S.dati.utente.solaLettura && futuro && !g.riprogrammare && !mioTurno ? `<button data-prendi="${key}" data-ora="${esc(t.orario)}" data-day="${g.data}">Affianco io</button>` : '';
     return `<span class="${cls('aff')}"${editAttr}>${esc(p.persone.join(' + ') || 'Studente')} · da affiancare ${btn}</span>`;
   }
   if (p.tipo === 'libero'){
     const altri = p.persone.map(x => esc(x)).join(' + ');
-    const btn = !G && n && futuro && !g.riprogrammare && !mioTurno ? `<button data-prendi="${key}" data-ora="${esc(t.orario)}" data-day="${g.data}">Prendo io</button>` : '';
+    const btn = !G && n && !S.dati.utente.solaLettura && futuro && !g.riprogrammare && !mioTurno ? `<button data-prendi="${key}" data-ora="${esc(t.orario)}" data-day="${g.data}">Prendo io</button>` : '';
     return `<span class="${cls('free')}"${editAttr}>Posto libero${altri ? ' + '+altri : ''} ${btn}</span>`;
   }
   const c = p.tipo === 'team' ? 'team' : p.tipo === 'fsl' ? 'fsl' : 'altro';
-  const lascia = !G && sonoIo && futuro ? `<button data-lascia="${key}" title="Rinuncia al turno">Lascio</button>` : '';
+  const lascia = !G && sonoIo && !S.dati.utente.solaLettura && futuro ? `<button data-lascia="${key}" title="Rinuncia al turno">Lascio</button>` : '';
   return `<span class="${cls(c)}"${editAttr}>${esc(p.testo)} ${lascia}</span>`;
 }
 
@@ -591,24 +533,12 @@ const unkey = k => { const [m,r,c,t,x] = k.split('|'); return [m, Number(r), Num
 const decode = s => s;
 
 document.addEventListener('click', e => {
-  const el = e.target.closest('[data-scambia],[data-accetta],[data-rifiuta],[data-ritira],[data-modg],[data-riprog],[data-tab],[data-prendi],[data-lascia],[data-posto],[data-txt],[data-coppia],[data-close],#nAdd,#reload,#logout');
+  const el = e.target.closest('[data-modg],[data-riprog],[data-tab],[data-prendi],[data-lascia],[data-posto],[data-txt],[data-coppia],[data-close],#nAdd,#reload,#logout');
   if (!el) { if (e.target.id === 'modalBg') chiudiModal(); return; }
   if (el.dataset.tab){ S.tab = el.dataset.tab; render(); window.scrollTo(0,0); return; }
   if (el.id === 'reload'){ carica(); return; }
   if (el.id === 'logout'){ esci(); return; }
   if (el.hasAttribute('data-close')){ chiudiModal(); return; }
-  if (el.dataset.scambia){
-    if (confirm(`Proponi a ${el.dataset.scambia} di scambiare il tuo pacchetto con il Pacchetto ${el.dataset.num}? Lo scambio avviene solo se accetta.`))
-      azione('proponiScambio', [el.dataset.scambia], 'Proposta inviata: ' + el.dataset.scambia + ' riceverà una mail.');
-    return;
-  }
-  if (el.dataset.accetta){
-    if (confirm(`Accetti lo scambio con ${el.dataset.chi}? Prenderai tutte le sue date e lui/lei le tue. Il foglio turni si aggiorna subito.`))
-      azione('rispondiScambio', [el.dataset.accetta, true], 'Scambio fatto! Ora le date nuove sono tue.');
-    return;
-  }
-  if (el.dataset.rifiuta){ if (confirm('Rifiuti questa proposta di scambio?')) azione('rispondiScambio', [el.dataset.rifiuta, false], 'Proposta rifiutata.'); return; }
-  if (el.dataset.ritira){ if (confirm('Ritiri la tua proposta di scambio?')) azione('annullaScambio', [el.dataset.ritira], 'Proposta ritirata.'); return; }
 
   if (el.dataset.prendi){
     const [mat,r,c,t] = unkey(decode(el.dataset.prendi));

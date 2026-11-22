@@ -20,8 +20,8 @@ window.AREA_TEAM = [
   {
     titolo: "Gestionale turni",
     descrizione: "Date, scuole, classi e chi è di turno.",
-    // agli studenti FSL mostra i loro pacchetti di date e gli scambi
-    descrizioni: { 5: "I tuoi pacchetti di date e gli scambi con gli altri studenti." },
+    // gli studenti FSL (livello 5) lo vedono in sola visualizzazione
+    descrizioni: { 5: "Date, scuole, classi e chi è di turno (sola visualizzazione)." },
     link: "/turni/",
     icona: "calendario",
     nuovaScheda: false,
