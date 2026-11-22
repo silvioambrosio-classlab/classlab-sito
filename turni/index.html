@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Turni ClassLab</title>
+<meta name="theme-color" content="#2f6fde">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icona-32.png">
+<link rel="apple-touch-icon" href="icona-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Turni">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#fff; --ink:#1d2330; --muted:#6b7385; --line:#e4e7ec;
+    --accent:#2f6fde; --accent-soft:#e8f0fd;
+    --team:#b7e1cd; --team-ink:#155a3a; --fsl:#ead1dc; --fsl-ink:#7a2f52;
+    --aff:#ff9900; --aff-soft:#fff1dc; --aff-ink:#8a4b00;
+    --free-ink:#2f6fde; --radius:12px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:15px}
+  header.top{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--line)}
+  .wrap{max-width:980px;margin:0 auto;padding:0 16px}
+  .bar{display:flex;align-items:center;gap:12px;padding:12px 0}
+  .bar h1{font-size:18px;margin:0;flex:1}
+  .bar h1 small{color:var(--muted);font-weight:500;margin-left:6px}
+  .who{font-size:13px;color:var(--muted);text-align:right}
+  .who b{color:var(--ink)}
+  .tabs{display:flex;gap:4px;overflow-x:auto;padding-bottom:0}
+  .tab{border:0;background:none;padding:10px 12px;font:inherit;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+  .tab.on{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+  .tab .n{display:inline-block;min-width:20px;padding:0 6px;border-radius:10px;background:var(--line);color:var(--ink);font-size:12px;margin-left:4px}
+  .tab .n.warn{background:var(--aff);color:#fff}
+  main.wrap{padding-top:18px;padding-bottom:60px}
+  .tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+  select,input,button{font:inherit}
+  select,input[type=text],input[type=date],input[type=number]{padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:#fff}
+  label.chk{display:flex;gap:6px;align-items:center;color:var(--muted);font-size:14px}
+  .btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 12px;cursor:pointer}
+  .btn:hover{border-color:#c9ced8}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.small{padding:3px 9px;font-size:13px}
+  .btn.ghost{border-color:transparent;background:none;color:var(--muted)}
+  .btn.danger{color:#b42318}
+  .month{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:22px 0 8px;font-weight:600}
+  .day{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);margin-bottom:10px;overflow:hidden}
+  .day.past{opacity:.55}
+  .glist .grow{display:grid;grid-template-columns:120px 1fr auto;gap:12px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:6px}
+  .glist .grow.resched{background:#f3f4f6;border-style:dashed}
+  .glist .grow.past{opacity:.55}
+  .glist .labs{color:var(--muted);font-size:13px;margin-top:2px}
+  .glist .ga{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+  .modal .fasce{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .modal .warn{background:var(--aff-soft);color:var(--aff-ink);border-radius:8px;padding:8px 10px;font-size:13px;margin-top:8px}
+  #login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  #login .card{background:#fff;border:1px solid var(--line);border-radius:20px;max-width:400px;width:100%;padding:32px 24px;text-align:center}
+  #login img{width:84px;height:84px;border-radius:20px}
+  #login h1{font-size:24px;margin:14px 0 6px}
+  #login p{color:var(--muted);margin:0 0 22px;line-height:1.45}
+  #gbtn{display:flex;justify-content:center;min-height:44px}
+  #loginErr{color:#b42318;font-size:14px;margin-top:14px;min-height:1em}
+  .hidden{display:none !important}
+  @media (max-width:640px){ .glist .grow{grid-template-columns:1fr} .glist .ga{justify-content:flex-start} }
+  .day.resched{background:#f3f4f6;border-style:dashed}
+  .day.resched .turni{opacity:.55}
+  .tag.resched{background:#fde8e8;color:#b42318;font-weight:600}
+  .day.today{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+  .day-h{display:flex;gap:14px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line)}
+  .date{width:54px;text-align:center;flex:none;line-height:1.1}
+  .date .dow{font-size:12px;color:var(--muted);text-transform:uppercase}
+  .date .d{font-size:24px;font-weight:700}
+  .date .m{font-size:12px;color:var(--muted);text-transform:uppercase}
+  .day-h .t{flex:1;min-width:0}
+  .day-h h3{margin:0;font-size:16px}
+  .nota{margin:2px 0 0;font-size:13px;color:var(--aff-ink)}
+  .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .tag{font-size:12px;padding:2px 8px;border-radius:10px;background:var(--line);color:var(--ink)}
+  .tag.free{background:var(--accent-soft);color:var(--free-ink)}
+  .tag.mat-bio{background:#e3ecfb;color:#1e4fa8}
+  .tag.mat-fisica{background:#e2f1dc;color:#2e6b1f}
+  #materia{padding:5px 8px;border-radius:8px}
+  .tag.aff{background:var(--aff-soft);color:var(--aff-ink)}
+  .turni{display:grid}
+  .turno{display:grid;grid-template-columns:110px 1fr auto;gap:12px;align-items:center;padding:10px 14px;border-top:1px solid var(--line)}
+  .turno:first-child{border-top:0}
+  .turno.mine{background:#f3faf6}
+  .ora{font-variant-numeric:tabular-nums;font-weight:600}
+  .classe b{font-weight:600}
+  .classe .labs{color:var(--muted);font-size:13px}
+  .posti{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+  .chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:16px;font-size:13px;border:1px solid transparent;white-space:nowrap}
+  .chip.team{background:var(--team);color:var(--team-ink)}
+  .chip.fsl{background:var(--fsl);color:var(--fsl-ink)}
+  .chip.aff{background:var(--aff-soft);color:var(--aff-ink);border-color:var(--aff)}
+  .chip.free{background:#fff;color:var(--free-ink);border:1px dashed var(--free-ink)}
+  .chip.altro{background:#eee;color:#444}
+  .chip.me{font-weight:700;box-shadow:inset 0 0 0 2px var(--team-ink)}
+  .chip button{border:0;background:rgba(255,255,255,.85);border-radius:10px;padding:1px 8px;font-size:12px;cursor:pointer;color:inherit;font-weight:600}
+  .chip.edit{cursor:pointer}
+  .chip.edit:hover{filter:brightness(.95)}
+  .editable{cursor:pointer;border-bottom:1px dashed #b5bccb}
+  .empty{padding:40px 16px;text-align:center;color:var(--muted)}
+  .summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:16px}
+  .stat{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px}
+  .stat .v{font-size:22px;font-weight:700}
+  .stat .l{font-size:13px;color:var(--muted)}
+  .legend{display:flex;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin:8px 0 0}
+  .panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin-bottom:14px}
+  .panel h2{font-size:15px;margin:0 0 10px}
+  .form{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;align-items:end}
+  .form label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+  .hint{font-size:13px;color:var(--muted);margin:8px 0 0}
+  .modal-bg{position:fixed;inset:0;background:rgba(20,25,35,.4);display:none;align-items:center;justify-content:center;z-index:20;padding:16px}
+  .modal{background:#fff;border-radius:14px;padding:18px;width:100%;max-width:420px}
+  .modal h3{margin:0 0 12px;font-size:16px}
+  .modal .row{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;font-size:13px;color:var(--muted)}
+  .modal .row input,.modal .row select{width:100%}
+  .modal .acts{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+  #toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#1d2330;color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;display:none;z-index:30;max-width:90vw}
+  #toast.err{background:#b42318}
+  #busy{position:fixed;top:0;left:0;right:0;height:3px;background:var(--accent);display:none;z-index:40;animation:b 1s infinite linear}
+  @keyframes b{0%{opacity:.3}50%{opacity:1}100%{opacity:.3}}
+  @media (max-width:640px){
+    .turno{grid-template-columns:1fr;gap:6px}
+    .posti{justify-content:flex-start}
+    .who{display:none}
+  }
+</style>
+</head>
+<body>
+<div id="busy"></div>
+<section id="login">
+  <div class="card">
+    <img src="icona-180.png" alt="">
+    <h1>Turni ClassLab</h1>
+    <p>Accedi con il tuo account Google <b>@classlab.it</b> per vedere e gestire i turni.</p>
+    <div id="gbtn"></div>
+    <div id="loginErr"></div>
+  </div>
+</section>
+<div id="app" class="hidden">
+<header class="top">
+  <div class="wrap">
+    <div class="bar">
+      <h1>Turni ClassLab</h1>
+      <select id="materia" title="Materia"></select>
+      <div class="who" id="who"></div>
+      <button class="btn small" id="reload" title="Ricarica dal foglio">Aggiorna</button>
+      <button class="btn small ghost" id="logout" title="Esci">Esci</button>
+    </div>
+    <nav class="tabs" id="tabs"></nav>
+  </div>
+</header>
+<main class="wrap" id="main"><div class="empty">Caricamento dei turni…</div></main>
+</div>
+
+<div class="modal-bg" id="modalBg"><div class="modal" id="modal"></div></div>
+<div id="toast"></div>
+
+<script src="config.js"></script>
+<script>
+/* ---------- configurazione: i valori sono in config.js ---------- */
+const API_URL = (window.TURNI_CONFIG || {}).API_URL;
+const CLIENT_ID = (window.TURNI_CONFIG || {}).CLIENT_ID;
+const DOMINIO = 'classlab.it';
+
+const S = { dati:null, tab:'miei', persona:'', passate:false, gestione:false, materia:'' };
+const GIORNI = ['dom','lun','mar','mer','gio','ven','sab'];
+const MESI = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
+const oggi = (() => { const d = new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); })();
+
+/* ---------- login ---------- */
+function payload(tok){ try { return JSON.parse(decodeURIComponent(escape(atob(tok.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))))); } catch(e){ return {}; } }
+function tokenValido(tok){ const p = tok && payload(tok); return p && p.exp && p.exp*1000 > Date.now() + 60000 && p.hd === DOMINIO; }
+function mostraLogin(msg){
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('login').classList.remove('hidden');
+  document.getElementById('loginErr').textContent = msg || '';
+  try { google.accounts.id.prompt(); } catch(e){}
+}
+function onCredenziale(r){
+  const p = payload(r.credential);
+  if (p.hd !== DOMINIO){ mostraLogin('Puoi accedere solo con un account @' + DOMINIO + '.'); return; }
+  S.token = r.credential;
+  try { sessionStorage.setItem('turniToken', S.token); } catch(e){}
+  document.getElementById('login').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  carica();
+}
+function esci(){
+  S.token = null;
+  try { sessionStorage.removeItem('turniToken'); google.accounts.id.disableAutoSelect(); } catch(e){}
+  mostraLogin('');
+}
+function avviaLogin(){
+  if (!window.google || !google.accounts || !google.accounts.id){ setTimeout(avviaLogin, 100); return; }
+  google.accounts.id.initialize({ client_id: CLIENT_ID, callback: onCredenziale, hd: DOMINIO, auto_select: true, cancel_on_tap_outside: false });
+  google.accounts.id.renderButton(document.getElementById('gbtn'), { theme: 'outline', size: 'large', text: 'signin_with', shape: 'pill', locale: 'it' });
+  let tok = null; try { tok = sessionStorage.getItem('turniToken'); } catch(e){}
+  if (tokenValido(tok)) onCredenziale({ credential: tok });
+  else mostraLogin('');
+}
+
+/* ---------- server ---------- */
+async function call(fn, ...args){
+  if (!tokenValido(S.token)){ mostraLogin('Sessione scaduta: accedi di nuovo.'); throw new Error('Sessione scaduta: accedi di nuovo.'); }
+  document.getElementById('busy').style.display='block';
+  try {
+    const r = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ token: S.token, fn, args }) });
+    const j = await r.json();
+    if (!j.ok){ if (j.auth) mostraLogin(j.errore); throw new Error(j.errore); }
+    return j.dati;
+  } finally {
+    document.getElementById('busy').style.display='none';
+  }
+}
+async function carica(){
+  try { S.dati = await call('getDati'); render(); }
+  catch(e){ toast(e.message, true); document.getElementById('main').innerHTML = '<div class="empty">Impossibile caricare i turni: '+esc(e.message)+'</div>'; }
+}
+async function azione(fn, args, msg){
+  try { S.dati = await call(fn, ...args); render(); if (msg) toast(msg); }
+  catch(e){ toast(e.message, true); if (S.token) carica(); }
+}
+
+/* ---------- utilità ---------- */
+function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function toast(t, err){ const el = document.getElementById('toast'); el.textContent = t; el.className = err ? 'err' : ''; el.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => el.style.display='none', err ? 6000 : 3000); }
+function me(){ return S.dati && S.dati.utente.nome; }
+function eqNome(a,b){ return String(a||'').trim().toLowerCase() === String(b||'').trim().toLowerCase(); }
+function dataObj(iso){ const [y,m,d] = iso.split('-').map(Number); return new Date(y, m-1, d); }
+function minuti(orario){
+  const m = /^\s*(\d{1,2})(?:[:.](\d{1,2}))?\s*-\s*(\d{1,2})(?:[:.](\d{1,2}))?/.exec(orario||'');
+  if (!m) return null;
+  return [ +m[1]*60 + +(m[2]||0), +m[3]*60 + +(m[4]||0) ];
+}
+function haPersona(t, nome){ return t.posti.some(p => p.persone.some(x => eqNome(x, nome))); }
+function liberi(t){ return t.posti.filter(p => p.libero && p.tipo !== 'affiancare'); }
+function daAffiancare(t){ return t.posti.filter(p => p.tipo === 'affiancare'); }
+function futura(g){ return g.data >= oggi; }
+function attiva(g){ return futura(g) && !g.riprogrammare; }
+function tuttiTurni(){ return S.dati.giornate.flatMap(g => g.turni.map(t => ({g, t}))); }
+function giornateVis(){ return S.dati.giornate.filter(g => !S.materia || g.materia === S.materia); }
+function turniVis(){ return giornateVis().flatMap(g => g.turni.map(t => ({g, t}))); }
+function nomeMateria(id){ const m = (S.dati.materie||[]).find(x => x.id === id); return m ? m.nome : id; }
+
+/* ---------- render ---------- */
+function render(){
+  const d = S.dati, u = d.utente;
+  document.getElementById('who').innerHTML = u.nome
+    ? 'Ciao <b>'+esc(u.nome)+'</b>' + (u.organizzatore ? ' · organizzatore' : '')
+    : esc(u.email || 'Account non riconosciuto');
+
+  const selM = document.getElementById('materia');
+  selM.innerHTML = '<option value="">Tutte le materie</option>' + (d.materie||[]).map(m => `<option value="${m.id}" ${S.materia===m.id?'selected':''}>${esc(m.nome)}</option>`).join('');
+  const futuri = turniVis().filter(x => attiva(x.g));
+  const nMiei = u.nome ? futuri.filter(x => haPersona(x.t, u.nome)).length : 0;
+  const nLib = futuri.reduce((s,x) => s + liberi(x.t).length, 0);
+  const nAff = futuri.reduce((s,x) => s + daAffiancare(x.t).length, 0);
+
+  const tabs = [
+    u.nome && ['miei','I miei turni', nMiei, ''],
+    ['cal','Calendario', null, ''],
+    ['liberi','Posti liberi', nLib, ''],
+    ['aff','Affiancamenti', nAff, nAff ? 'warn' : ''],
+    u.organizzatore && ['giorn','Giornate', null, ''],
+    u.organizzatore && ['gest','Gestione', null, ''],
+  ].filter(Boolean);
+  if (!tabs.some(t => t[0] === S.tab)) S.tab = tabs[0][0];
+  document.getElementById('tabs').innerHTML = tabs.map(([id,l,n,cls]) =>
+    `<button class="tab ${S.tab===id?'on':''}" data-tab="${id}">${l}${n!==null?` <span class="n ${cls}">${n}</span>`:''}</button>`).join('');
+
+  const main = document.getElementById('main');
+  S.gestione = S.tab === 'gest';
+  if (S.tab === 'miei') main.innerHTML = viewMiei();
+  else if (S.tab === 'cal') main.innerHTML = viewCalendario();
+  else if (S.tab === 'liberi') main.innerHTML = viewFiltro(t => liberi(t).length > 0, 'Nessun posto libero nelle prossime giornate.', 'Turni in cui serve ancora qualcuno del team. Premi "Prendo io" per segnarti: il foglio si aggiorna subito.');
+  else if (S.tab === 'aff') main.innerHTML = viewFiltro(t => daAffiancare(t).length > 0, 'Nessuno studente FSL da affiancare.', 'Studenti FSL alla prima uscita: serve uno di noi in più che li affianchi.');
+  else if (S.tab === 'gest') main.innerHTML = viewGestione();
+  else if (S.tab === 'giorn') main.innerHTML = viewGiornate();
+}
+
+function viewMiei(){
+  const n = me();
+  const tutti = turniVis().filter(x => haPersona(x.t, n));
+  const fut = tutti.filter(x => attiva(x.g));
+  const nRip = tutti.filter(x => futura(x.g) && x.g.riprogrammare).length;
+  const prossimo = fut[0];
+  const giorni = new Set(fut.map(x => x.g.data)).size;
+  let h = `<div class="summary">
+    <div class="stat"><div class="v">${fut.length}</div><div class="l">turni in programma</div></div>
+    <div class="stat"><div class="v">${giorni}</div><div class="l">giornate</div></div>
+    <div class="stat"><div class="v">${prossimo ? esc(dataBreve(prossimo.g.data)) : '–'}</div><div class="l">${prossimo ? esc(prossimo.g.scuola)+', '+esc(prossimo.t.orario) : 'nessun prossimo turno'}</div></div>
+    <div class="stat"><div class="v">${nRip}</div><div class="l">da riprogrammare</div></div>
+  </div>`;
+  const conflitti = trovaConflitti(n);
+  if (conflitti.length) h += `<div class="panel" style="border-color:var(--aff)"><h2>Attenzione: turni sovrapposti</h2>${conflitti.map(c => `<div>${esc(dataLunga(c.data))}: ${esc(c.a)} e ${esc(c.b)}</div>`).join('')}</div>`;
+  h += giornateHtml(giornateVis().filter(g => futura(g) || S.passate), t => haPersona(t, n), 'Non hai turni in programma.');
+  h += `<div class="tools" style="margin-top:12px"><label class="chk"><input type="checkbox" id="passate" ${S.passate?'checked':''}> Mostra giornate passate</label></div>`;
+  return h;
+}
+
+function viewCalendario(){
+  const team = S.dati.team;
+  let h = `<div class="tools">
+    <select id="persona"><option value="">Tutto il team</option>${team.map(n => `<option ${eqNome(n,S.persona)?'selected':''}>${esc(n)}</option>`).join('')}</select>
+    <label class="chk"><input type="checkbox" id="passate" ${S.passate?'checked':''}> Mostra giornate passate</label>
+  </div>`;
+  h += legenda();
+  const filtro = S.persona ? (t => haPersona(t, S.persona)) : null;
+  h += giornateHtml(giornateVis().filter(g => futura(g) || S.passate), filtro, 'Nessuna giornata.');
+  return h;
+}
+
+function viewFiltro(fn, vuoto, intro){
+  return `<p class="hint" style="margin:0 0 12px">${intro}</p>` + giornateHtml(giornateVis().filter(attiva), fn, vuoto);
+}
+
+function viewGestione(){
+  let h = `<div class="tools">
+    <label class="chk"><input type="checkbox" id="passate" ${S.passate?'checked':''}> Mostra giornate passate</label>
+    ${(S.dati.materie||[]).filter(m => m.url && (!S.materia || S.materia===m.id)).map(m => `<a class="btn small" href="${esc(m.url)}" target="_blank">Apri foglio ${esc(m.nome)}</a>`).join('')}
+  </div>
+  <p class="hint" style="margin:0 0 12px">Tocca un nome, un orario o una classe per modificarli; "+ persona" riempie una cella vuota. Date, fasce orarie e numero di classi si cambiano dal menu <b>Giornate</b>.</p>`;
+  h += giornateHtml(giornateVis().filter(g => futura(g) || S.passate), null, 'Nessuna giornata.');
+  return h;
+}
+
+function viewGiornate(){
+  let h = `<div class="panel"><h2>Nuova giornata</h2>
+    <div class="form">
+      <label>Materia<select id="nMateria">${(S.dati.materie||[]).map(m => `<option value="${m.id}" ${S.materia===m.id?'selected':''}>${esc(m.nome)}</option>`).join('')}</select></label>
+      <label>Data<input type="date" id="nData"></label>
+      <label>Scuola<input type="text" id="nScuola" placeholder="es. Codermatz"></label>
+      <label>Fasce orarie (separate da virgola)<input type="text" id="nOrari" value="08:00-10:00, 10:00-12:00"></label>
+      <label>Classi per fascia<input type="number" id="nCoppie" min="1" max="4" value="1"></label>
+      <label>Nota (facoltativa)<input type="text" id="nNota" placeholder="es. Fuori città!"></label>
+      <button class="btn primary" id="nAdd">Aggiungi giornata</button>
+    </div>
+    <p class="hint">La giornata viene inserita nel foglio nella posizione giusta per data, con il colore alternato e un posto "C" in ogni turno.</p>
+  </div>
+  <div class="tools"><label class="chk"><input type="checkbox" id="passate" ${S.passate?'checked':''}> Mostra giornate passate</label></div>`;
+  const lista = giornateVis().filter(g => futura(g) || S.passate);
+  if (!lista.length) return h + '<div class="empty">Nessuna giornata.</div>';
+  let mese = '';
+  h += '<div class="glist">';
+  for (const g of lista){
+    const m = g.data.slice(0,7);
+    if (m !== mese){ mese = m; const d = dataObj(g.data); h += `<div class="month">${MESI[d.getMonth()]} ${d.getFullYear()}</div>`; }
+    const d = dataObj(g.data);
+    const orari = [...new Set(g.turni.map(t => t.orario))].sort((a,b) => (minuti(a)||[0])[0] - (minuti(b)||[0])[0]);
+    const nClassi = new Set(g.turni.map(t => t.riga)).size;
+    h += `<div class="grow ${g.riprogrammare?'resched':''} ${g.data<oggi?'past':''}">
+      <div class="gd"><b>${GIORNI[d.getDay()]} ${d.getDate()} ${MESI[d.getMonth()].slice(0,3)}</b></div>
+      <div class="gs"><b>${esc(g.scuola)}</b> ${!S.materia ? `<span class="tag mat-${esc(g.materia)}">${esc(nomeMateria(g.materia))}</span>` : ''} ${g.riprogrammare ? '<span class="tag resched">Da riprogrammare</span>' : ''}
+        <div class="labs">${orari.map(esc).join(' · ') || 'nessuna fascia'} — ${nClassi} ${nClassi===1?'classe':'classi'} per fascia</div></div>
+      <div class="ga">
+        <button class="btn small" data-modg="${g.materia}|${g.riga}">Modifica</button>
+        <button class="btn small ${g.riprogrammare?'':'ghost'}" data-riprog="${g.materia}|${g.riga}|${g.riprogrammare?0:1}">${g.riprogrammare ? 'Togli «da riprogrammare»' : 'Da riprogrammare'}</button>
+      </div>
+    </div>`;
+  }
+  return h + '</div>';
+}
+
+function legenda(){
+  return `<div class="legend" style="margin-bottom:12px">
+    <span class="chip team">Team</span><span class="chip fsl">Studente FSL</span>
+    <span class="chip aff">Da affiancare</span><span class="chip free">Posto libero</span></div>`;
+}
+
+function giornateHtml(giornate, filtroTurno, vuoto){
+  let h = '', mese = '';
+  for (const g of giornate){
+    const turni = filtroTurno ? g.turni.filter(filtroTurno) : g.turni;
+    if (filtroTurno && !turni.length) continue;
+    const m = g.data.slice(0,7);
+    if (m !== mese){ mese = m; const d = dataObj(g.data); h += `<div class="month">${MESI[d.getMonth()]} ${d.getFullYear()}</div>`; }
+    h += giornataHtml(g, turni);
+  }
+  return h || `<div class="empty">${vuoto}</div>`;
+}
+
+function giornataHtml(g, turni){
+  const d = dataObj(g.data), G = S.gestione;
+  const nLib = g.turni.reduce((s,t) => s + liberi(t).length, 0);
+  const nAff = g.turni.reduce((s,t) => s + daAffiancare(t).length, 0);
+  const ordinati = turni.slice().sort((a,b) => (minuti(a.orario)||[0])[0] - (minuti(b.orario)||[0])[0] || a.riga - b.riga);
+  return `<article class="day ${g.data<oggi?'past':''} ${g.data===oggi?'today':''} ${g.riprogrammare?'resched':''}">
+    <div class="day-h">
+      <div class="date"><div class="dow">${GIORNI[d.getDay()]}</div><div class="d">${d.getDate()}</div><div class="m">${MESI[d.getMonth()].slice(0,3)}</div></div>
+      <div class="t">
+        <h3>${G ? `<span class="editable" data-txt="${g.materia}|${g.riga}|2|${esc(g.scuola)}|Scuola">${esc(g.scuola)}</span>` : esc(g.scuola)}</h3>
+        ${g.nota ? `<p class="nota">${esc(g.nota)}</p>` : ''}
+      </div>
+      <div class="tags">
+        ${!S.materia ? `<span class="tag mat-${esc(g.materia)}">${esc(nomeMateria(g.materia))}</span>` : ''}
+        ${g.riprogrammare ? `<span class="tag resched">Da riprogrammare</span>` : ''}
+        ${nLib && !g.riprogrammare ? `<span class="tag free">${nLib} ${nLib===1?'posto libero':'posti liberi'}</span>` : ''}
+        ${nAff && !g.riprogrammare ? `<span class="tag aff">${nAff} da affiancare</span>` : ''}
+        ${G ? `<button class="btn small" data-coppia="${g.materia}|${g.riga}">+ classe</button>` : ''}
+      </div>
+    </div>
+    <div class="turni">${ordinati.map(t => turnoHtml(g, t)).join('')}</div>
+  </article>`;
+}
+
+function turnoHtml(g, t){
+  const G = S.gestione, n = me();
+  const mio = n && haPersona(t, n);
+  const [cls, ...rest] = t.classe.split(':');
+  const classe = t.classe
+    ? (rest.length ? `<b>${esc(cls.trim())}</b> <span class="labs">${esc(rest.join(':').trim().replace(/\s*-\s*/g,' · '))}</span>` : esc(t.classe))
+    : '<span class="labs">classe non indicata</span>';
+  const ora = G ? `<span class="editable" data-txt="${g.materia}|${t.rigaOrario}|${t.col}|${esc(t.orario)}|Orario">${esc(t.orario)}</span>` : esc(t.orario);
+  const cl = G && t.rigaClasse ? `<span class="editable" data-txt="${g.materia}|${t.rigaClasse}|${t.col}|${esc(t.classe)}|Classe e laboratori">${classe}</span>` : classe;
+  return `<div class="turno ${mio?'mine':''}">
+    <div class="ora">${ora}</div>
+    <div class="classe">${cl}</div>
+    <div class="posti">${t.posti.map(p => chipHtml(g, t, p, mio)).join('')}${G ? [t.col, t.col+1].filter(c => !t.posti.some(p => p.col === c)).map(c => `<span class="chip free edit" data-posto="${g.materia}|${t.riga}|${c}||vuoto"> + persona</span>`).join('') : ''}</div>
+  </div>`;
+}
+
+function chipHtml(g, t, p, mioTurno){
+  const n = me(), G = S.gestione;
+  const sonoIo = n && p.persone.some(x => eqNome(x, n));
+  const key = `${g.materia}|${p.riga}|${p.col}|${esc(p.testo)}|${esc(p.tipo)}`;
+  const editAttr = G ? ` data-posto="${key}"` : '';
+  const cls = c => `chip ${c} ${sonoIo?'me':''} ${G?'edit':''}`;
+  const futuro = futura(g);
+
+  if (p.tipo === 'affiancare'){
+    const btn = !G && n && futuro && !g.riprogrammare && !mioTurno ? `<button data-prendi="${key}" data-ora="${esc(t.orario)}" data-day="${g.data}">Affianco io</button>` : '';
+    return `<span class="${cls('aff')}"${editAttr}>${esc(p.persone.join(' + ') || 'Studente')} · da affiancare ${btn}</span>`;
+  }
+  if (p.tipo === 'libero'){
+    const altri = p.persone.map(x => esc(x)).join(' + ');
+    const btn = !G && n && futuro && !g.riprogrammare && !mioTurno ? `<button data-prendi="${key}" data-ora="${esc(t.orario)}" data-day="${g.data}">Prendo io</button>` : '';
+    return `<span class="${cls('free')}"${editAttr}>Posto libero${altri ? ' + '+altri : ''} ${btn}</span>`;
+  }
+  const c = p.tipo === 'team' ? 'team' : p.tipo === 'fsl' ? 'fsl' : 'altro';
+  const lascia = !G && sonoIo && futuro ? `<button data-lascia="${key}" title="Rinuncia al turno">Lascio</button>` : '';
+  return `<span class="${cls(c)}"${editAttr}>${esc(p.testo)} ${lascia}</span>`;
+}
+
+/* ---------- date ---------- */
+function dataBreve(iso){ const d = dataObj(iso); return d.getDate()+' '+MESI[d.getMonth()].slice(0,3); }
+function dataLunga(iso){ const d = dataObj(iso); return GIORNI[d.getDay()]+' '+d.getDate()+' '+MESI[d.getMonth()]; }
+
+function trovaConflitti(nome, extra){
+  const per = {};
+  tuttiTurni().filter(x => attiva(x.g) && haPersona(x.t, nome)).forEach(x => (per[x.g.data] = per[x.g.data] || []).push(x));
+  if (extra) (per[extra.g.data] = per[extra.g.data] || []).push(extra);
+  const out = [];
+  Object.keys(per).forEach(data => {
+    const l = per[data];
+    for (let i=0;i<l.length;i++) for (let j=i+1;j<l.length;j++){
+      const a = minuti(l[i].t.orario), b = minuti(l[j].t.orario);
+      if (a && b && a[0] < b[1] && b[0] < a[1]) out.push({data, a: l[i].g.scuola+' '+l[i].t.orario, b: l[j].g.scuola+' '+l[j].t.orario, extra: extra && (l[i]===extra || l[j]===extra)});
+    }
+  });
+  return out;
+}
+
+/* ---------- modali ---------- */
+function apriModal(html){ document.getElementById('modal').innerHTML = html; document.getElementById('modalBg').style.display = 'flex'; }
+function chiudiModal(){ document.getElementById('modalBg').style.display = 'none'; }
+
+function modalPosto(mat, riga, col, testo, tipo){
+  const tipi = [['team','Team confermato (verde)'],['fsl','Studente FSL (rosa)'],['affiancare','FSL da affiancare (arancione)'],['libero','Posto libero per il team (C)'],['vuoto','Vuoto']];
+  apriModal(`<h3>Modifica posto</h3>
+    <div class="row">Nome nel foglio<input type="text" id="mTesto" value="${esc(testo)}" placeholder="es. Silvio, oppure Estefania"></div>
+    <div class="row">Tipo<select id="mTipo">${tipi.map(([v,l]) => `<option value="${v}" ${v===tipo?'selected':''}>${l}</option>`).join('')}</select></div>
+    <p class="hint">Per due persone nella stessa cella usa "+", es. "C + Sarah".</p>
+    <div class="acts"><button class="btn ghost" data-close>Annulla</button><button class="btn primary" id="mSave">Salva</button></div>`);
+  document.getElementById('mSave').onclick = () => {
+    const nuovo = document.getElementById('mTesto').value, t = document.getElementById('mTipo').value;
+    chiudiModal(); azione('modificaPosto', [mat, riga, col, testo, nuovo, t], 'Posto aggiornato');
+  };
+}
+
+function modalTesto(mat, riga, col, testo, etichetta){
+  apriModal(`<h3>${esc(etichetta)}</h3>
+    <div class="row"><input type="text" id="mTesto" value="${esc(testo)}"></div>
+    ${etichetta.startsWith('Classe') ? '<p class="hint">Formato: "4A: Cipolla-Foglie-Batteri"</p>' : ''}
+    ${etichetta === 'Orario' ? '<p class="hint">Formato: "08:00-10:00"</p>' : ''}
+    <div class="acts"><button class="btn ghost" data-close>Annulla</button><button class="btn primary" id="mSave">Salva</button></div>`);
+  document.getElementById('mSave').onclick = () => {
+    const nuovo = document.getElementById('mTesto').value;
+    chiudiModal(); azione('modificaTesto', [mat, riga, col, testo, nuovo], 'Modifica salvata');
+  };
+}
+
+function modalGiornata(mat, riga){
+  const g = S.dati.giornate.find(x => x.materia === mat && x.riga === riga);
+  if (!g) return;
+  const per = {}; g.turni.forEach(t => { per[t.col] = t.orario; });
+  const COLS = [3,6,9,12];
+  const nClassi = new Set(g.turni.map(t => t.riga)).size || 1;
+  apriModal(`<h3>Modifica giornata · ${esc(nomeMateria(g.materia))}</h3>
+    <div class="row">Data<input type="date" id="gData" value="${g.data}"></div>
+    <div class="row">Scuola<input type="text" id="gScuola" value="${esc(g.scuola)}"></div>
+    <div class="row">Fasce orarie (lascia vuota per toglierne una)
+      <div class="fasce">${COLS.map((c,i) => `<input type="text" class="gOra" data-i="${i}" value="${esc(per[c]||'')}" placeholder="fascia ${i+1}, es. 10:00-12:00">`).join('')}</div>
+    </div>
+    <div class="row">Classi per fascia<input type="number" id="gCoppie" min="1" max="6" value="${nClassi}"></div>
+    ${g.riprogrammare ? `<label class="chk" style="margin:4px 0"><input type="checkbox" id="gRip" checked> Togli «da riprogrammare»</label>` : ''}
+    <div class="warn">Le fasce o le classi tolte devono essere libere (solo "C"). Se cambi la data, la giornata viene spostata nel foglio al punto giusto.</div>
+    <div class="acts"><button class="btn ghost" data-close>Annulla</button><button class="btn primary" id="gSave">Salva</button></div>`);
+  document.getElementById('gSave').onclick = () => {
+    const orari = [...document.querySelectorAll('.gOra')].map(x => x.value.trim());
+    const mod = {
+      data: document.getElementById('gData').value,
+      scuola: document.getElementById('gScuola').value.trim(),
+      orari,
+      coppie: Number(document.getElementById('gCoppie').value),
+      togliRiprogrammare: !!(document.getElementById('gRip') && document.getElementById('gRip').checked),
+    };
+    if (!mod.data || !mod.scuola){ toast('Data e scuola sono obbligatorie.', true); return; }
+    if (!orari.some(Boolean)){ toast('Serve almeno una fascia oraria.', true); return; }
+    const tolte = COLS.filter((c,i) => per[c] && !orari[i]).length;
+    if ((tolte || mod.coppie < nClassi) && !confirm('Stai togliendo fasce o classi: le righe corrispondenti verranno cancellate dal foglio. Continuo?')) return;
+    chiudiModal();
+    azione('modificaGiornata', [g.materia, g.riga, g.data, mod], 'Giornata aggiornata');
+  };
+}
+
+/* ---------- eventi ---------- */
+const unkey = k => { const [m,r,c,t,x] = k.split('|'); return [m, Number(r), Number(c), t, x]; };
+const decode = s => s;
+
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-modg],[data-riprog],[data-tab],[data-prendi],[data-lascia],[data-posto],[data-txt],[data-coppia],[data-close],#nAdd,#reload,#logout');
+  if (!el) { if (e.target.id === 'modalBg') chiudiModal(); return; }
+  if (el.dataset.tab){ S.tab = el.dataset.tab; render(); window.scrollTo(0,0); return; }
+  if (el.id === 'reload'){ carica(); return; }
+  if (el.id === 'logout'){ esci(); return; }
+  if (el.hasAttribute('data-close')){ chiudiModal(); return; }
+
+  if (el.dataset.prendi){
+    const [mat,r,c,t] = unkey(decode(el.dataset.prendi));
+    const g = S.dati.giornate.find(x => x.materia === mat && x.data === el.dataset.day && x.turni.some(tt => tt.posti.some(p => p.riga===r && p.col===c)));
+    const tr = g && g.turni.find(tt => tt.posti.some(p => p.riga===r && p.col===c));
+    const conf = g && tr ? trovaConflitti(me(), {g, t: tr}).filter(x => x.extra) : [];
+    const msg = conf.length ? `Hai già un turno sovrapposto (${conf[0].a} / ${conf[0].b}). Vuoi segnarti comunque?` : `Confermi di prendere il turno delle ${el.dataset.ora}?`;
+    if (!confirm(msg)) return;
+    azione('prendiPosto', [mat, r, c, t], 'Fatto! Il turno è tuo.');
+    return;
+  }
+  if (el.dataset.lascia){
+    const [mat,r,c,t] = unkey(decode(el.dataset.lascia));
+    if (!confirm('Vuoi davvero lasciare questo turno? Il posto torna libero per gli altri.')) return;
+    azione('lasciaPosto', [mat, r, c, t], 'Turno lasciato.');
+    return;
+  }
+  if (el.dataset.posto){ const [m,r,c,t,tipo] = unkey(decode(el.dataset.posto)); modalPosto(m, r, c, t, tipo); return; }
+  if (el.dataset.txt){ const [m,r,c,t,l] = unkey(decode(el.dataset.txt)); modalTesto(m, r, c, t, l); return; }
+  if (el.dataset.modg){ const [m,r] = el.dataset.modg.split('|'); modalGiornata(m, Number(r)); return; }
+  if (el.dataset.riprog){
+    const [m,r,on] = el.dataset.riprog.split('|');
+    const msg = on === '1' ? 'Segno questa giornata come DA RIPROGRAMMARE? I suoi posti non compariranno più tra quelli disponibili.' : 'La giornata è stata riprogrammata? Torna visibile con i suoi posti liberi.';
+    if (confirm(msg)) azione('segnaRiprogrammare', [m, Number(r), on === '1'], on === '1' ? 'Giornata segnata da riprogrammare' : 'Giornata di nuovo attiva');
+    return;
+  }
+  if (el.dataset.coppia){ const [m,r] = el.dataset.coppia.split('|'); if (confirm('Aggiungo una classe (due righe) in fondo a questa giornata?')) azione('aggiungiCoppia', [m, Number(r)], 'Classe aggiunta'); return; }
+  if (el.id === 'nAdd'){
+    const d = {
+      materia: document.getElementById('nMateria').value,
+      data: document.getElementById('nData').value,
+      scuola: document.getElementById('nScuola').value.trim(),
+      orari: document.getElementById('nOrari').value.split(',').map(s => s.trim()).filter(Boolean),
+      coppie: document.getElementById('nCoppie').value,
+      nota: document.getElementById('nNota').value.trim(),
+    };
+    if (!d.data || !d.scuola){ toast('Inserisci almeno data e scuola.', true); return; }
+    azione('aggiungiGiornata', [d], 'Giornata aggiunta');
+  }
+});
+document.addEventListener('change', e => {
+  if (e.target.id === 'persona'){ S.persona = e.target.value; render(); }
+  if (e.target.id === 'materia'){ S.materia = e.target.value; render(); }
+  if (e.target.id === 'passate'){ S.passate = e.target.checked; render(); }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') chiudiModal(); });
+
+avviaLogin();
+</script>
+</body>
+</html>
