@@ -166,7 +166,8 @@ strong { color: var(--inchiostro); font-weight: 700; }
   .nav__voce::after { display: none; }
   .nav__tendina { position: static; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; background: none; border: 0; box-shadow: none; padding: 0; min-width: 0; }
   .nav__tendina a { font-size: 1.05rem; font-weight: 600; color: #dbeaf7; padding: 10px 4px; }
-  .nav__cta { margin: 28px 0 0; }
+  .nav__sotto { order: 1; }       /* su mobile: Chi siamo prima delle Edizioni */
+  .nav__cta { margin: 28px 0 0; order: 2; }
   .nav__cta a { background: #fff !important; color: var(--navy) !important; text-align: center !important; font-size: 1.05rem; padding: 16px 20px; border-radius: 999px; }
   .nav__cta a:hover { background: var(--cielo) !important; }
 
@@ -238,14 +239,16 @@ strong { color: var(--inchiostro); font-weight: 700; }
 
 /* ---------- Partner ---------- */
 .partner__titolo { text-align: center; font-size: .8rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--grigio); margin: 0 0 18px; }
-.partner__riga { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin-bottom: 40px; }
+.partner__riga { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-bottom: 48px; }
 .partner__logo {
-  background: #e9ecef; border-radius: 14px; width: 220px; aspect-ratio: 16 / 9; display: grid; place-items: center;
+  background: #e9ecef; border-radius: 18px; width: 260px; aspect-ratio: 16 / 9; display: grid; place-items: center;
   overflow: hidden; transition: transform .15s ease, box-shadow .15s ease;
 }
 .partner__logo img { width: 100%; height: 100%; object-fit: contain; }
-.partner__logo:hover { transform: translateY(-2px); box-shadow: var(--ombra); }
-@media (max-width: 520px) { .partner__logo { width: calc(50% - 8px); } }
+.partner__logo:hover { transform: translateY(-3px); box-shadow: var(--ombra); }
+#partner-finanziatori .partner__logo { width: 380px; }
+@media (min-width: 1100px) { .partner__logo { width: 255px; } #partner-finanziatori .partner__logo { width: 420px; } }
+@media (max-width: 640px) { .partner__logo { width: calc(50% - 10px); } #partner-finanziatori .partner__logo { width: 100%; max-width: 360px; } }
 
 /* ---------- Edizioni ---------- */
 .edizioni-griglia { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
@@ -282,10 +285,10 @@ strong { color: var(--inchiostro); font-weight: 700; }
 .etichetta { align-self: flex-start; display: inline-block; background: #fff1de; color: #9a5300; font-size: .72rem; font-weight: 700; padding: 5px 10px; border-radius: 999px; }
 
 /* ---------- Team ---------- */
-.team-griglia { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+.team-griglia { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 28px; }
 .membro { background: #fff; border: 1px solid var(--bordo); border-radius: 22px; padding: 28px 24px 26px; box-shadow: var(--ombra); display: flex; flex-direction: column; gap: 12px; }
 .membro__testa { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; margin-bottom: 4px; }
-.membro__testa img { width: 160px; height: 160px; border-radius: 50%; object-fit: cover; border: 5px solid var(--cielo); box-shadow: 0 8px 22px rgba(20, 54, 95, .15); margin-bottom: 12px; transition: transform .3s ease; }
+.membro__testa img { width: 220px; height: 220px; border-radius: 50%; object-fit: cover; border: 5px solid var(--cielo); box-shadow: 0 8px 22px rgba(20, 54, 95, .15); margin-bottom: 12px; transition: transform .3s ease; }
 .membro:hover .membro__testa img { transform: scale(1.04); }
 .membro h3 { margin: 0; font-size: 1.25rem; }
 .membro__ruolo { font-size: .78rem; font-weight: 700; color: var(--blu); text-transform: uppercase; letter-spacing: .08em; }
@@ -297,7 +300,8 @@ strong { color: var(--inchiostro); font-weight: 700; }
 .membro__email svg { width: 16px; height: 16px; flex-shrink: 0; }
 .membro p { margin: 0; color: var(--grigio); font-size: .94rem; }
 .membro p + p { margin-top: 10px; }
-@media (max-width: 480px) { .membro__testa img { width: 140px; height: 140px; } }
+@media (max-width: 1100px) { .membro__testa img { width: 190px; height: 190px; } }
+@media (max-width: 480px) { .membro__testa img { width: 160px; height: 160px; } }
 
 /* ---------- CTA finale ---------- */
 .cta {
