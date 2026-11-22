@@ -488,3 +488,5 @@ a:hover > .partner-link svg, .partner-link:hover svg { transform: translateX(4px
 .email-aiuto a:hover, .email-aiuto button:hover { background: rgba(255, 255, 255, .22); color: #fff; }
 .email-aiuto .email-aiuto__chiudi { background: none; padding: 7px 8px; opacity: .7; }
 @media (max-width: 520px) { .email-aiuto { bottom: calc(12px + env(safe-area-inset-bottom)); } .email-aiuto__testo { flex-basis: 100%; } }
+.membro__carica { font-size: .86rem; font-weight: 700; color: var(--navy); line-height: 1.4; margin: 6px 0 2px; }
+.membro__carica + .membro__ruolo { color: var(--grigio); }
