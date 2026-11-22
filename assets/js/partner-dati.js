@@ -8,7 +8,7 @@
    Per aggiungerne uno copia un blocco { ... }, incluse le graffe.
    ===================================================================== */
 window.CLASSLAB.finanziatori = [
-    { nome: "Fondazione Pietro Pittini", logo: "assets/img/logo-fondazione-pittini.png", link: "https://fondazionepittini.it/",
+    { nome: "Fondazione Pietro Pittini", logo: "assets/img/logo-fondazione-pittini.png?v=2", link: "https://fondazionepittini.it/",
       descrizione: "Il suo sostegno rende tutte le attività di ClassLab completamente gratuite per le scuole e ci permette di investire in materiali di qualità, sicurezza e professionalità degli incontri." }
 ];
 
