@@ -18,7 +18,7 @@
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
 <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 <link rel="preload" href="assets/fonts/montserrat-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/style.css?v=917c7099">
+<link rel="stylesheet" href="assets/css/style.css?v=68c22003">
 </head>
 <body>
 <div id="site-header"></div>
@@ -39,9 +39,9 @@
       <p class="intro">Tutto quello che c'è da sapere sulle nostre attività laboratoriali nelle scuole.</p>
     </div>
     <div class="griglia griglia--3">
-      <article class="card appare"><div class="card__icona" aria-hidden="true">⏱️</div><h3>Durata e Orario</h3><p>Le attività si svolgono direttamente durante l'orario scolastico. Ogni incontro ha una durata di circa due ore, strutturate in moduli dinamici e su misura.</p></article>
-      <article class="card appare"><div class="card__icona card__icona--verde" aria-hidden="true">🧪</div><h3>I Moduli Sperimentali</h3><p>Ogni percorso include tre esperimenti scelti tra quelli disponibili, calibrati in base all'età, al livello di preparazione e al programma delle classi.</p></article>
-      <article class="card appare"><div class="card__icona card__icona--arancio" aria-hidden="true">🎁</div><h3>100% Gratuito</h3><p>Crediamo fermamente che la divulgazione scientifica debba essere accessibile a tutti: la partecipazione ai laboratori è completamente gratuita per le scuole.</p></article>
+      <article class="card appare"><h3>Durata e Orario</h3><p>Le attività si svolgono direttamente durante l'orario scolastico. Ogni incontro ha una durata di circa due ore, strutturate in moduli dinamici e su misura.</p></article>
+      <article class="card appare"><h3>I Moduli Sperimentali</h3><p>Ogni percorso include tre esperimenti scelti tra quelli disponibili, calibrati in base all'età, al livello di preparazione e al programma delle classi.</p></article>
+      <article class="card appare"><h3>100% Gratuito</h3><p>Crediamo fermamente che la divulgazione scientifica debba essere accessibile a tutti: la partecipazione ai laboratori è completamente gratuita per le scuole.</p></article>
     </div>
   </div>
 </section>
@@ -50,9 +50,20 @@
   <div class="contenitore">
     <div class="centrato appare">
       <h2>Il catalogo dei laboratori</h2>
-      <p class="intro">Esplora gli esperimenti che compongono i nostri percorsi didattici.</p>
+      <p class="intro">Esplora gli esperimenti che compongono i nostri percorsi didattici, divisi per disciplina.</p>
     </div>
-    <div class="lab-griglia" id="griglia-laboratori"></div>
+    <div class="disciplina appare" id="biologia">
+      <span class="disciplina__etichetta disciplina__etichetta--bio">Biologia</span>
+      <h3 class="disciplina__titolo">Laboratori di biologia</h3>
+      <p class="disciplina__testo">Per la scuola primaria e secondaria di primo grado: ogni classe ne svolge tre, scelti tra questi.</p>
+    </div>
+    <div class="lab-griglia lab-griglia--3" id="griglia-laboratori"></div>
+    <div class="disciplina appare" id="fisica" style="margin-top:72px">
+      <span class="disciplina__etichetta disciplina__etichetta--fis">Fisica</span>
+      <h3 class="disciplina__titolo">Percorsi di fisica</h3>
+      <p class="disciplina__testo">Per la scuola secondaria di primo grado: ogni classe sceglie un percorso.</p>
+    </div>
+    <div class="lab-griglia lab-griglia--2" id="griglia-fisica"></div>
   </div>
 </section>
 
@@ -73,8 +84,8 @@
 <div id="site-footer"></div>
 <script src="assets/js/config.js?v=7e989b84"></script>
 <script src="assets/js/partner-dati.js?v=9b2dbdbc"></script>
-<script src="assets/js/laboratori-dati.js?v=8f4dd00b"></script>
-<script src="assets/js/main.js?v=344e3466"></script>
+<script src="assets/js/laboratori-dati.js?v=7484dc3f"></script>
+<script src="assets/js/main.js?v=13a58c4c"></script>
 
 </body>
 </html>

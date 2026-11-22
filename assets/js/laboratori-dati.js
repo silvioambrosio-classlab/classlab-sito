@@ -19,6 +19,7 @@
      visibile     → false per nasconderlo da sito e modulo senza cancellarlo
    ===================================================================== */
 
+/* ---------------------------- BIOLOGIA ---------------------------- */
 window.CLASSLAB_LABORATORI = [
   {
     titolo: "Estrazione del DNA vegetale",
@@ -33,7 +34,7 @@ window.CLASSLAB_LABORATORI = [
     descrizione: "Prepara vetrini di cipolla per osservare pareti cellulari e nuclei da un punto di vista inedito.",
     immagine: "https://lh3.googleusercontent.com/d/15eq5k2s-HTl4-nle_sf8jDSotD-9tT8z=s800",
     consigliato: "",
-    perChi: ["primaria-4", "primaria-5"],
+    perChi: ["primaria-4", "primaria-5", "secondaria"],
     visibile: true
   },
   {
@@ -74,7 +75,7 @@ window.CLASSLAB_LABORATORI = [
     descrizione: "Simula la digestione e scopri come gli enzimi scompongono i cibi nel nostro organismo.",
     immagine: "https://lh3.googleusercontent.com/d/1oZk4TtaR3gSRJ1GJ1FKJZI3bgBOKVU_m=s800",
     consigliato: "",
-    perChi: ["primaria-4", "primaria-5"],
+    perChi: ["primaria-4", "primaria-5", "secondaria"],
     visibile: true
   },
   {
@@ -95,10 +96,26 @@ window.CLASSLAB_LABORATORI = [
   }
 ];
 
-/* Percorsi di FISICA (solo scuola secondaria di 1° grado, uno per classe) */
+/* =====================================================================
+   PERCORSI DI FISICA (solo scuola secondaria di 1° grado, uno per classe)
+   Compaiono nella sezione "Fisica" della pagina dei laboratori e
+   nel modulo. "immagine" è facoltativa: se vuota si usa un disegno.
+   ===================================================================== */
 window.CLASSLAB_PERCORSI_FISICA = [
-  "Percorso sulla luce",
-  "Percorso sull'elettromagnetismo"
+  {
+    titolo: "Onde e Luce",
+    descrizione: "Scopri la natura della luce attraverso esperimenti di interferenza, colori iridescenti ed effetto fotoelettrico, esplorando il sorprendente comportamento della luce tra onde e particelle.",
+    immagine: "",
+    disegno: "onde",
+    visibile: true
+  },
+  {
+    titolo: "Elettromagnetismo",
+    descrizione: "Costruisci una pila al limone, sperimenta il legame tra elettricità e magnetismo e rendi visibili le linee del campo magnetico, scoprendo i fenomeni alla base dell'elettromagnetismo.",
+    immagine: "",
+    disegno: "campo",
+    visibile: true
+  }
 ];
 
 /* Classi proponibili per ciascun ordine di scuola */

@@ -59,8 +59,9 @@
     }).map(function (l) { return '<option value="' + esc(l.titolo) + '">' + esc(l.titolo) + "</option>"; }).join("");
   }
   function opzioniFisica() {
-    return '<option value="">— Seleziona il percorso —</option>' + FISICA.map(function (p) {
-      return '<option value="' + esc(p) + '">' + esc(p) + "</option>";
+    return '<option value="">— Seleziona il percorso —</option>' + FISICA.filter(function (p) { return p.visibile !== false; }).map(function (p) {
+      var t = typeof p === "string" ? p : p.titolo;
+      return '<option value="' + esc(t) + '">' + esc(t) + "</option>";
     }).join("");
   }
 
@@ -280,7 +281,7 @@
       '<div class="esito__icona" aria-hidden="true">✓</div>' +
       "<h2>" + (viaEmail ? "Quasi fatto!" : "Richiesta inviata con successo!") + "</h2>" +
       (viaEmail
-        ? "<p>Per completare la richiesta <strong>invia l'email già compilata</strong> con Gmail, Outlook o la tua app di posta. Se la finestra si è chiusa, <a href=\"#\" data-riapri>riaprila da qui</a>, oppure copia il riepilogo qui sotto e scrivi a <strong>" + esc(C.email) + "</strong>.</p>"
+        ? "<p>Per completare la richiesta <strong>invia l'email già compilata</strong> dal tuo programma di posta. Se non si è aperta, <a href=\"#\" data-riapri>riaprila da qui</a>, oppure copia il riepilogo qui sotto e scrivi a <strong>" + esc(C.email) + "</strong>.</p>"
         : "<p>Grazie da tutto il team ClassLab! Ti ricontatteremo presto all'indirizzo <strong>" + esc(d.email) + "</strong>." +
           (codice ? "<br>Codice della richiesta: <strong>" + esc(codice) + "</strong>" : "") + "</p>") +
       '<div class="riepilogo">' + esc(testoRiepilogo(d)) + "</div>" +

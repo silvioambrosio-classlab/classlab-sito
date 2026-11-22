@@ -112,58 +112,60 @@
   });
   document.querySelectorAll("[data-periodo]").forEach(function (el) { el.textContent = C.periodoAttivita; });
 
-  /* ---------- Finestra "Scrivi un'email" ----------
-     Molti computer non hanno un programma di posta impostato: cliccando
-     un link mailto: non succede nulla. Per questo ogni link email apre
-     una piccola finestra con Gmail, Outlook, app di posta o "Copia".   */
+  /* ---------- Link email ----------
+     Un clic su un indirizzo apre SUBITO la scrittura della mail
+     nel programma di posta del dispositivo.
+     Solo se dopo un attimo non si è aperto nulla (succede sui computer
+     senza programma di posta impostato) compare in basso un piccolo
+     aiuto discreto con Gmail, Outlook e "Copia indirizzo".            */
   function apriEmail(indirizzo, oggetto, testo) {
     var q = function (k, v) { return v ? "&" + k + "=" + encodeURIComponent(v) : ""; };
-    var mailto = "mailto:" + indirizzo + "?" + (oggetto ? "subject=" + encodeURIComponent(oggetto) : "") + (testo ? (oggetto ? "&" : "") + "body=" + encodeURIComponent(testo) : "");
-    var gmail = "https://mail.google.com/mail/?view=cm&fs=1&to=" + encodeURIComponent(indirizzo) + q("su", oggetto) + q("body", testo);
-    var outlook = "https://outlook.office.com/mail/deeplink/compose?to=" + encodeURIComponent(indirizzo) + q("subject", oggetto) + q("body", testo);
+    var par = [];
+    if (oggetto) par.push("subject=" + encodeURIComponent(oggetto));
+    if (testo) par.push("body=" + encodeURIComponent(testo));
+    var mailto = "mailto:" + indirizzo + (par.length ? "?" + par.join("&") : "");
 
-    var vecchio = document.querySelector(".email-sfondo"); if (vecchio) vecchio.remove();
-    var sfondo = document.createElement("div");
-    sfondo.className = "email-sfondo";
-    sfondo.innerHTML =
-      '<div class="email-box" role="dialog" aria-modal="true" aria-labelledby="email-titolo">' +
-      '<h3 id="email-titolo">Scrivici un\'email</h3><p class="indirizzo">' + esc(indirizzo) + "</p>" +
-      '<div class="scelte-email">' +
-      '<a href="' + esc(gmail) + '" target="_blank" rel="noopener"><span class="ico">G</span>Scrivi con Gmail</a>' +
-      '<a href="' + esc(outlook) + '" target="_blank" rel="noopener"><span class="ico">O</span>Scrivi con Outlook</a>' +
-      '<a href="' + esc(mailto) + '" data-diretto><span class="ico">✉️</span>Apri l\'app di posta</a>' +
-      '<button type="button" data-copia><span class="ico">📋</span><span>Copia l\'indirizzo</span></button>' +
-      "</div>" +
-      '<button type="button" class="chiudi">Chiudi</button></div>';
-    document.body.appendChild(sfondo);
-    requestAnimationFrame(function () { sfondo.classList.add("visibile"); });
-    var primo = sfondo.querySelector(".scelte-email a"); if (primo) primo.focus();
+    var aperto = false;
+    function segna() { aperto = true; }
+    window.addEventListener("blur", segna);
+    document.addEventListener("visibilitychange", segna);
+    location.href = mailto;
+    setTimeout(function () {
+      window.removeEventListener("blur", segna);
+      document.removeEventListener("visibilitychange", segna);
+      if (!aperto && document.hasFocus()) mostraAiuto();
+    }, 1600);
 
-    function chiudi() {
-      sfondo.classList.remove("visibile");
-      document.removeEventListener("keydown", tasto);
-      setTimeout(function () { sfondo.remove(); }, 220);
+    function mostraAiuto() {
+      var gmail = "https://mail.google.com/mail/?view=cm&fs=1&to=" + encodeURIComponent(indirizzo) + q("su", oggetto) + q("body", testo);
+      var outlook = "https://outlook.office.com/mail/deeplink/compose?to=" + encodeURIComponent(indirizzo) + q("subject", oggetto) + q("body", testo);
+      var vecchio = document.querySelector(".email-aiuto"); if (vecchio) vecchio.remove();
+      var box = document.createElement("div");
+      box.className = "email-aiuto"; box.setAttribute("role", "status");
+      box.innerHTML = '<span class="email-aiuto__testo">Non si è aperta la posta? Scrivi a <strong>' + esc(indirizzo) + "</strong> con</span>" +
+        '<a href="' + esc(gmail) + '" target="_blank" rel="noopener">Gmail</a>' +
+        '<a href="' + esc(outlook) + '" target="_blank" rel="noopener">Outlook</a>' +
+        '<button type="button" data-copia>Copia</button>' +
+        '<button type="button" class="email-aiuto__chiudi" aria-label="Chiudi">✕</button>';
+      document.body.appendChild(box);
+      requestAnimationFrame(function () { box.classList.add("visibile"); });
+      var timer = setTimeout(chiudi, 12000);
+      function chiudi() { clearTimeout(timer); box.classList.remove("visibile"); setTimeout(function () { box.remove(); }, 300); }
+      box.querySelector(".email-aiuto__chiudi").addEventListener("click", chiudi);
+      box.querySelectorAll("a").forEach(function (a) { a.addEventListener("click", function () { setTimeout(chiudi, 200); }); });
+      box.querySelector("[data-copia]").addEventListener("click", function () {
+        var btn = this, t = testo ? indirizzo + "\n\n" + testo : indirizzo;
+        function ok() { btn.textContent = "Copiato ✓"; clearTimeout(timer); timer = setTimeout(chiudi, 3000); }
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok, function () { prompt("Copia l'indirizzo:", indirizzo); });
+        else prompt("Copia l'indirizzo:", indirizzo);
+      });
     }
-    function tasto(e) { if (e.key === "Escape") chiudi(); }
-    document.addEventListener("keydown", tasto);
-    sfondo.addEventListener("click", function (e) {
-      if (e.target === sfondo || e.target.closest(".chiudi")) chiudi();
-      else if (e.target.closest("a")) setTimeout(chiudi, 150);
-    });
-    sfondo.querySelector("[data-copia]").addEventListener("click", function () {
-      var lbl = this.querySelector("span:last-child");
-      var testoDaCopiare = testo ? indirizzo + "\n\n" + testo : indirizzo;
-      function fatto() { lbl.textContent = testo ? "Copiati indirizzo e testo ✓" : "Indirizzo copiato ✓"; }
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(testoDaCopiare).then(fatto, function () { prompt("Copia l'indirizzo:", indirizzo); });
-      } else { prompt("Copia l'indirizzo:", indirizzo); }
-    });
   }
   window.ClassLabEmail = apriEmail;
 
   document.addEventListener("click", function (e) {
     var a = e.target.closest('a[href^="mailto:"]');
-    if (!a || a.hasAttribute("data-diretto") || e.ctrlKey || e.metaKey) return;
+    if (!a || e.ctrlKey || e.metaKey || e.shiftKey) return;
     e.preventDefault();
     var url = a.getAttribute("href").slice(7);
     var parti = url.split("?");
@@ -180,7 +182,7 @@
   if (fp) fp.innerHTML = (C.finanziatori || []).map(function (p) {
     return '<article class="partner-top appare">' +
       '<a class="partner-top__logo" href="' + esc(p.link) + '" target="_blank" rel="noopener"><img src="' + esc(p.logo) + '" alt="' + esc(p.nome) + '" loading="lazy"></a>' +
-      '<div class="partner-top__testo"><span class="badge badge--oro">★ Con il finanziamento di</span>' +
+      '<div class="partner-top__testo">' +
       "<h3>" + esc(p.nome) + "</h3><p>" + esc(p.descrizione || "") + "</p>" +
       '<a class="partner-link" href="' + esc(p.link) + '" target="_blank" rel="noopener">Scopri la fondazione ' + freccia + "</a></div></article>";
   }).join("");
@@ -216,16 +218,37 @@
   }
 
   /* ---------- Catalogo laboratori ---------- */
+  function cardLab(l, disegno) {
+    var visual = l.immagine
+      ? '<img src="' + esc(l.immagine) + '" alt="' + esc(l.titolo) + '" loading="lazy" width="800" height="500"' +
+        (l.posizioneImmagine ? ' style="object-position:' + esc(l.posizioneImmagine) + '"' : "") + ">"
+      : '<div class="lab-card__disegno lab-card__disegno--' + esc(l.disegno || "onde") + '" aria-hidden="true">' + (DISEGNI[l.disegno] || DISEGNI.onde) + "</div>";
+    return '<article class="lab-card appare">' + visual +
+      '<div class="lab-card__corpo"><h3>' + esc(l.titolo) + "</h3><p>" + esc(l.descrizione) + "</p>" +
+      (l.consigliato ? '<span class="etichetta">' + esc(l.consigliato) + "</span>" : "") +
+      "</div></article>";
+  }
+  var DISEGNI = {
+    onde: '<svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice"><g fill="none" stroke-width="3" stroke-linecap="round">' +
+      [0, 1, 2, 3, 4, 5].map(function (i) {
+        var c = ["#ff6b6b", "#f9a03f", "#f7d046", "#5dd39e", "#4dabf7", "#9775fa"][i], y = 60 + i * 16, d = "M-20 " + y;
+        for (var x = -20; x <= 420; x += 40) d += " q 20 " + (i % 2 ? -26 : 26) + " 40 0";
+        return '<path d="' + d + '" stroke="' + c + '" opacity=".9"/>';
+      }).join("") + '</g><circle cx="330" cy="46" r="18" fill="#fff6c9" opacity=".9"/></svg>',
+    campo: '<svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice"><g fill="none" stroke="#cfe8fb" stroke-width="2.2" opacity=".85">' +
+      [26, 46, 66, 86].map(function (r) {
+        return '<path d="M150 100 C 150 ' + (100 - r * 1.6) + ', 250 ' + (100 - r * 1.6) + ', 250 100"/><path d="M150 100 C 150 ' + (100 + r * 1.6) + ', 250 ' + (100 + r * 1.6) + ', 250 100"/>';
+      }).join("") + '</g><rect x="120" y="86" width="80" height="28" rx="6" fill="#ff6b6b"/><rect x="200" y="86" width="80" height="28" rx="6" fill="#4dabf7"/>' +
+      '<text x="160" y="106" font-family="Montserrat,sans-serif" font-weight="800" font-size="18" fill="#fff" text-anchor="middle">N</text>' +
+      '<text x="240" y="106" font-family="Montserrat,sans-serif" font-weight="800" font-size="18" fill="#fff" text-anchor="middle">S</text></svg>'
+  };
   var griglia = document.getElementById("griglia-laboratori");
   if (griglia && window.CLASSLAB_LABORATORI) {
-    griglia.innerHTML = window.CLASSLAB_LABORATORI.filter(function (l) { return l.visibile !== false; }).map(function (l) {
-      return '<article class="lab-card appare">' +
-        '<img src="' + esc(l.immagine) + '" alt="' + esc(l.titolo) + '" loading="lazy" width="800" height="500"' +
-        (l.posizioneImmagine ? ' style="object-position:' + esc(l.posizioneImmagine) + '"' : "") + ">" +
-        '<div class="lab-card__corpo"><h3>' + esc(l.titolo) + "</h3><p>" + esc(l.descrizione) + "</p>" +
-        (l.consigliato ? '<span class="etichetta">' + esc(l.consigliato) + "</span>" : "") +
-        "</div></article>";
-    }).join("");
+    griglia.innerHTML = window.CLASSLAB_LABORATORI.filter(function (l) { return l.visibile !== false; }).map(function (l) { return cardLab(l); }).join("");
+  }
+  var grigliaF = document.getElementById("griglia-fisica");
+  if (grigliaF && window.CLASSLAB_PERCORSI_FISICA) {
+    grigliaF.innerHTML = window.CLASSLAB_PERCORSI_FISICA.filter(function (l) { return typeof l === "object" && l.visibile !== false; }).map(function (l) { return cardLab(l); }).join("");
   }
 
   /* ---------- Comparsa morbida allo scorrimento ---------- */
