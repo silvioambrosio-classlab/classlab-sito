@@ -27,7 +27,8 @@
   .bar{display:flex;align-items:center;gap:12px;padding:12px 0}
   .bar h1{font-size:18px;margin:0;flex:1}
   .bar-logo{height:36px;width:auto;flex-shrink:0}
-  @media (max-width:560px){.bar{gap:8px}.bar h1{font-size:17px;white-space:nowrap;flex:1 0 auto}.h1-extra{display:none}#materia{flex:0 1 auto;min-width:0;max-width:150px;font-size:14px;padding:6px}.bar .btn{padding:5px 8px}.who{font-size:12px}}
+  @media (max-width:560px){.bar{gap:8px}.bar h1{font-size:17px;white-space:nowrap;flex:1 0 auto}.h1-extra{display:none}#materia{flex:0 1 auto;min-width:0;max-width:150px;font-size:14px;padding:6px}.bar .btn{padding:5px 8px}.who{font-size:12px}.installa-t{display:none}}
+  @media (max-width:350px){.bar h1{font-size:0}}
   .bar h1 small{color:var(--muted);font-weight:500;margin-left:6px}
   .who{font-size:13px;color:var(--muted);text-align:right}
   .who b{color:var(--ink)}
@@ -116,6 +117,10 @@
   .form label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
   .hint{font-size:13px;color:var(--muted);margin:8px 0 0}
   .modal-bg{position:fixed;inset:0;background:rgba(20,25,35,.4);display:none;align-items:center;justify-content:center;z-index:20;padding:16px}
+  [hidden]{display:none!important}
+  .installa{display:inline-flex;align-items:center;gap:4px}
+  .login-installa{margin:18px 0 0}
+  .guida ol{padding-left:20px;margin:8px 0}.guida li{margin:6px 0}.guida .ico-share{display:inline-block;vertical-align:-3px}
   .modal{background:#fff;border-radius:14px;padding:18px;width:100%;max-width:420px}
   .modal h3{margin:0 0 12px;font-size:16px}
   .modal .row{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;font-size:13px;color:var(--muted)}
@@ -140,6 +145,7 @@
     <h1>Turni ClassLab</h1>
     <p>Accedi con il tuo account Google <b>@classlab.it</b> per vedere e gestire i turni.</p>
     <div id="gbtn"></div>
+    <p class="login-installa" hidden><button class="btn small" data-installa>Aggiungi alla schermata Home</button></p>
     <div id="loginErr"></div>
   </div>
 </section>
@@ -151,6 +157,7 @@
       <h1>Turni<span class="h1-extra"> ClassLab</span></h1>
       <select id="materia" title="Materia"></select>
       <div class="who" id="who"></div>
+      <button class="btn small installa" data-installa title="Aggiungi alla schermata Home" aria-label="Aggiungi alla schermata Home" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M12 7v7M9 11l3 3 3-3"/></svg><span class="installa-t"> Installa</span></button>
       <button class="btn small" id="reload" title="Ricarica dal foglio">Aggiorna</button>
       <button class="btn small ghost" id="logout" title="Esci">Esci</button>
     </div>
@@ -531,13 +538,56 @@ function modalGiornata(mat, riga){
   };
 }
 
+/* ---------- collegamento sulla schermata Home ---------- */
+let promptInstalla = null;
+const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+function aggiornaTastiInstalla(){
+  document.querySelectorAll('[data-installa]').forEach(b => {
+    const contenitore = b.closest('.login-installa') || b;
+    contenitore.hidden = isStandalone();
+  });
+}
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); promptInstalla = e; aggiornaTastiInstalla(); });
+window.addEventListener('appinstalled', () => { promptInstalla = null; aggiornaTastiInstalla(); toast('App installata: la trovi nella schermata Home.'); });
+async function installa(){
+  if (promptInstalla){
+    promptInstalla.prompt();
+    try { await promptInstalla.userChoice; } catch(e){}
+    promptInstalla = null;
+    return;
+  }
+  const ua = navigator.userAgent;
+  const ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const android = /Android/.test(ua);
+  const share = '<svg class="ico-share" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>';
+  let passi;
+  if (ios) passi = `<ol>
+      <li>Apri questa pagina con <b>Safari</b> (o Chrome).</li>
+      <li>Tocca il pulsante <b>Condividi</b> ${share} (in basso, o in alto su iPad; in Chrome è in alto a destra).</li>
+      <li>Scorri e scegli <b>Aggiungi alla schermata Home</b>, poi <b>Aggiungi</b>.</li></ol>`;
+  else if (android) passi = `<ol>
+      <li>Apri questa pagina con <b>Chrome</b>.</li>
+      <li>Tocca il menu <b>⋮</b> in alto a destra.</li>
+      <li>Scegli <b>Aggiungi a schermata Home</b> (o <b>Installa app</b>), poi conferma.</li></ol>`;
+  else passi = `<ol>
+      <li>In Chrome o Edge, clicca l'icona di installazione nella barra degli indirizzi (a destra) oppure apri il menu <b>⋮</b>.</li>
+      <li>Scegli <b>Installa Turni</b> (o <b>App → Installa questo sito come app</b>).</li></ol>
+      <p class="hint">Dal telefono: apri <b>www.classlab.it/turni</b> e premi di nuovo questo tasto.</p>`;
+  apriModal(`<div class="guida"><h3>Aggiungi Turni alla schermata Home</h3>
+    <p class="hint">Avrai un'icona ClassLab che apre direttamente il gestionale, come un'app.</p>${passi}
+    <p class="hint">Se avevi già un'icona vecchia, eliminala prima e poi aggiungila di nuovo.</p>
+    <div class="acts"><button class="btn primary" data-close>Ho capito</button></div></div>`);
+}
+aggiornaTastiInstalla();
+
 /* ---------- eventi ---------- */
 const unkey = k => { const [m,r,c,t,x] = k.split('|'); return [m, Number(r), Number(c), t, x]; };
 const decode = s => s;
 
 document.addEventListener('click', e => {
-  const el = e.target.closest('[data-modg],[data-riprog],[data-tab],[data-prendi],[data-lascia],[data-posto],[data-txt],[data-coppia],[data-close],#nAdd,#reload,#logout');
+  const el = e.target.closest('[data-installa],[data-modg],[data-riprog],[data-tab],[data-prendi],[data-lascia],[data-posto],[data-txt],[data-coppia],[data-close],#nAdd,#reload,#logout');
   if (!el) { if (e.target.id === 'modalBg') chiudiModal(); return; }
+  if (el.hasAttribute('data-installa')){ installa(); return; }
   if (el.dataset.tab){ S.tab = el.dataset.tab; render(); window.scrollTo(0,0); return; }
   if (el.id === 'reload'){ carica(); return; }
   if (el.id === 'logout'){ esci(); return; }
