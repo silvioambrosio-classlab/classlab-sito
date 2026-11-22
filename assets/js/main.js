@@ -175,14 +175,45 @@
   });
 
   /* ---------- Partner ---------- */
-  function partner(lista) {
-    return (lista || []).map(function (p) {
-      return '<a class="partner__logo" href="' + esc(p.link) + '" target="_blank" rel="noopener" title="' + esc(p.nome) + '">' +
-        '<img src="' + esc(p.logo) + '" alt="' + esc(p.nome) + '" loading="lazy"></a>';
-    }).join("");
+  var freccia = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  var fp = document.getElementById("partner-principale");
+  if (fp) fp.innerHTML = (C.finanziatori || []).map(function (p) {
+    return '<article class="partner-top appare">' +
+      '<a class="partner-top__logo" href="' + esc(p.link) + '" target="_blank" rel="noopener"><img src="' + esc(p.logo) + '" alt="' + esc(p.nome) + '" loading="lazy"></a>' +
+      '<div class="partner-top__testo"><span class="badge badge--oro">★ Con il finanziamento di</span>' +
+      "<h3>" + esc(p.nome) + "</h3><p>" + esc(p.descrizione || "") + "</p>" +
+      '<a class="partner-link" href="' + esc(p.link) + '" target="_blank" rel="noopener">Scopri la fondazione ' + freccia + "</a></div></article>";
+  }).join("");
+  var fs = document.getElementById("partner-sostenitori");
+  if (fs) fs.innerHTML = (C.sostenitori || []).map(function (p) {
+    return '<a class="partner-card appare" href="' + esc(p.link) + '" target="_blank" rel="noopener">' +
+      '<div class="partner-card__logo"><img src="' + esc(p.logo) + '" alt="' + esc(p.nome) + '" loading="lazy"></div>' +
+      "<h3>" + esc(p.nome) + "</h3><p>" + esc(p.descrizione || "") + "</p>" +
+      '<span class="partner-link">Visita il sito ' + freccia + "</span></a>";
+  }).join("");
+
+  /* Fascia loghi sopra il piè di pagina (tutte le pagine tranne la home) */
+  var footerEl = document.querySelector(".footer");
+  if (footerEl && !fs && !document.body.hasAttribute("data-senza-partner")) {
+    var tutti = (C.finanziatori || []).concat(C.sostenitori || []);
+    var banda = document.createElement("section");
+    banda.className = "banda-partner";
+    banda.setAttribute("aria-label", "Partner di ClassLab");
+    banda.innerHTML = '<div class="contenitore"><p class="banda-partner__titolo">ClassLab è possibile grazie a</p><div class="banda-partner__loghi">' +
+      tutti.map(function (p, i) {
+        return '<a href="' + esc(p.link) + '" target="_blank" rel="noopener" title="' + esc(p.nome) + '"' + (i < (C.finanziatori || []).length ? ' class="principale"' : "") + '><img src="' + esc(p.logo) + '" alt="' + esc(p.nome) + '" loading="lazy"></a>';
+      }).join("") + "</div></div>";
+    footerEl.parentNode.insertBefore(banda, footerEl);
+    /* Bilancia loghi verticali e molto larghi perché "pesino" uguale */
+    banda.querySelectorAll("img").forEach(function (img) {
+      function misura() {
+        var r = img.naturalWidth / img.naturalHeight;
+        if (r && r < 1.2) img.classList.add("verticale");
+        else if (r > 3.2 && !img.parentNode.classList.contains("principale")) img.classList.add("largo");
+      }
+      if (img.complete) misura(); else img.addEventListener("load", misura);
+    });
   }
-  var f = document.getElementById("partner-finanziatori"); if (f) f.innerHTML = partner(C.finanziatori);
-  var s = document.getElementById("partner-sostenitori"); if (s) s.innerHTML = partner(C.sostenitori);
 
   /* ---------- Catalogo laboratori ---------- */
   var griglia = document.getElementById("griglia-laboratori");
