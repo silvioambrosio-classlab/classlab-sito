@@ -106,6 +106,7 @@ window.CLASSLAB_PERCORSI_FISICA = [
     titolo: "Onde e Luce",
     descrizione: "Scopri la natura della luce attraverso esperimenti di interferenza, colori iridescenti ed effetto fotoelettrico, esplorando il sorprendente comportamento della luce tra onde e particelle.",
     immagine: "",
+    consigliato: "In collaborazione con ICTP FabLab",
     disegno: "onde",
     visibile: true
   },
@@ -113,6 +114,7 @@ window.CLASSLAB_PERCORSI_FISICA = [
     titolo: "Elettromagnetismo",
     descrizione: "Costruisci una pila al limone, sperimenta il legame tra elettricità e magnetismo e rendi visibili le linee del campo magnetico, scoprendo i fenomeni alla base dell'elettromagnetismo.",
     immagine: "",
+    consigliato: "In collaborazione con ICTP FabLab",
     disegno: "campo",
     visibile: true
   }
