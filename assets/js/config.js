@@ -13,7 +13,7 @@ window.CLASSLAB = {
      Incolla qui l'URL "/exec" dell'App web di Google Apps Script
      (vedi GUIDA, passo 2). Finché è vuoto, il modulo prepara
      un'email precompilata da inviare a mano a info@classlab.it.      */
-  moduloEndpoint: "",
+  moduloEndpoint: "https://script.google.com/macros/s/AKfycbwI0Rm-mk4guzrum9im0l33TbN-W6tUUrPbOKFvMiIb72H5QIUlNViLICZ2IqxTaypLEQ/exec",
 
   /* Periodo in cui si svolgono le attività (compare nel modulo) */
   periodoAttivita: "dal 12 dicembre al 15 marzo",
