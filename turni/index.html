@@ -6,8 +6,8 @@
 <title>Turni ClassLab</title>
 <meta name="theme-color" content="#2f6fde">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="icona-32.png">
-<link rel="apple-touch-icon" href="icona-180.png">
+<link rel="icon" href="icona-32.png?v=2">
+<link rel="apple-touch-icon" href="icona-180.png?v=2">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Turni">
@@ -26,6 +26,8 @@
   .wrap{max-width:980px;margin:0 auto;padding:0 16px}
   .bar{display:flex;align-items:center;gap:12px;padding:12px 0}
   .bar h1{font-size:18px;margin:0;flex:1}
+  .bar-logo{height:36px;width:auto;flex-shrink:0}
+  @media (max-width:560px){.bar{gap:8px}.bar h1{font-size:17px;white-space:nowrap;flex:1 0 auto}.h1-extra{display:none}#materia{flex:0 1 auto;min-width:0;max-width:150px;font-size:14px;padding:6px}.bar .btn{padding:5px 8px}.who{font-size:12px}}
   .bar h1 small{color:var(--muted);font-weight:500;margin-left:6px}
   .who{font-size:13px;color:var(--muted);text-align:right}
   .who b{color:var(--ink)}
@@ -57,7 +59,7 @@
   .modal .warn{background:var(--aff-soft);color:var(--aff-ink);border-radius:8px;padding:8px 10px;font-size:13px;margin-top:8px}
   #login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
   #login .card{background:#fff;border:1px solid var(--line);border-radius:20px;max-width:400px;width:100%;padding:32px 24px;text-align:center}
-  #login img{width:84px;height:84px;border-radius:20px}
+  #login img{width:auto;height:96px;display:block;margin:0 auto}
   #login h1{font-size:24px;margin:14px 0 6px}
   #login p{color:var(--muted);margin:0 0 22px;line-height:1.45}
   #gbtn{display:flex;justify-content:center;min-height:44px}
@@ -134,7 +136,7 @@
 <div id="busy"></div>
 <section id="login">
   <div class="card">
-    <img src="icona-180.png" alt="">
+    <img src="../assets/img/logo-classlab-300.png" alt="ClassLab">
     <h1>Turni ClassLab</h1>
     <p>Accedi con il tuo account Google <b>@classlab.it</b> per vedere e gestire i turni.</p>
     <div id="gbtn"></div>
@@ -145,7 +147,8 @@
 <header class="top">
   <div class="wrap">
     <div class="bar">
-      <h1>Turni ClassLab</h1>
+      <img class="bar-logo" src="../assets/img/logo-classlab-300.png" alt="ClassLab" width="300" height="326">
+      <h1>Turni<span class="h1-extra"> ClassLab</span></h1>
       <select id="materia" title="Materia"></select>
       <div class="who" id="who"></div>
       <button class="btn small" id="reload" title="Ricarica dal foglio">Aggiorna</button>
@@ -255,7 +258,7 @@ function render(){
     : esc(u.email || 'Account non riconosciuto');
 
   const selM = document.getElementById('materia');
-  selM.innerHTML = '<option value="">Tutte le materie</option>' + (d.materie||[]).map(m => `<option value="${m.id}" ${S.materia===m.id?'selected':''}>${esc(m.nome)}</option>`).join('');
+  selM.innerHTML = '<option value="">' + (innerWidth < 560 ? 'Tutte' : 'Tutte le materie') + '</option>' + (d.materie||[]).map(m => `<option value="${m.id}" ${S.materia===m.id?'selected':''}>${esc(m.nome)}</option>`).join('');
   const futuri = turniVis().filter(x => attiva(x.g));
   const nMiei = u.nome ? futuri.filter(x => haPersona(x.t, u.nome)).length : 0;
   const nLib = futuri.reduce((s,x) => s + liberi(x.t).length, 0);
