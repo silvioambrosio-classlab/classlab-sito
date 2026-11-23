@@ -72,12 +72,10 @@
 <script src="assets/js/laboratori-dati.js?v=8ffe1dc9"></script>
 <script src="assets/js/main.js?v=b9934bac"></script>
 <script src="turni/config.js"></script>
+<script src="assets/js/team-auth.js?v=bba1f888"></script>
 <script src="assets/js/area-team-dati.js?v=2bee4d93"></script>
 <script>
 (function () {
-  var CLIENT_ID = (window.TURNI_CONFIG || {}).CLIENT_ID;
-  var DOMINIO = "classlab.it";
-  var CHIAVE = "turniToken"; // stessa sessione del gestionale turni: niente doppio accesso
   var $ = function (id) { return document.getElementById(id); };
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
 
@@ -91,15 +89,9 @@
     link: '<path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/>'
   };
 
-  function payload(tok) {
-    try { return JSON.parse(decodeURIComponent(escape(atob(tok.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))))); } catch (e) { return {}; }
-  }
-  function valido(tok) { var p = tok && payload(tok); return p && p.exp && p.exp * 1000 > Date.now() + 60000 && p.hd === DOMINIO; }
-
   function mostraLogin(msg) {
     $("at-hub").hidden = true; $("at-login").hidden = false;
     $("at-errore").textContent = msg || "";
-    try { google.accounts.id.prompt(); } catch (e) {}
   }
 
   // Livelli: 1 Gestori · 2 Responsabile · 3 Operatori · 4 Fruitori · 5 Sola visualizzazione (predefinito).
@@ -107,17 +99,9 @@
   // i permessi veri li controllano gli script dei turni e della checklist.
   var NOMI_LIVELLO = { 1: "Gestore", 2: "Responsabile", 3: "Operatore", 4: "Fruitore", 5: "Sola visualizzazione" };
 
-  function chiSono(tok) {
-    var api = (window.TURNI_CONFIG || {}).API_URL;
-    if (!api) return Promise.resolve(null);
-    return fetch(api, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ token: tok, fn: "chiSono", args: [] }) })
-      .then(function (r) { return r.json(); })
-      .then(function (j) {
-        if (j && j.ok && j.dati) return j.dati;
-        if (j && j.auth) throw new Error(j.errore || "auth");
-        return null; // server non ancora aggiornato: mostra tutto (i controlli restano lato server)
-      })
-      .catch(function (e) { if (e && e.message && e.message !== "Failed to fetch") throw e; return null; });
+  // null = server non ancora aggiornato (mostra tutto: i controlli restano lato server); undefined = sessione scaduta
+  function chiSono() {
+    return TeamAuth.chiama("chiSono").then(function (d) { return d || null; }, function (e) { return e && e.auth ? undefined : null; });
   }
 
   function mostraHub(p, tok) {
@@ -126,13 +110,11 @@
     $("at-mail").textContent = p.email || "";
     if (p.picture) { $("at-foto").src = p.picture; $("at-foto").hidden = false; }
     $("at-griglia").innerHTML = '<p class="at-attesa">Caricamento…</p>';
-    chiSono(tok).then(function (io) {
+    chiSono().then(function (io) {
+      if (io === undefined) return; // sessione scaduta: TeamAuth ha già mostrato l'accesso
       var liv = io && io.livello ? Number(io.livello) : null;
       if (liv) $("at-mail").textContent = (p.email || "") + " · " + (io.ruolo || NOMI_LIVELLO[liv] || "");
       disegna(String(p.email || "").toLowerCase(), liv);
-    }, function (e) {
-      try { sessionStorage.removeItem(CHIAVE); } catch (x) {}
-      mostraLogin("Sessione scaduta: accedi di nuovo.");
     });
   }
 
@@ -154,27 +136,9 @@
     }).join("");
   }
 
-  function onCredenziale(r) {
-    var p = payload(r.credential);
-    if (p.hd !== DOMINIO) { mostraLogin("Puoi accedere solo con un account @" + DOMINIO + "."); return; }
-    try { sessionStorage.setItem(CHIAVE, r.credential); } catch (e) {}
-    mostraHub(p, r.credential);
-  }
+  $("at-esci").onclick = function () { TeamAuth.esci(); };
 
-  $("at-esci").onclick = function () {
-    try { sessionStorage.removeItem(CHIAVE); google.accounts.id.disableAutoSelect(); } catch (e) {}
-    mostraLogin("");
-  };
-
-  function avvia() {
-    if (!CLIENT_ID) { $("at-login").hidden = false; $("at-errore").textContent = "Manca il CLIENT_ID in turni/config.js."; return; }
-    if (!window.google || !google.accounts || !google.accounts.id) { setTimeout(avvia, 100); return; }
-    google.accounts.id.initialize({ client_id: CLIENT_ID, callback: onCredenziale, hd: DOMINIO, auto_select: true, cancel_on_tap_outside: false });
-    google.accounts.id.renderButton($("gbtn"), { theme: "outline", size: "large", text: "signin_with", shape: "pill", locale: "it" });
-    var tok = null; try { tok = sessionStorage.getItem(CHIAVE); } catch (e) {}
-    if (valido(tok)) onCredenziale({ credential: tok }); else mostraLogin("");
-  }
-  avvia();
+  TeamAuth.avvia({ bottone: "gbtn", onLogin: mostraLogin, onAccesso: mostraHub });
 })();
 </script>
 </body>
