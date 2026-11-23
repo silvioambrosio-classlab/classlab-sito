@@ -35,7 +35,7 @@
     header.outerHTML =
       '<a class="skip-link" href="#contenuto">Vai al contenuto</a>' +
       '<header class="header"><div class="contenitore header__barra">' +
-      '<a class="logo" href="index.html" aria-label="ClassLab ODV – Home"><img src="assets/img/logo-classlab-300.png" alt="" width="300" height="326"><span>ClassLab ODV</span></a>' +
+      '<a class="logo" href="index.html" aria-label="ClassLab ODV – Home"><img src="assets/img/logo-classlab-150.webp" alt="" width="150" height="163"><span>ClassLab ODV</span></a>' +
       '<button class="menu-toggle" type="button" aria-expanded="false" aria-controls="nav-principale" aria-label="Apri il menu">' +
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path class="ic-apri" d="M4 7h16M4 12h16M4 17h16"/></svg></button>' +
       '<nav class="nav" id="nav-principale" aria-label="Menu principale"><ul>' + voci +
@@ -56,7 +56,7 @@
     }).join("");
     footer.outerHTML =
       '<footer class="footer"><div class="contenitore"><div class="footer__griglia">' +
-      '<div><a class="footer__logo" href="index.html"><img src="assets/img/logo-classlab-300.png" alt="ClassLab" width="300" height="326"></a>' +
+      '<div><a class="footer__logo" href="index.html"><img src="assets/img/logo-classlab-150.webp" alt="ClassLab" width="150" height="163"></a>' +
       "<p>Laboratori scientifici e peer education per le scuole del Friuli Venezia Giulia e non solo.</p>" +
       '<p>Scrivici: <a href="mailto:' + esc(C.email) + '">' + esc(C.email) + "</a></p></div>" +
       '<div><h4>Il sito</h4><ul>' + linkMenu.map(function (l) { return '<li><a href="' + esc(l.link) + '">' + esc(l.testo) + "</a></li>"; }).join("") + "</ul></div>" +
