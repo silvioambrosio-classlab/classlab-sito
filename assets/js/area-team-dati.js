@@ -55,5 +55,13 @@ window.AREA_TEAM = [
     livelli: [1],
     // riservata agli organizzatori (il controllo vero lo fa lo script dei turni)
     solo: ["silvio.ambrosio@classlab.it", "giulio.prodan@classlab.it", "info@classlab.it"]
+  },
+  {
+    titolo: "Ultime modifiche",
+    descrizione: "Un tocco per aprire l'ultima modifica a sito, cartelle Drive e mail di prova. Installabile sul telefono.",
+    link: "/ultime/",
+    icona: "link",
+    nuovaScheda: false,
+    livelli: [1]
   }
 ];
