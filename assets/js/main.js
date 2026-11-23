@@ -70,22 +70,6 @@
       "</div></div></footer>";
   }
 
-  /* ---------- Area team (pagina turni.html) ---------- */
-  var boxTurni = document.getElementById("area-team");
-  if (boxTurni) {
-    var url = (C.gestionaleTurni || "").trim();
-    var btn = document.getElementById("apri-turni");
-    var stato = document.getElementById("stato-turni");
-    if (url) {
-      btn.href = url;
-      btn.hidden = false;
-      stato.textContent = "Ti stiamo portando al gestionale turni…";
-      if (!/[?&]resta\b/.test(location.search)) setTimeout(function () { location.href = url; }, 900);
-    } else {
-      stato.textContent = "Il link al gestionale non è ancora stato impostato (config.js → gestionaleTurni).";
-    }
-  }
-
   /* ---------- Comportamento menu ---------- */
   var toggle = document.querySelector(".menu-toggle");
   var nav = document.getElementById("nav-principale");

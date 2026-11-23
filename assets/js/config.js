@@ -14,7 +14,6 @@ window.CLASSLAB = {
      (vedi GUIDA, passo 2). Finché è vuoto, il modulo prepara
      un'email precompilata da inviare a mano a info@classlab.it.      */
   moduloEndpoint: "https://script.google.com/macros/s/AKfycbwI0Rm-mk4guzrum9im0l33TbN-W6tUUrPbOKFvMiIb72H5QIUlNViLICZ2IqxTaypLEQ/exec",
-   gestionaleTurni: "/turni/",
 
   /* Periodo in cui si svolgono le attività (compare nel modulo) */
   periodoAttivita: "dal 12 dicembre al 15 marzo",
@@ -45,16 +44,5 @@ window.CLASSLAB = {
       { testo: "Edizione 2022/23", link: "edizione-2022-23.html" }
     ]},
     { testo: "Chi siamo", link: "chi-siamo.html" }
-  ],
-
-  /* --- PARTNER (home page) ----------------------------------------- */
-  finanziatori: [
-    { nome: "Fondazione Pietro Pittini", logo: "assets/img/partner-fondazione-pittini.png", link: "https://fondazionepittini.it/" }
-  ],
-  sostenitori: [
-    { nome: "SciFabLab – ICTP", logo: "assets/img/partner-scifablab-ictp.png", link: "http://scifablab.ictp.it/" },
-    { nome: "Fondazione AIRC", logo: "assets/img/partner-airc.png", link: "https://www.airc.it/" },
-    { nome: "Smart Micro Optics – DIPLE", logo: "assets/img/partner-diple.png", link: "https://smartmicrooptics.com/it/" },
-    { nome: "Liceo Scientifico Galileo Galilei – Trieste", logo: "assets/img/partner-liceo-galilei.png", link: "https://www.galileitrieste.it/" }
   ]
 };
