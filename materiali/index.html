@@ -369,6 +369,8 @@ function costruisci(d){
           nome:m.nome, ubic:m.ubic, qta:m.per[cod]*k.sessioni.length, note:m.note, anticipo:m.anticipo,
           key:u.key+'|esp|'+cod+'|'+(i+1)+'|'+m.nome
         })).sort((a,b) => ordUbic(a.ubic)-ordUbic(b.ubic) || a.ubic.localeCompare(b.ubic) || a.nome.localeCompare(b.nome,'it'));
+        // Kit AIRC: nessun materiale in catalogo, solo una casella da spuntare
+        if(cod==='AIRC' && !voci.length) voci.push({ nome:'Kit AIRC pronto', ubic:'', qta:null, note:'', anticipo:0, key:u.key+'|esp|AIRC|'+(i+1)+'|pronto' });
         const team = [...new Set(k.sessioni.flatMap(s=>s.team).flatMap(splitNomi))];
         u.kit.push({ n:u.kit.length+1, esp:cod, nome:cod, nomeLungo:(lab?lab.nome:cod), copia:i+1, copie:linee.length, sessioni:k.sessioni, team, voci });
       });
@@ -438,11 +440,11 @@ function voce(v, extra){
   const ok = fatto(v.key), st = S.stato[v.key];
   return `<label class="it ${ok?'ok':''}"><input type="checkbox" data-k="${esc(v.key)}" ${ok?'checked':''}>
     <span class="nm">${esc(v.nome)}${extra||''}${v.note?`<span class="nt">${esc(v.note)}</span>`:''}${ok && st && st.da ? `<span class="who">✓ ${esc(nomeBreve(st.da))} · ${esc(st.quando)}</span>`:''}</span>
-    <span class="q">${numFmt(v.qta)}</span></label>`;
+    <span class="q">${v.qta==null?'':numFmt(v.qta)}</span></label>`;
 }
 function perUbic(voci, extra){
   const g = new Map(); voci.forEach(v => { if(!g.has(v.ubic)) g.set(v.ubic, []); g.get(v.ubic).push(v); });
-  return [...g.entries()].map(([ub, arr]) => `<h5>${esc(ub||'—')}</h5>${arr.map(v=>voce(v, extra&&extra(v))).join('')}`).join('');
+  return [...g.entries()].map(([ub, arr]) => `${ub?`<h5>${esc(ub)}</h5>`:''}${arr.map(v=>voce(v, extra&&extra(v))).join('')}`).join('');
 }
 function contatore(arr){ const [a,b] = conta(arr); return `<span class="c ${a===b&&b?'ok':''}">${a}/${b}</span>`; }
 function tuttiBtn(arr){ const [a,b] = conta(arr); return b ? `<button class="btn small" data-tutti="${esc(arr.map(v=>v.key).join('\n'))}" data-val="${a===b?'0':'1'}">${a===b?'Togli spunte':'Segna tutto'}</button>` : ''; }
