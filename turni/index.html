@@ -171,62 +171,37 @@
 <div id="toast"></div>
 
 <script src="config.js"></script>
+<script src="../assets/js/team-auth.js?v=bba1f888"></script>
 <script>
 /* ---------- configurazione: i valori sono in config.js ---------- */
 const API_URL = (window.TURNI_CONFIG || {}).API_URL;
-const CLIENT_ID = (window.TURNI_CONFIG || {}).CLIENT_ID;
-const DOMINIO = 'classlab.it';
 
 const S = { dati:null, tab:'miei', persona:'', passate:false, gestione:false, materia:'' };
 const GIORNI = ['dom','lun','mar','mer','gio','ven','sab'];
 const MESI = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
 const oggi = (() => { const d = new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); })();
 
-/* ---------- login ---------- */
-function payload(tok){ try { return JSON.parse(decodeURIComponent(escape(atob(tok.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))))); } catch(e){ return {}; } }
-function tokenValido(tok){ const p = tok && payload(tok); return p && p.exp && p.exp*1000 > Date.now() + 60000 && p.hd === DOMINIO; }
+/* ---------- login e server: vedi ../assets/js/team-auth.js ---------- */
 function mostraLogin(msg){
+  S.token = null;
   document.getElementById('app').classList.add('hidden');
   document.getElementById('login').classList.remove('hidden');
   document.getElementById('loginErr').textContent = msg || '';
-  try { google.accounts.id.prompt(); } catch(e){}
 }
-function onCredenziale(r){
-  const p = payload(r.credential);
-  if (p.hd !== DOMINIO){ mostraLogin('Puoi accedere solo con un account @' + DOMINIO + '.'); return; }
-  S.token = r.credential;
-  try { sessionStorage.setItem('turniToken', S.token); } catch(e){}
+function onAccesso(p, tok){
+  S.token = tok;
   document.getElementById('login').classList.add('hidden');
   document.getElementById('app').classList.remove('hidden');
   carica();
 }
-function esci(){
-  S.token = null;
-  try { sessionStorage.removeItem('turniToken'); google.accounts.id.disableAutoSelect(); } catch(e){}
-  mostraLogin('');
-}
+function esci(){ TeamAuth.esci(); }
 function avviaLogin(){
-  if (!window.google || !google.accounts || !google.accounts.id){ setTimeout(avviaLogin, 100); return; }
-  google.accounts.id.initialize({ client_id: CLIENT_ID, callback: onCredenziale, hd: DOMINIO, auto_select: true, cancel_on_tap_outside: false });
-  google.accounts.id.renderButton(document.getElementById('gbtn'), { theme: 'outline', size: 'large', text: 'signin_with', shape: 'pill', locale: 'it' });
-  let tok = null; try { tok = sessionStorage.getItem('turniToken'); } catch(e){}
-  if (tokenValido(tok)) onCredenziale({ credential: tok });
-  else mostraLogin('');
+  TeamAuth.avvia({
+    api: API_URL, bottone: 'gbtn', onLogin: mostraLogin, onAccesso: onAccesso,
+    onBusy: on => { document.getElementById('busy').style.display = on ? 'block' : 'none'; }
+  });
 }
-
-/* ---------- server ---------- */
-async function call(fn, ...args){
-  if (!tokenValido(S.token)){ mostraLogin('Sessione scaduta: accedi di nuovo.'); throw new Error('Sessione scaduta: accedi di nuovo.'); }
-  document.getElementById('busy').style.display='block';
-  try {
-    const r = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ token: S.token, fn, args }) });
-    const j = await r.json();
-    if (!j.ok){ if (j.auth) mostraLogin(j.errore); throw new Error(j.errore); }
-    return j.dati;
-  } finally {
-    document.getElementById('busy').style.display='none';
-  }
-}
+const call = (fn, ...args) => TeamAuth.chiama(fn, ...args);
 async function carica(){
   try { S.dati = await call('getDati'); render(); }
   catch(e){ toast(e.message, true); document.getElementById('main').innerHTML = '<div class="empty">Impossibile caricare i turni: '+esc(e.message)+'</div>'; }
