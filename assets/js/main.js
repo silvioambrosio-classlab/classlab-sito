@@ -8,6 +8,8 @@
   var C = window.CLASSLAB || {};
   var pagina = (location.pathname.split("/").pop() || "index.html").toLowerCase();
   if (pagina === "") pagina = "index.html";
+  // Le pagine nella cartella rassegna-stampa/ evidenziano la voce di menu "Rassegna stampa"
+  if (/^\/rassegna-stampa\//i.test(location.pathname)) pagina = "rassegna-stampa/";
 
   function esc(s) {
     return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
@@ -33,7 +35,7 @@
     }).join("");
 
     header.outerHTML =
-      '<a class="skip-link" href="#contenuto">Vai al contenuto</a>' +
+      '<a class="skip-link" href="' + esc(location.pathname) + '#contenuto">Vai al contenuto</a>' +
       '<header class="header"><div class="contenitore header__barra">' +
       '<a class="logo" href="index.html" aria-label="ClassLab ODV – Home"><img src="assets/img/logo-classlab-150.webp" alt="" width="150" height="163"><span>ClassLab ODV</span></a>' +
       '<button class="menu-toggle" type="button" aria-expanded="false" aria-controls="nav-principale" aria-label="Apri il menu">' +
