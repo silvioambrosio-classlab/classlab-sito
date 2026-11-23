@@ -3,6 +3,5 @@ Allow: /
 Disallow: /turni/
 Disallow: /materiali/
 Disallow: /permessi/
-Disallow: /ultime/
 Disallow: /area-team.html
 Sitemap: https://www.classlab.it/sitemap.xml
