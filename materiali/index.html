@@ -174,6 +174,7 @@
 <div class="toast" id="toast"></div>
 
 <script src="../turni/config.js"></script>
+<script src="../assets/js/team-auth.js?v=bba1f888"></script>
 <script src="config.js?v=ce6af879"></script>
 <script>
 /* =====================================================================
@@ -181,8 +182,6 @@
    Legge turni + catalogo dall'API (Apps Script), calcola kit e materiali qui.
    ===================================================================== */
 const API_URL = (window.MATERIALI_CONFIG || {}).API_URL;
-const CLIENT_ID = (window.TURNI_CONFIG || {}).CLIENT_ID;
-const DOMINIO = 'classlab.it';
 const S = { io:'', data:null, uscite:[], stato:{}, tab:'uscite', range:'30', area:'TUTTE', persona:'', aperte:new Set(), token:null, utente:null };
 
 /* ========= Utilità ========= */
@@ -542,48 +541,33 @@ function render(){
   document.getElementById('main').innerHTML = tools + v;
 }
 
-/* ========= Login (stesso del gestionale turni) ========= */
-function payload(tok){ try { return JSON.parse(decodeURIComponent(escape(atob(tok.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))))); } catch(e){ return {}; } }
-function tokenValido(tok){ const p = tok && payload(tok); return p && p.exp && p.exp*1000 > Date.now() + 60000 && p.hd === DOMINIO; }
+/* ========= Login e server: vedi ../assets/js/team-auth.js ========= */
 function mostraLogin(msg){
+  S.token = null;
   document.getElementById('app').classList.add('hidden');
   document.getElementById('login').classList.remove('hidden');
   document.getElementById('loginErr').textContent = msg || '';
-  try { google.accounts.id.prompt(); } catch(e){}
 }
-function onCredenziale(r){
-  const p = payload(r.credential);
-  if(p.hd !== DOMINIO){ mostraLogin('Puoi accedere solo con un account @'+DOMINIO+'.'); return; }
-  S.token = r.credential; S.utente = p;
-  try { sessionStorage.setItem('turniToken', S.token); } catch(e){}
+function onAccesso(p, tok){
+  S.token = tok; S.utente = p;
   document.getElementById('login').classList.add('hidden');
   document.getElementById('app').classList.remove('hidden');
   document.getElementById('who').innerHTML = 'Ciao <b>'+esc(p.given_name||'')+'</b><button id="esci">Esci</button>';
   try { const c = JSON.parse(localStorage.getItem('matCache')||'null'); if(c && !S.data) usaDati(c, true); } catch(e){}
   carica();
 }
-function esci(){ S.token = null; try { sessionStorage.removeItem('turniToken'); google.accounts.id.disableAutoSelect(); } catch(e){} mostraLogin(''); }
+function esci(){ TeamAuth.esci(); }
 function avviaLogin(){
   if(window.DEMO){ S.utente = {given_name:'Silvio'}; document.getElementById('app').classList.remove('hidden'); document.getElementById('who').innerHTML='Ciao <b>Silvio</b> <span style="opacity:.7">(anteprima)</span>'; usaDati(window.DEMO); return; }
   if(!API_URL){ document.getElementById('login').classList.remove('hidden'); document.getElementById('gbtn').innerHTML=''; document.getElementById('loginErr').textContent='La checklist non è ancora collegata: manca l\'indirizzo API in materiali/config.js.'; return; }
-  if(!window.google || !google.accounts || !google.accounts.id){ setTimeout(avviaLogin, 100); return; }
-  google.accounts.id.initialize({ client_id: CLIENT_ID, callback: onCredenziale, hd: DOMINIO, auto_select: true, cancel_on_tap_outside: false });
-  google.accounts.id.renderButton(document.getElementById('gbtn'), { theme:'outline', size:'large', text:'signin_with', shape:'pill', locale:'it' });
-  let tok = null; try { tok = sessionStorage.getItem('turniToken'); } catch(e){}
-  if(tokenValido(tok)) onCredenziale({ credential: tok }); else mostraLogin('');
+  TeamAuth.avvia({
+    api: API_URL, bottone: 'gbtn', onLogin: mostraLogin, onAccesso: onAccesso,
+    onBusy: on => { document.getElementById('busy').style.display = on ? 'block' : 'none'; }
+  });
 }
-
-/* ========= Server ========= */
 async function call(fn, ...args){
   if(window.DEMO) return fn==='segnaMolti' ? args[0].map(k=>({chiave:k, fatto:args[1], da:'silvio.ambrosio@classlab.it', quando:'ora'})) : null;
-  if(!tokenValido(S.token)){ mostraLogin('Sessione scaduta: accedi di nuovo.'); throw new Error('Sessione scaduta'); }
-  document.getElementById('busy').style.display = 'block';
-  try {
-    const r = await fetch(API_URL, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify({ token:S.token, fn, args }) });
-    const j = await r.json();
-    if(!j.ok){ if(j.auth) mostraLogin(j.errore); throw new Error(j.errore); }
-    return j.dati;
-  } finally { document.getElementById('busy').style.display = 'none'; }
+  return TeamAuth.chiama(fn, ...args);
 }
 function usaDati(d, daCache){
   S.data = d; S.stato = d.stato || {}; S.uscite = costruisci(d);
