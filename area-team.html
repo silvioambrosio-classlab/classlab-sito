@@ -72,7 +72,7 @@
 <script src="assets/js/laboratori-dati.js?v=8ffe1dc9"></script>
 <script src="assets/js/main.js?v=76e3aa78"></script>
 <script src="turni/config.js"></script>
-<script src="assets/js/area-team-dati.js?v=12f785bb"></script>
+<script src="assets/js/area-team-dati.js?v=2bee4d93"></script>
 <script>
 (function () {
   var CLIENT_ID = (window.TURNI_CONFIG || {}).CLIENT_ID;
@@ -87,6 +87,7 @@
     documento: '<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h6"/>',
     cartella: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
     foglio: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/>',
+    persone: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5a6.5 6.5 0 0 1 3.5 5.5"/>',
     link: '<path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/>'
   };
 
@@ -101,10 +102,10 @@
     try { google.accounts.id.prompt(); } catch (e) {}
   }
 
-  // Livelli: 1 Gestori · 2 Responsabile · 3 Operatori · 4 Fruitori · 5 Studenti FSL.
+  // Livelli: 1 Gestori · 2 Responsabile · 3 Operatori · 4 Fruitori · 5 Sola visualizzazione (predefinito).
   // Il livello arriva dal server (scheda "Ruoli"): qui serve solo a mostrare le schede giuste,
   // i permessi veri li controllano gli script dei turni e della checklist.
-  var NOMI_LIVELLO = { 1: "Gestore", 2: "Responsabile", 3: "Operatore", 4: "Fruitore", 5: "Studente FSL" };
+  var NOMI_LIVELLO = { 1: "Gestore", 2: "Responsabile", 3: "Operatore", 4: "Fruitore", 5: "Sola visualizzazione" };
 
   function chiSono(tok) {
     var api = (window.TURNI_CONFIG || {}).API_URL;

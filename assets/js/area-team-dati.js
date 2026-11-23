@@ -7,11 +7,13 @@
    titolo       → nome della scheda
    descrizione  → una riga che spiega a cosa serve
    link         → indirizzo (lascia "" per mostrare la scheda come "In arrivo")
-   icona        → calendario | checklist | documento | cartella | foglio | link
+   icona        → calendario | checklist | documento | cartella | foglio | persone | link
    nuovaScheda  → true = si apre in una nuova scheda del browser
    livelli      → quali livelli vedono la scheda (il livello di ognuno si
                   imposta nella scheda "Ruoli" del foglio turni):
-                  1 Gestori · 2 Responsabile · 3 Operatori · 4 Fruitori · 5 Studenti FSL
+                  1 Gestori · 2 Responsabile · 3 Operatori · 4 Fruitori · 5 Sola visualizzazione
+                  (chi ha un account @classlab.it ma non è nella scheda "Ruoli" è livello 5;
+                  i livelli si cambiano dalla pagina /permessi/)
    solo         → (facoltativo) elenco di email che vedono la scheda,
                   es. ["silvio.ambrosio@classlab.it", "giulio.prodan@classlab.it"]
    ===================================================================== */
@@ -43,5 +45,15 @@ window.AREA_TEAM = [
     icona: "cartella",
     nuovaScheda: true,
     livelli: [1, 2, 3, 4, 5]
+  },
+  {
+    titolo: "Permessi del team",
+    descrizione: "Chi vede cosa: cambia il livello di accesso di ogni persona.",
+    link: "/permessi/",
+    icona: "persone",
+    nuovaScheda: false,
+    livelli: [1],
+    // riservata agli organizzatori (il controllo vero lo fa lo script dei turni)
+    solo: ["silvio.ambrosio@classlab.it", "giulio.prodan@classlab.it", "info@classlab.it"]
   }
 ];

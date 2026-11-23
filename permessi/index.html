@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Permessi · ClassLab</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14365f">
+<link rel="icon" href="../assets/img/favicon.png">
+<link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+<link rel="preload" href="../assets/fonts/montserrat-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+  @font-face{font-family:"Montserrat";src:url("../assets/fonts/montserrat-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:swap}
+  :root{
+    --navy:#14365f; --blu:#0b77b8; --cielo:#e3f2fc; --arancio:#f29a2e;
+    --bg:#f6f9fc; --card:#fff; --ink:#0f172a; --testo:#334155; --muted:#64748b; --line:#e2e8f0;
+    --bad:#b42318; --bad-bg:#fdecea; --ok:#2f7d3b; --ok-bg:#e7f5ea; --r:14px;
+    --l1:#14365f; --l2:#0b77b8; --l3:#3a9a4a; --l4:#a26a00; --l5:#64748b;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;font-family:"Montserrat",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--testo);font-size:15px;line-height:1.45}
+  button,select,input{font:inherit}
+  .hidden{display:none!important}
+  .wrap{max-width:1020px;margin:0 auto;padding:0 16px}
+
+  #login,#negato{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  .card-c{background:#fff;border:1px solid var(--line);border-radius:22px;max-width:420px;width:100%;padding:32px 24px;text-align:center;box-shadow:0 10px 30px rgba(20,54,95,.08)}
+  .card-c img{width:84px;height:84px;border-radius:20px}
+  .card-c h1{font-size:23px;margin:14px 0 6px;color:var(--ink)}
+  .card-c p{color:var(--muted);margin:0 0 22px}
+  .card-c a{color:var(--blu);font-size:14px}
+  #gbtn{display:flex;justify-content:center;min-height:44px}
+  #loginErr{color:var(--bad);font-size:14px;margin-top:14px;min-height:1em}
+
+  header.top{position:sticky;top:0;z-index:5;background:var(--navy);color:#fff}
+  .bar{display:flex;align-items:center;gap:12px;padding:14px 0}
+  .bar a.back{color:#fff;opacity:.8;text-decoration:none;font-size:18px}
+  .bar h1{font-size:18px;margin:0;flex:1;color:#fff}
+  .bar h1 small{opacity:.7;font-weight:500;margin-left:6px}
+  .who{font-size:13px;text-align:right;opacity:.9}
+  .who button{background:rgba(255,255,255,.14);border:0;color:#fff;border-radius:999px;padding:4px 10px;margin-left:6px;cursor:pointer}
+
+  main.wrap{padding-top:18px;padding-bottom:80px}
+  .info{background:var(--cielo);color:var(--navy);border-radius:var(--r);padding:12px 16px;font-size:14px;margin-bottom:16px}
+  .info b{color:var(--navy)}
+
+  /* legenda livelli */
+  .livelli{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:18px}
+  .lv{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;cursor:pointer;text-align:left;color:inherit;display:flex;flex-direction:column;gap:4px;transition:border-color .15s,box-shadow .15s}
+  .lv:hover{border-color:#c4ccd8}
+  .lv.on{border-color:var(--c);box-shadow:0 0 0 1px var(--c)}
+  .lv .t{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--ink)}
+  .lv .d{font-size:12.5px;color:var(--muted)}
+  .lv .n{margin-left:auto;font-size:12px;color:var(--muted);font-weight:600}
+  .pill{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--c);color:#fff;font-size:13px;font-weight:700;flex:none}
+
+  .tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+  .tools input[type=search]{flex:1;min-width:200px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:#fff}
+  .btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 14px;cursor:pointer;color:var(--ink);white-space:nowrap}
+  .btn:hover{border-color:#c4ccd8}
+  .btn.prim{background:var(--blu);border-color:var(--blu);color:#fff}
+  .btn.prim:disabled{opacity:.5;cursor:default}
+  .btn.small{padding:5px 10px;font-size:13px}
+  .btn.ghost{border-color:transparent;background:none;color:var(--muted)}
+  .btn.danger{color:var(--bad)}
+
+  /* elenco persone */
+  .persona{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;display:grid;grid-template-columns:minmax(0,1.4fr) auto;gap:10px 16px;align-items:center}
+  .persona.mod{border-color:var(--arancio);box-shadow:0 0 0 1px var(--arancio)}
+  .p-chi{min-width:0}
+  .p-chi .m{font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .p-chi .s{font-size:13px;color:var(--muted);margin-top:2px}
+  .p-chi .s span+span:before{content:" · "}
+  .lock{font-size:12px;color:var(--navy);background:var(--cielo);border-radius:999px;padding:1px 8px;font-weight:600;margin-left:6px}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}
+  .seg button{border:0;background:none;padding:7px 0;width:40px;cursor:pointer;color:var(--muted);font-weight:700;border-left:1px solid var(--line)}
+  .seg button:first-child{border-left:0}
+  .seg button.on{background:var(--c);color:#fff}
+  .seg button:disabled{cursor:not-allowed}
+  .seg button:not(.on):not(:disabled):hover{background:#f1f5f9;color:var(--ink)}
+  .p-az{display:flex;gap:6px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+  .p-livdesc{grid-column:1/-1;font-size:12.5px;color:var(--muted);margin-top:-4px}
+  @media (max-width:640px){
+    .persona{grid-template-columns:1fr}
+    .p-az{justify-content:flex-start}
+  }
+  @media (max-width:560px){.livelli{grid-template-columns:1fr 1fr;gap:8px}.lv .d{display:none}.bar h1 small{display:none}.seg button{width:36px}}
+  .vuoto{text-align:center;color:var(--muted);padding:30px 10px}
+
+  /* finestra */
+  .modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:flex-start;justify-content:center;padding:6vh 14px;z-index:20;overflow:auto}
+  .modal-bg.on{display:flex}
+  .modal{background:#fff;border-radius:18px;max-width:480px;width:100%;padding:22px;box-shadow:0 20px 50px rgba(0,0,0,.2)}
+  .modal h2{margin:0 0 14px;font-size:19px;color:var(--ink)}
+  .campo{margin-bottom:12px}
+  .campo label{display:block;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:4px}
+  .campo small{display:block;color:var(--muted);font-size:12px;margin-top:3px}
+  .campo input{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:10px}
+  .mail{display:flex;align-items:center;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .mail input{border:0;border-radius:0;flex:1;min-width:0}
+  .mail span{padding:0 11px;color:var(--muted);background:#f8fafc;align-self:stretch;display:flex;align-items:center;border-left:1px solid var(--line)}
+  .scelte{display:grid;gap:6px}
+  .scelta{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:8px 10px;cursor:pointer}
+  .scelta input{margin-top:4px}
+  .scelta.on{border-color:var(--c);box-shadow:0 0 0 1px var(--c)}
+  .scelta b{color:var(--ink)}
+  .scelta div{font-size:12.5px;color:var(--muted)}
+  .m-az{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+  .err{color:var(--bad);font-size:13.5px;min-height:1em;margin-top:6px}
+
+  #busy{position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--arancio),var(--blu));display:none;z-index:30;animation:b 1s linear infinite;background-size:200% 100%}
+  @keyframes b{to{background-position:-200% 0}}
+  .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;display:none;z-index:40;max-width:92vw;text-align:center}
+  .toast.err{background:var(--bad)}
+</style>
+</head>
+<body>
+<div id="busy"></div>
+
+<section id="login" class="hidden">
+  <div class="card-c">
+    <img src="../turni/icona-192.png" alt="">
+    <h1>Permessi del team</h1>
+    <p>Accedi con il tuo account Google <b>@classlab.it</b>.</p>
+    <div id="gbtn"></div>
+    <div id="loginErr"></div>
+    <p style="margin:18px 0 0"><a href="../area-team.html">← Torna all'area team</a></p>
+  </div>
+</section>
+
+<section id="negato" class="hidden">
+  <div class="card-c">
+    <img src="../turni/icona-192.png" alt="">
+    <h1>Accesso riservato</h1>
+    <p id="negatoMsg">Questa pagina è riservata agli organizzatori.</p>
+    <p style="margin:0"><a href="../area-team.html">← Torna all'area team</a></p>
+  </div>
+</section>
+
+<div id="app" class="hidden">
+  <header class="top">
+    <div class="wrap">
+      <div class="bar">
+        <a class="back" href="../area-team.html" title="Area team">←</a>
+        <h1>Permessi<small>Area team</small></h1>
+        <div class="who" id="who"></div>
+      </div>
+    </div>
+  </header>
+  <main class="wrap" id="main"></main>
+</div>
+
+<div class="modal-bg" id="modalBg"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast"></div>
+
+<script src="../turni/config.js"></script>
+<script>
+/* =====================================================================
+   CLASSLAB · PERMESSI — chi vede cosa nell'area team
+   ---------------------------------------------------------------------
+   Legge e scrive la scheda "Ruoli" tramite lo script dei turni
+   (funzioni elencoPermessi / salvaPermesso / rimuoviPermesso).
+   Il controllo vero è sul server: solo Silvio, Giulio e info@ possono
+   usarla, anche se qualcun altro aprisse questa pagina.
+   ===================================================================== */
+const API_URL = (window.TURNI_CONFIG || {}).API_URL;
+const CLIENT_ID = (window.TURNI_CONFIG || {}).CLIENT_ID;
+const DOMINIO = 'classlab.it';
+const COLORI = { 1:'var(--l1)', 2:'var(--l2)', 3:'var(--l3)', 4:'var(--l4)', 5:'var(--l5)' };
+
+const S = { token:null, dati:null, filtro:0, cerca:'', bozze:{} };
+
+/* ---------- login (stessa sessione di turni e materiali) ---------- */
+function payload(tok){ try { return JSON.parse(decodeURIComponent(escape(atob(tok.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))))); } catch(e){ return {}; } }
+function tokenValido(tok){ const p = tok && payload(tok); return p && p.exp && p.exp*1000 > Date.now() + 60000 && p.hd === DOMINIO; }
+function mostra(id){ ['login','negato','app'].forEach(x => document.getElementById(x).classList.toggle('hidden', x !== id)); }
+function mostraLogin(msg){ mostra('login'); document.getElementById('loginErr').textContent = msg || ''; try { google.accounts.id.prompt(); } catch(e){} }
+function onCredenziale(r){
+  const p = payload(r.credential);
+  if (p.hd !== DOMINIO){ mostraLogin('Puoi accedere solo con un account @' + DOMINIO + '.'); return; }
+  S.token = r.credential;
+  try { sessionStorage.setItem('turniToken', S.token); } catch(e){}
+  document.getElementById('who').innerHTML = esc(p.email || '') + '<button type="button" onclick="esci()">Esci</button>';
+  carica();
+}
+function esci(){ S.token = null; try { sessionStorage.removeItem('turniToken'); google.accounts.id.disableAutoSelect(); } catch(e){} mostraLogin(''); }
+function avviaLogin(){
+  if (!window.google || !google.accounts || !google.accounts.id){ setTimeout(avviaLogin, 100); return; }
+  google.accounts.id.initialize({ client_id: CLIENT_ID, callback: onCredenziale, hd: DOMINIO, auto_select: true, cancel_on_tap_outside: false });
+  google.accounts.id.renderButton(document.getElementById('gbtn'), { theme:'outline', size:'large', text:'signin_with', shape:'pill', locale:'it' });
+  let tok = null; try { tok = sessionStorage.getItem('turniToken'); } catch(e){}
+  if (tokenValido(tok)) onCredenziale({ credential: tok }); else mostraLogin('');
+}
+
+/* ---------- server ---------- */
+async function call(fn, ...args){
+  if (!tokenValido(S.token)){ mostraLogin('Sessione scaduta: accedi di nuovo.'); throw new Error('Sessione scaduta: accedi di nuovo.'); }
+  document.getElementById('busy').style.display = 'block';
+  try {
+    const r = await fetch(API_URL, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify({ token: S.token, fn, args }) });
+    const j = await r.json();
+    if (!j.ok){ if (j.auth) mostraLogin(j.errore); const e = new Error(j.errore || 'Errore'); e.auth = j.auth; throw e; }
+    return j.dati;
+  } finally { document.getElementById('busy').style.display = 'none'; }
+}
+async function carica(){
+  try { S.dati = await call('elencoPermessi'); S.bozze = {}; mostra('app'); render(); }
+  catch(e){
+    if (e.auth) return;
+    document.getElementById('negatoMsg').textContent = /riservat|non valida/i.test(e.message)
+      ? 'Questa pagina è riservata agli organizzatori (Silvio, Giulio, info@classlab.it).'
+      : 'Impossibile caricare i permessi: ' + e.message;
+    mostra('negato');
+  }
+}
+
+/* ---------- utilità ---------- */
+function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function toast(t, err){ const el = document.getElementById('toast'); el.textContent = t; el.className = 'toast' + (err ? ' err' : ''); el.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => el.style.display = 'none', err ? 6000 : 3000); }
+function liv(n){ return (S.dati.livelli || []).find(l => l.livello === n) || { livello:n, nome:'', descrizione:'' }; }
+function utente(email){ return S.dati.utenti.find(u => u.email === email); }
+function livCorrente(u){ return S.bozze[u.email] != null ? S.bozze[u.email] : u.livello; }
+
+/* ---------- render ---------- */
+function render(){
+  const d = S.dati;
+  const conta = n => d.utenti.filter(u => u.livello === n).length;
+  const cerca = S.cerca.trim().toLowerCase();
+  const lista = d.utenti.filter(u => (!S.filtro || u.livello === S.filtro) &&
+    (!cerca || (u.email + ' ' + u.nome + ' ' + u.ruolo + ' ' + u.note).toLowerCase().includes(cerca)))
+    .sort((a, b) => (a.livello - b.livello) || a.email.localeCompare(b.email));
+
+  document.getElementById('main').innerHTML = `
+    <div class="info">Chi ha un account <b>@${esc(d.dominio)}</b> ma non è in questo elenco entra automaticamente al
+      <b>livello ${d.predefinito}</b> (${esc(liv(d.predefinito).descrizione.toLowerCase())}). Le modifiche valgono subito per i turni
+      e entro 2 minuti per la checklist.</div>
+    <div class="livelli">${d.livelli.map(l => `
+      <button type="button" class="lv${S.filtro === l.livello ? ' on' : ''}" style="--c:${COLORI[l.livello]}" onclick="filtra(${l.livello})">
+        <span class="t"><span class="pill">${l.livello}</span>${esc(l.nome)}<span class="n">${conta(l.livello)}</span></span>
+        <span class="d">${esc(l.descrizione)}</span>
+      </button>`).join('')}
+    </div>
+    <div class="tools">
+      <input type="search" id="cerca" placeholder="Cerca per nome o email…" value="${esc(S.cerca)}" oninput="S.cerca=this.value; renderLista()">
+      ${S.filtro ? `<button class="btn ghost" type="button" onclick="filtra(0)">Mostra tutti</button>` : ''}
+      <button class="btn prim" type="button" onclick="apriScheda()">+ Aggiungi persona</button>
+    </div>
+    <div id="lista"></div>`;
+  renderLista(lista);
+}
+
+function renderLista(lista){
+  if (!lista){
+    const cerca = S.cerca.trim().toLowerCase();
+    lista = S.dati.utenti.filter(u => (!S.filtro || u.livello === S.filtro) &&
+      (!cerca || (u.email + ' ' + u.nome + ' ' + u.ruolo + ' ' + u.note).toLowerCase().includes(cerca)))
+      .sort((a, b) => (a.livello - b.livello) || a.email.localeCompare(b.email));
+  }
+  const el = document.getElementById('lista');
+  if (!lista.length){ el.innerHTML = '<div class="vuoto">Nessuna persona trovata.</div>'; return; }
+  el.innerHTML = lista.map(u => {
+    const l = livCorrente(u), mod = S.bozze[u.email] != null && S.bozze[u.email] !== u.livello;
+    const e = esc(u.email).replace(/'/g, '&#39;');
+    return `<div class="persona${mod ? ' mod' : ''}">
+      <div class="p-chi">
+        <div class="m">${esc(u.email)}${u.protetto ? '<span class="lock" title="Gli organizzatori restano sempre al livello 1">🔒 organizzatore</span>' : ''}</div>
+        <div class="s">${u.nome ? `<span>Nei turni: <b>${esc(u.nome)}</b></span>` : ''}<span>${esc(u.ruolo || liv(u.livello).nome)}</span>${u.note ? `<span>${esc(u.note)}</span>` : ''}</div>
+      </div>
+      <div class="p-az">
+        <div class="seg" role="group" aria-label="Livello di ${esc(u.email)}">${[1,2,3,4,5].map(n =>
+          `<button type="button" style="--c:${COLORI[n]}" class="${n === l ? 'on' : ''}" title="${esc(n + ' · ' + liv(n).nome + ': ' + liv(n).descrizione)}"
+            ${u.protetto ? 'disabled' : ''} onclick="scegli('${e}',${n})">${n}</button>`).join('')}</div>
+        ${mod ? `<button class="btn prim small" type="button" onclick="salvaLivello('${e}')">Salva</button>
+                 <button class="btn ghost small" type="button" onclick="annulla('${e}')">Annulla</button>`
+              : `<button class="btn small" type="button" onclick="apriScheda('${e}')">Modifica</button>
+                 ${u.protetto ? '' : `<button class="btn small danger" type="button" title="Togli dall'elenco" onclick="chiediRimozione('${e}')">Rimuovi</button>`}`}
+      </div>
+      ${mod ? `<div class="p-livdesc">Nuovo livello: <b>${l} · ${esc(liv(l).nome)}</b> — ${esc(liv(l).descrizione)}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+/* ---------- azioni ---------- */
+function filtra(n){ S.filtro = S.filtro === n ? 0 : n; render(); }
+function scegli(email, n){ const u = utente(email); if (!u || u.protetto) return; S.bozze[email] = n; if (n === u.livello) delete S.bozze[email]; renderLista(); }
+function annulla(email){ delete S.bozze[email]; renderLista(); }
+
+async function salva(dati, msg){
+  S.dati = await call('salvaPermesso', dati);
+  delete S.bozze[dati.email];
+  render(); toast(msg);
+}
+async function salvaLivello(email){
+  const u = utente(email); const n = S.bozze[email];
+  // se il ruolo era quello predefinito del vecchio livello, segue il nuovo livello
+  const ruolo = (!u.ruolo || u.ruolo === liv(u.livello).nome) ? liv(n).nome : u.ruolo;
+  try { await salva({ email, nome:u.nome, livello:n, ruolo, note:u.note }, (u.nome || email) + ': ora livello ' + n + '.'); }
+  catch(e){ toast(e.message, true); }
+}
+
+function apriScheda(email){
+  const u = email ? utente(email) : null;
+  const l = u ? livCorrente(u) : 5;
+  const locale = u ? u.email.split('@')[0] : '';
+  document.getElementById('modal').innerHTML = `
+    <h2>${u ? 'Modifica permessi' : 'Aggiungi persona'}</h2>
+    <form id="f" onsubmit="inviaScheda(event)">
+      <div class="campo"><label for="fEmail">Account</label>
+        <div class="mail"><input id="fEmail" required autocomplete="off" placeholder="nome.cognome" value="${esc(locale)}" ${u ? 'readonly' : ''}><span>@${esc(S.dati.dominio)}</span></div></div>
+      <div class="campo"><label for="fNome">Nome nel foglio turni</label>
+        <input id="fNome" maxlength="40" placeholder="es. Anna M." value="${esc(u ? u.nome : '')}">
+        <small>Come compare nelle celle del foglio turni. Serve per segnarsi ai turni (livelli 1–3).</small></div>
+      <div class="campo"><label>Livello</label>
+        <div class="scelte">${S.dati.livelli.map(x => `
+          <label class="scelta${x.livello === l ? ' on' : ''}" style="--c:${COLORI[x.livello]}">
+            <input type="radio" name="fLiv" value="${x.livello}" ${x.livello === l ? 'checked' : ''} ${u && u.protetto && x.livello !== 1 ? 'disabled' : ''}
+              onchange="document.querySelectorAll('.scelta').forEach(s=>s.classList.toggle('on', s.contains(this)))">
+            <span><b>${x.livello} · ${esc(x.nome)}</b><div>${esc(x.descrizione)}</div></span>
+          </label>`).join('')}</div></div>
+      <div class="campo"><label for="fRuolo">Ruolo (etichetta)</label>
+        <input id="fRuolo" maxlength="40" placeholder="es. Responsabile fisica, Studente FSL" value="${esc(u ? u.ruolo : '')}">
+        <small>Facoltativo: se vuoto si usa il nome del livello.</small></div>
+      <div class="campo"><label for="fNote">Note</label>
+        <input id="fNote" maxlength="200" value="${esc(u ? u.note : '')}"></div>
+      <div class="err" id="fErr"></div>
+      <div class="m-az">
+        <button class="btn ghost" type="button" onclick="chiudi()">Annulla</button>
+        <button class="btn prim" type="submit" id="fOk">Salva</button>
+      </div>
+    </form>`;
+  document.getElementById('modalBg').classList.add('on');
+  setTimeout(() => document.getElementById(u ? 'fNome' : 'fEmail').focus(), 30);
+}
+async function inviaScheda(ev){
+  ev.preventDefault();
+  let loc = document.getElementById('fEmail').value.trim().toLowerCase().replace(/@.*$/, '');
+  const email = loc + '@' + S.dati.dominio;
+  const sel = document.querySelector('input[name=fLiv]:checked');
+  const errEl = document.getElementById('fErr');
+  if (!/^[a-z0-9._%+-]+$/.test(loc)){ errEl.textContent = 'Scrivi solo la parte prima di @, es. nome.cognome'; return; }
+  if (!sel){ errEl.textContent = 'Scegli un livello.'; return; }
+  const nuovo = !utente(email);
+  const btn = document.getElementById('fOk'); btn.disabled = true; errEl.textContent = '';
+  try {
+    await salva({ email, nome: document.getElementById('fNome').value, livello: Number(sel.value),
+      ruolo: document.getElementById('fRuolo').value, note: document.getElementById('fNote').value },
+      nuovo ? email + ' aggiunto.' : 'Permessi aggiornati.');
+    chiudi();
+  } catch(e){ errEl.textContent = e.message; btn.disabled = false; }
+}
+function chiediRimozione(email){
+  const u = utente(email);
+  document.getElementById('modal').innerHTML = `
+    <h2>Rimuovere ${esc(u.nome || email)}?</h2>
+    <p style="margin:0">${esc(email)} verrà tolto dall'elenco. Se ha un account @${esc(S.dati.dominio)} potrà ancora entrare,
+      ma al <b>livello ${S.dati.predefinito}</b> (${esc(liv(S.dati.predefinito).descrizione.toLowerCase())}).</p>
+    <div class="m-az">
+      <button class="btn ghost" type="button" onclick="chiudi()">Annulla</button>
+      <button class="btn prim" type="button" style="background:var(--bad);border-color:var(--bad)" onclick="rimuovi('${esc(email).replace(/'/g,'&#39;')}')">Rimuovi</button>
+    </div>`;
+  document.getElementById('modalBg').classList.add('on');
+}
+async function rimuovi(email){
+  try { S.dati = await call('rimuoviPermesso', email); delete S.bozze[email]; chiudi(); render(); toast(email + ' rimosso.'); }
+  catch(e){ toast(e.message, true); }
+}
+function chiudi(){ document.getElementById('modalBg').classList.remove('on'); }
+document.getElementById('modalBg').addEventListener('click', e => { if (e.target.id === 'modalBg') chiudi(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') chiudi(); });
+
+avviaLogin();
+</script>
+</body>
+</html>
