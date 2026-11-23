@@ -3,7 +3,7 @@
 window.ULTIME_CONFIG = {
   // URL del deployment di Apps Script "ClassLab - Ultime modifiche" (finisce con /exec).
   // Finché è vuoto l'app mostra comunque il sito e i collegamenti fissi (vedi GUIDA-ULTIME.md, passo 2).
-  API_URL: '',
+  API_URL: 'https://script.google.com/macros/s/AKfycbyG2zTJ5NFr7GX7Dt0zSQhOGT1d8Qhulka18Tp_1bVwjs8kf465EpkVDAi2DNHbq0s/exec',
 
   // Repository del sito (pubblico): serve a leggere l'ultima modifica pubblicata.
   REPO: 'silvioambrosio-classlab/classlab-sito',
