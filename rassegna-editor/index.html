@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rassegna stampa · ClassLab</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14365f">
+<link rel="icon" href="../assets/img/favicon.png">
+<link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+<link rel="preload" href="../assets/fonts/montserrat-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+  @font-face{font-family:"Montserrat";src:url("../assets/fonts/montserrat-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:swap}
+  :root{
+    --navy:#14365f; --blu:#0b77b8; --cielo:#e3f2fc; --arancio:#f29a2e;
+    --bg:#f6f9fc; --card:#fff; --ink:#0f172a; --testo:#334155; --muted:#64748b; --line:#e2e8f0;
+    --bad:#b42318; --bad-bg:#fdecea; --ok:#2f7d3b; --ok-bg:#e7f5ea; --r:14px;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;font-family:"Montserrat",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--testo);font-size:15px;line-height:1.45}
+  button,select,input,textarea{font:inherit}
+  .hidden{display:none!important}
+  .wrap{max-width:860px;margin:0 auto;padding:0 16px}
+
+  #login,#negato{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  .card-c{background:#fff;border:1px solid var(--line);border-radius:22px;max-width:420px;width:100%;padding:32px 24px;text-align:center;box-shadow:0 10px 30px rgba(20,54,95,.08)}
+  .card-c img{width:84px;height:84px;border-radius:20px}
+  .card-c h1{font-size:23px;margin:14px 0 6px;color:var(--ink)}
+  .card-c p{color:var(--muted);margin:0 0 22px}
+  .card-c a{color:var(--blu);font-size:14px}
+  #gbtn{display:flex;justify-content:center;min-height:44px}
+  #loginErr{color:var(--bad);font-size:14px;margin-top:14px;min-height:1em}
+
+  header.top{position:sticky;top:0;z-index:5;background:var(--navy);color:#fff}
+  .bar{display:flex;align-items:center;gap:12px;padding:14px 0}
+  .bar a.back,.bar button.back{color:#fff;opacity:.85;text-decoration:none;font-size:20px;background:none;border:0;cursor:pointer;padding:0 4px}
+  .bar h1{font-size:18px;margin:0;flex:1;color:#fff;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .bar h1 small{opacity:.7;font-weight:500;margin-left:6px}
+  .who{font-size:13px;text-align:right;opacity:.9}
+  .who button{background:rgba(255,255,255,.14);border:0;color:#fff;border-radius:999px;padding:4px 10px;margin-left:6px;cursor:pointer}
+  main.wrap{padding-top:18px;padding-bottom:120px}
+
+  .btn{border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 16px;cursor:pointer;color:var(--ink);white-space:nowrap;min-height:44px}
+  .btn:hover{border-color:#c4ccd8}
+  .btn.prim{background:var(--blu);border-color:var(--blu);color:#fff;font-weight:600}
+  .btn.ok{background:var(--ok);border-color:var(--ok);color:#fff;font-weight:600}
+  .btn.danger{color:var(--bad);border-color:#f1c7c2}
+  .btn.small{padding:6px 11px;font-size:13px;min-height:36px}
+  .btn.ghost{border-color:transparent;background:none;color:var(--muted)}
+  .btn:disabled{opacity:.5;cursor:default}
+
+  /* elenco */
+  .tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+  .tools .sp{flex:1}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;cursor:pointer;color:var(--muted);font-weight:600;min-height:40px}
+  .chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
+  .riga{display:block;width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin-bottom:10px;cursor:pointer;color:inherit}
+  .riga:hover{border-color:var(--blu)}
+  .riga .t{font-weight:700;color:var(--ink);font-size:16px;overflow-wrap:anywhere}
+  .riga .s{font-size:13px;color:var(--muted);margin-top:4px;display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center}
+  .pill{display:inline-block;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:700}
+  .pill.bozza{background:#fff1de;color:#9a5300}
+  .pill.pubblicata{background:var(--ok-bg);color:var(--ok)}
+  .vuoto{text-align:center;color:var(--muted);padding:34px 10px}
+
+  /* modulo */
+  .info{background:var(--cielo);color:var(--navy);border-radius:var(--r);padding:12px 16px;font-size:14px;margin-bottom:16px}
+  .sez{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:16px}
+  .sez>h2{margin:0 0 12px;font-size:16px;color:var(--ink);display:flex;align-items:center;gap:8px}
+  .campo{margin-bottom:14px}
+  .campo:last-child{margin-bottom:0}
+  .campo label{display:block;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:5px}
+  .campo small{display:block;color:var(--muted);font-size:12px;margin-top:4px}
+  .campo input[type=text],.campo input[type=date],.campo input[type=url],.campo textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:16px;color:var(--ink)}
+  .campo textarea{min-height:130px;resize:vertical;line-height:1.5}
+  .campo input:focus,.campo textarea:focus{outline:2px solid var(--blu);outline-offset:0;border-color:var(--blu)}
+  .due{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:560px){.due{grid-template-columns:1fr}}
+  .img-box{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .img-box .anteprima{width:128px;height:80px;border-radius:10px;object-fit:cover;background:var(--cielo);border:1px solid var(--line);flex:none}
+  .img-box .vuota{display:grid;place-items:center;color:var(--muted);font-size:12px;text-align:center}
+  .art{border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px;background:#fbfdff}
+  .art-h{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+  .art-h b{color:var(--ink);flex:1}
+  .errcampo{outline:2px solid var(--bad)!important;border-color:var(--bad)!important}
+
+  .azioni{position:fixed;left:0;right:0;bottom:0;z-index:6;background:#fff;border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
+  .azioni .wrap{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:0}
+  .azioni .sp{flex:1}
+  @media (max-width:560px){.azioni .btn{flex:1 1 calc(50% - 8px);padding:10px 8px}.azioni .sp{display:none}}
+
+  /* finestre */
+  .modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.5);display:none;align-items:flex-start;justify-content:center;padding:8vh 14px;z-index:20;overflow:auto}
+  .modal-bg.on{display:flex}
+  .modal{background:#fff;border-radius:18px;max-width:460px;width:100%;padding:22px;box-shadow:0 20px 50px rgba(0,0,0,.2)}
+  .modal h2{margin:0 0 10px;font-size:19px;color:var(--ink)}
+  .modal p{margin:0 0 6px}
+  .m-az{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
+  .prev{position:fixed;inset:0;z-index:25;background:var(--bg);display:none;flex-direction:column}
+  .prev.on{display:flex}
+  .prev-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--navy);color:#fff;padding:10px 16px}
+  .prev-bar b{flex:1;min-width:140px}
+  .prev iframe{flex:1;width:100%;border:0;background:#fff}
+  .err{color:var(--bad);font-size:13.5px;min-height:1em;margin-top:6px}
+
+  #busy{position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--arancio),var(--blu));display:none;z-index:30;animation:b 1s linear infinite;background-size:200% 100%}
+  @keyframes b{to{background-position:-200% 0}}
+  .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;display:none;z-index:40;max-width:92vw;text-align:center}
+  .toast.err{background:var(--bad)}
+</style>
+</head>
+<body>
+<div id="busy"></div>
+
+<section id="login" class="hidden">
+  <div class="card-c">
+    <img src="../turni/icona-192.png" alt="">
+    <h1>Rassegna stampa</h1>
+    <p>Accedi con il tuo account Google <b>@classlab.it</b>.</p>
+    <div id="gbtn"></div>
+    <div id="loginErr"></div>
+    <p style="margin:18px 0 0"><a href="../area-team.html">← Torna all'area team</a></p>
+  </div>
+</section>
+
+<section id="negato" class="hidden">
+  <div class="card-c">
+    <img src="../turni/icona-192.png" alt="">
+    <h1>Accesso riservato</h1>
+    <p id="negatoMsg">Questa pagina è riservata agli organizzatori.</p>
+    <p style="margin:0"><a href="../area-team.html">← Torna all'area team</a></p>
+  </div>
+</section>
+
+<div id="app" class="hidden">
+  <header class="top">
+    <div class="wrap">
+      <div class="bar">
+        <a class="back" id="indietro" href="../area-team.html" title="Area team">←</a>
+        <h1 id="titoloBarra">Rassegna stampa<small>Area team</small></h1>
+        <div class="who" id="who"></div>
+      </div>
+    </div>
+  </header>
+  <main class="wrap" id="main"></main>
+  <div class="azioni hidden" id="azioni"><div class="wrap" id="azioniWrap"></div></div>
+</div>
+
+<div class="modal-bg" id="modalBg"><div class="modal" id="modal"></div></div>
+<div class="prev" id="prev">
+  <div class="prev-bar" id="prevBar"></div>
+  <iframe id="prevFrame" title="Anteprima della rassegna" sandbox="allow-same-origin"></iframe>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/config.js"></script>
+<script src="../turni/config.js"></script>
+<script src="../assets/js/team-auth.js?v=bba1f888"></script>
+<script src="../assets/js/rassegna.js?v=fef6dbd9"></script>
+<script>
+/* =====================================================================
+   CLASSLAB · EDITOR RASSEGNA STAMPA — solo organizzatori
+   ---------------------------------------------------------------------
+   Crea, modifica, pubblica e toglie le rassegne stampa senza toccare il codice.
+   Parla con lo script "ClassLab – Rassegna stampa" (rassegnaEndpoint in config.js).
+   Il controllo vero è sul server: solo Silvio, Giulio e info@ possono usarlo,
+   anche se qualcun altro aprisse questa pagina.
+   ===================================================================== */
+const API_URL = (window.CLASSLAB || {}).rassegnaEndpoint;
+const S = { lista: [], filtro: 'tutte', cur: null, sporco: false, occupato: false };
+
+/* ---------- login e server: vedi ../assets/js/team-auth.js (stessa sessione delle altre pagine) ---------- */
+function mostra(id){ ['login','negato','app'].forEach(x => document.getElementById(x).classList.toggle('hidden', x !== id)); }
+function mostraLogin(msg){ mostra('login'); document.getElementById('loginErr').textContent = msg || ''; }
+function onAccesso(p){
+  document.getElementById('who').innerHTML = esc(p.email || '') + '<button type="button" onclick="esci()">Esci</button>';
+  vaiElenco();
+}
+function esci(){ if (S.sporco && !confirm('Ci sono modifiche non salvate. Uscire lo stesso?')) return; S.sporco = false; TeamAuth.esci(); }
+const call = (fn, ...args) => TeamAuth.chiama(fn, ...args);
+function avviaLogin(){
+  if (!API_URL) { document.getElementById('negatoMsg').textContent = 'Manca l\'indirizzo dello script in assets/js/config.js (rassegnaEndpoint).'; mostra('negato'); return; }
+  TeamAuth.avvia({ api: API_URL, bottone: 'gbtn', onLogin: mostraLogin, onAccesso: onAccesso,
+    onBusy: on => { document.getElementById('busy').style.display = on ? 'block' : 'none'; } });
+}
+function nonAutorizzato(e){
+  if (e.auth) return true;
+  if (/riservat|non valida/i.test(e.message)) {
+    document.getElementById('negatoMsg').textContent = 'Questa pagina è riservata agli organizzatori (Silvio, Giulio, info@classlab.it).';
+    mostra('negato'); return true;
+  }
+  return false;
+}
+
+/* ---------- utilità ---------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(t, err){ const el = $('toast'); el.textContent = t; el.className = 'toast' + (err ? ' err' : ''); el.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => el.style.display = 'none', err ? 7000 : 3000); }
+function dataIt(s){ return window.Rassegna.dataLunga(s) || 'senza data'; }
+function oraIt(iso){ if (!iso) return ''; const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleString('it-IT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); }
+function chiaro(email){ return String(email || '').split('@')[0].replace(/\./g, ' '); }
+const vuota = () => ({ id: '', titolo: '', data: new Date().toISOString().slice(0, 10), introduzione: '', copertina: '', stato: 'bozza', articoli: [articoloVuoto()], versione: '' });
+const articoloVuoto = () => ({ testata: '', titolo: '', data: '', link: '', estratto: '', immagine: '' });
+
+function modale(html){ $('modal').innerHTML = html; $('modalBg').classList.add('on'); }
+function chiudiModale(){ $('modalBg').classList.remove('on'); }
+
+/* ---------- elenco ---------- */
+async function vaiElenco(){
+  S.cur = null; S.sporco = false;
+  $('azioni').classList.add('hidden');
+  $('indietro').outerHTML = '<a class="back" id="indietro" href="../area-team.html" title="Area team">←</a>';
+  $('titoloBarra').innerHTML = 'Rassegna stampa<small>Area team</small>';
+  try { S.lista = await call('elenco'); mostra('app'); renderElenco(); }
+  catch(e){ if (nonAutorizzato(e)) return; mostra('app'); $('main').innerHTML = '<div class="vuoto">Impossibile caricare le rassegne: ' + esc(e.message) + '<br><br><button class="btn" onclick="vaiElenco()">Riprova</button></div>'; }
+}
+function renderElenco(){
+  const n = s => S.lista.filter(r => r.stato === s).length;
+  const lista = S.lista.filter(r => S.filtro === 'tutte' || r.stato === S.filtro);
+  $('main').innerHTML =
+    '<div class="info">Qui crei e gestisci le rassegne stampa. Le <b>bozze</b> le vedi solo tu e gli altri organizzatori; il sito pubblico mostra solo quelle <b>pubblicate</b>.</div>' +
+    '<div class="tools"><div class="chips">' +
+    [['tutte','Tutte',S.lista.length],['bozza','Bozze',n('bozza')],['pubblicata','Pubblicate',n('pubblicata')]].map(c =>
+      `<button type="button" class="chip${S.filtro === c[0] ? ' on' : ''}" onclick="filtra('${c[0]}')">${c[1]} (${c[2]})</button>`).join('') +
+    '</div><span class="sp"></span><button class="btn prim" type="button" onclick="nuova()">+ Nuova rassegna</button></div>' +
+    (lista.length ? lista.map(r =>
+      `<button type="button" class="riga" onclick="apri('${esc(r.id)}')">
+        <div class="t">${esc(r.titolo)}</div>
+        <div class="s"><span class="pill ${esc(r.stato)}">${r.stato === 'pubblicata' ? 'Pubblicata' : 'Bozza'}</span>
+        <span>${esc(dataIt(r.data))}</span><span>${r.articoli} articol${r.articoli === 1 ? 'o' : 'i'}</span>
+        <span>modificata ${esc(oraIt(r.modificata_il))} da ${esc(chiaro(r.modificata_da))}</span></div></button>`).join('')
+     : '<div class="vuoto">' + (S.lista.length ? 'Nessuna rassegna in questo elenco.' : 'Ancora nessuna rassegna. Premi “Nuova rassegna” per iniziare.') + '</div>');
+}
+function filtra(f){ S.filtro = f; renderElenco(); }
+
+/* ---------- modulo ---------- */
+function nuova(){ S.cur = vuota(); S.sporco = false; renderForm(); }
+async function apri(id){
+  try { S.cur = await call('leggi', id); S.sporco = false; renderForm(); }
+  catch(e){ if (!nonAutorizzato(e)) toast(e.message, true); }
+}
+function tornaElenco(){
+  if (S.sporco) {
+    modale('<h2>Modifiche non salvate</h2><p>Se esci ora perderai le modifiche fatte dall\'ultimo salvataggio.</p>' +
+      '<div class="m-az"><button class="btn" onclick="chiudiModale()">Continua a modificare</button><button class="btn danger" onclick="chiudiModale();S.sporco=false;vaiElenco()">Esci senza salvare</button></div>');
+    return;
+  }
+  vaiElenco();
+}
+function immagineHtml(chi, url){
+  const ok = window.Rassegna.urlImmagine(url);
+  return `<div class="img-box">${ok ? `<img class="anteprima" src="${esc(ok)}" alt="Immagine caricata">` : '<div class="anteprima vuota">nessuna immagine</div>'}
+    <label class="btn small" style="margin:0">${ok ? 'Cambia' : 'Scegli immagine'}<input type="file" accept="image/jpeg,image/png,image/webp" class="hidden" data-img="${chi}"></label>
+    ${ok ? `<button type="button" class="btn small ghost" onclick="togliImg('${chi}')">Rimuovi</button>` : ''}</div>`;
+}
+function renderForm(){
+  const r = S.cur, pub = r.stato === 'pubblicata';
+  $('indietro').outerHTML = '<button type="button" class="back" id="indietro" title="Torna all\'elenco" onclick="tornaElenco()">←</button>';
+  $('titoloBarra').innerHTML = esc(r.titolo || 'Nuova rassegna') + '<small>' + (r.id ? (pub ? 'pubblicata' : 'bozza') : 'nuova') + '</small>';
+  $('main').innerHTML =
+    (pub ? '<div class="info">Questa rassegna è <b>online</b>. Le modifiche salvate si vedono subito sul sito. <a href="../rassegna.html?r=' + encodeURIComponent(r.slug) + '" target="_blank" rel="noopener">Vedi sul sito ↗</a></div>' : '') +
+    `<div class="sez"><h2>La rassegna</h2>
+      <div class="campo"><label for="f-titolo">Titolo</label><input type="text" id="f-titolo" data-k="titolo" maxlength="200" value="${esc(r.titolo)}" autocomplete="off"></div>
+      <div class="campo"><label for="f-data">Data</label><input type="date" id="f-data" data-k="data" value="${esc(r.data)}"></div>
+      <div class="campo"><label for="f-intro">Introduzione</label><textarea id="f-intro" data-k="introduzione" maxlength="5000">${esc(r.introduzione)}</textarea>
+        <small>Testo semplice. Lascia una riga vuota per andare a capo con un nuovo paragrafo. Compare anche nell'elenco, accorciata.</small></div>
+      <div class="campo"><label>Copertina (facoltativa)</label><div id="img-cop">${immagineHtml('cop', r.copertina)}</div></div></div>
+     <div class="sez"><h2>Articoli</h2><div id="articoli"></div>
+       <button type="button" class="btn" onclick="aggiungiArt()">+ Aggiungi articolo</button></div>`;
+  renderArticoli();
+  const b = [];
+  b.push('<button class="btn" type="button" onclick="anteprima(false)">Anteprima</button>');
+  b.push(`<button class="btn prim" type="button" onclick="salva()">${pub ? 'Salva modifiche' : 'Salva bozza'}</button>`);
+  if (!pub) b.push('<button class="btn ok" type="button" onclick="pubblica()">Pubblica…</button>');
+  b.push('<span class="sp"></span>');
+  if (pub) b.push('<button class="btn danger" type="button" onclick="chiediTogli()">Togli dalla pubblicazione</button>');
+  if (r.id) b.push('<button class="btn danger" type="button" onclick="chiediElimina()">Elimina</button>');
+  $('azioniWrap').innerHTML = b.join('');
+  $('azioni').classList.remove('hidden');
+  window.scrollTo(0, 0);
+}
+function renderArticoli(){
+  const A = S.cur.articoli, n = A.length;
+  $('articoli').innerHTML = A.map((a, i) =>
+    `<div class="art"><div class="art-h"><b>Articolo ${i + 1}</b>
+      <button type="button" class="btn small" onclick="sposta(${i},-1)" ${i === 0 ? 'disabled' : ''} aria-label="Sposta su">↑</button>
+      <button type="button" class="btn small" onclick="sposta(${i},1)" ${i === n - 1 ? 'disabled' : ''} aria-label="Sposta giù">↓</button>
+      <button type="button" class="btn small danger" onclick="rimuoviArt(${i})">Rimuovi</button></div>
+      <div class="due">
+        <div class="campo"><label>Testata (giornale o sito)</label><input type="text" data-a="${i}" data-k="testata" maxlength="100" value="${esc(a.testata)}" autocomplete="off"></div>
+        <div class="campo"><label>Data dell'articolo</label><input type="date" data-a="${i}" data-k="data" value="${esc(a.data)}"></div></div>
+      <div class="campo"><label>Titolo dell'articolo</label><input type="text" data-a="${i}" data-k="titolo" maxlength="200" value="${esc(a.titolo)}" autocomplete="off"></div>
+      <div class="campo"><label>Link all'articolo originale</label><input type="url" inputmode="url" data-a="${i}" data-k="link" placeholder="https://…" value="${esc(a.link)}" autocomplete="off"></div>
+      <div class="campo"><label>Estratto (facoltativo)</label><textarea data-a="${i}" data-k="estratto" maxlength="1000" style="min-height:80px">${esc(a.estratto)}</textarea></div>
+      <div class="campo"><label>Immagine (facoltativa)</label><div id="img-${i}">${immagineHtml('a' + i, a.immagine)}</div></div></div>`).join('');
+}
+function aggiungiArt(){ S.cur.articoli.push(articoloVuoto()); S.sporco = true; renderArticoli(); const el = document.querySelectorAll('#articoli .art'); el[el.length - 1].scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+function rimuoviArt(i){ S.cur.articoli.splice(i, 1); S.sporco = true; renderArticoli(); }
+function sposta(i, d){ const A = S.cur.articoli, j = i + d; if (j < 0 || j >= A.length) return; [A[i], A[j]] = [A[j], A[i]]; S.sporco = true; renderArticoli(); }
+function togliImg(chi){ if (chi === 'cop') { S.cur.copertina = ''; $('img-cop').innerHTML = immagineHtml('cop', ''); } else { const i = +chi.slice(1); S.cur.articoli[i].immagine = ''; $('img-' + i).innerHTML = immagineHtml(chi, ''); } S.sporco = true; }
+
+/* scrittura nei campi → stato (senza ridisegnare, così non si perde il cursore) */
+document.addEventListener('input', e => {
+  const t = e.target; if (!S.cur || !t.dataset || !t.dataset.k) return;
+  const v = t.value;
+  if (t.dataset.a != null) S.cur.articoli[+t.dataset.a][t.dataset.k] = v; else S.cur[t.dataset.k] = v;
+  t.classList.remove('errcampo'); S.sporco = true;
+});
+
+/* immagini: ridimensiona nel browser (max 1600 px, JPEG) e carica nel Drive tramite lo script */
+document.addEventListener('change', async e => {
+  const t = e.target; if (!t.dataset || !t.dataset.img || !t.files || !t.files[0]) return;
+  const chi = t.dataset.img, file = t.files[0]; t.value = '';
+  const box = chi === 'cop' ? $('img-cop') : $('img-' + chi.slice(1));
+  box.innerHTML = '<div class="vuoto" style="padding:14px 0">Caricamento dell\'immagine…</div>';
+  try {
+    const blob = await ridimensiona(file);
+    const b64 = await new Promise((ok, ko) => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(',')[1]); fr.onerror = () => ko(new Error('Lettura del file non riuscita.')); fr.readAsDataURL(blob); });
+    const nome = file.name.replace(/\.[^.]+$/, '') + '.jpg';
+    const r = await call('carica', nome, 'image/jpeg', b64);
+    if (chi === 'cop') S.cur.copertina = r.url; else S.cur.articoli[+chi.slice(1)].immagine = r.url;
+    S.sporco = true; box.innerHTML = immagineHtml(chi, r.url);
+  } catch (err) {
+    if (nonAutorizzato(err)) return;
+    toast(err.message, true);
+    const url = chi === 'cop' ? S.cur.copertina : S.cur.articoli[+chi.slice(1)].immagine; box.innerHTML = immagineHtml(chi, url);
+  }
+});
+function ridimensiona(file){
+  return new Promise((ok, ko) => {
+    const url = URL.createObjectURL(file), im = new Image();
+    im.onload = () => {
+      const k = Math.min(1, 1600 / Math.max(im.naturalWidth, im.naturalHeight));
+      const w = Math.max(1, Math.round(im.naturalWidth * k)), h = Math.max(1, Math.round(im.naturalHeight * k));
+      const c = document.createElement('canvas'); c.width = w; c.height = h;
+      const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, w, h); x.drawImage(im, 0, 0, w, h);
+      c.toBlob(b => { URL.revokeObjectURL(url); b ? ok(b) : ko(new Error('Immagine non leggibile.')); }, 'image/jpeg', .85);
+    };
+    im.onerror = () => { URL.revokeObjectURL(url); ko(new Error('Non riesco a leggere questa immagine: usa JPG, PNG o WebP.')); };
+    im.src = url;
+  });
+}
+
+/* ---------- controlli (gli stessi dello script: la verità resta sul server) ---------- */
+function problemi(perPubblicare){
+  const r = S.cur, p = [];
+  const segna = (sel, msg) => { p.push(msg); const el = document.querySelector(sel); if (el) el.classList.add('errcampo'); };
+  if (!r.titolo.trim()) segna('#f-titolo', 'Scrivi il titolo della rassegna.');
+  r.articoli.forEach((a, i) => {
+    const q = k => `[data-a="${i}"][data-k="${k}"]`;
+    if (a.link.trim() && !/^https?:\/\/\S+$/i.test(a.link.trim())) segna(q('link'), `Articolo ${i + 1}: il link deve iniziare con http:// o https://`);
+  });
+  if (perPubblicare) {
+    if (!r.data) segna('#f-data', 'Per pubblicare serve la data della rassegna.');
+    if (!r.articoli.length) p.push('Per pubblicare serve almeno un articolo.');
+    r.articoli.forEach((a, i) => {
+      const q = k => `[data-a="${i}"][data-k="${k}"]`;
+      if (!a.testata.trim()) segna(q('testata'), `Articolo ${i + 1}: manca la testata.`);
+      if (!a.titolo.trim()) segna(q('titolo'), `Articolo ${i + 1}: manca il titolo.`);
+      if (!a.data) segna(q('data'), `Articolo ${i + 1}: manca la data.`);
+      if (!a.link.trim()) segna(q('link'), `Articolo ${i + 1}: manca il link.`);
+    });
+  }
+  return p;
+}
+const daInviare = () => ({ id: S.cur.id, versione: S.cur.versione, titolo: S.cur.titolo, data: S.cur.data, introduzione: S.cur.introduzione, copertina: S.cur.copertina, articoli: S.cur.articoli });
+
+/* ---------- salvataggio e stati ---------- */
+async function esegui(fn){
+  if (S.occupato) return false; S.occupato = true;
+  document.querySelectorAll('.azioni .btn').forEach(b => b.disabled = true);
+  try { return await fn(); }
+  catch(e){ if (!nonAutorizzato(e)) toast(e.message, true); return false; }
+  finally { S.occupato = false; document.querySelectorAll('.azioni .btn').forEach(b => b.disabled = false); }
+}
+async function salva(quiet){
+  const p = problemi(S.cur.stato === 'pubblicata');
+  if (p.length) { toast(p[0], true); return false; }
+  return esegui(async () => {
+    S.cur = await call('salva', daInviare()); S.sporco = false;
+    if (quiet !== true) { toast(S.cur.stato === 'pubblicata' ? 'Modifiche salvate: sono già online.' : 'Bozza salvata.'); }
+    renderForm(); return true;
+  });
+}
+function pubblica(){
+  const p = problemi(true);
+  if (p.length) { toast(p[0] + (p.length > 1 ? ' (e altri ' + (p.length - 1) + ' campi)' : ''), true); const e = document.querySelector('.errcampo'); if (e) e.scrollIntoView({ block: 'center' }); return; }
+  anteprima(true);
+}
+async function confermaPubblica(){
+  chiudiAnteprima();
+  await esegui(async () => {
+    S.cur = await call('salva', daInviare());
+    S.cur = await call('stato', S.cur.id, 'pubblicata'); S.sporco = false;
+    toast('Rassegna pubblicata: ora è sul sito.'); renderForm(); return true;
+  });
+}
+function chiediTogli(){
+  modale('<h2>Togliere dalla pubblicazione?</h2><p>La rassegna sparirà subito dal sito e tornerà <b>bozza</b>. Potrai ripubblicarla quando vuoi.</p>' +
+    '<div class="m-az"><button class="btn" onclick="chiudiModale()">Annulla</button><button class="btn danger" onclick="chiudiModale();togli()">Togli dalla pubblicazione</button></div>');
+}
+async function togli(){
+  if (S.sporco) { toast('Salva prima le modifiche, poi togli la pubblicazione.', true); return; }
+  await esegui(async () => { S.cur = await call('stato', S.cur.id, 'bozza'); toast('Rassegna tolta dal sito: ora è una bozza.'); renderForm(); return true; });
+}
+function chiediElimina(){
+  const pub = S.cur.stato === 'pubblicata';
+  modale('<h2>Eliminare la rassegna?</h2><p><b>' + esc(S.cur.titolo || 'Senza titolo') + '</b></p>' +
+    '<p>Verranno eliminati la rassegna e tutti i suoi articoli.' + (pub ? ' È <b>pubblicata</b>: sparirà dal sito.' : '') + ' Non si può annullare.</p>' +
+    '<div class="m-az"><button class="btn" onclick="chiudiModale()">Annulla</button><button class="btn danger" onclick="chiudiModale();elimina()">Elimina definitivamente</button></div>');
+}
+async function elimina(){
+  const ok = await esegui(async () => { await call('elimina', S.cur.id); return true; });
+  if (ok) { S.sporco = false; toast('Rassegna eliminata.'); vaiElenco(); }
+}
+
+/* ---------- anteprima (stessa grafica e stesso codice della pagina pubblica) ---------- */
+function anteprima(conferma){
+  const r = Object.assign({}, S.cur, { titolo: S.cur.titolo || 'Senza titolo' });
+  const html = '<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
+    '<link rel="stylesheet" href="/assets/css/style.css"><base target="_blank"></head><body>' + window.Rassegna.pagina(r) + '</body></html>';
+  $('prevFrame').srcdoc = html;
+  $('prevBar').innerHTML = '<b>Anteprima' + (conferma ? ': controlla prima di pubblicare' : '') + '</b>' +
+    (conferma ? '<button class="btn ok" type="button" onclick="confermaPubblica()">Pubblica ora</button><button class="btn" type="button" onclick="chiudiAnteprima()">Torna a modificare</button>'
+              : '<button class="btn" type="button" onclick="chiudiAnteprima()">Chiudi anteprima</button>');
+  $('prev').classList.add('on');
+}
+function chiudiAnteprima(){ $('prev').classList.remove('on'); $('prevFrame').srcdoc = ''; }
+
+window.addEventListener('beforeunload', e => { if (S.sporco) { e.preventDefault(); e.returnValue = ''; } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { chiudiModale(); if ($('prev').classList.contains('on')) chiudiAnteprima(); } });
+$('modalBg').addEventListener('click', e => { if (e.target.id === 'modalBg') chiudiModale(); });
+avviaLogin();
+</script>
+</body>
+</html>
