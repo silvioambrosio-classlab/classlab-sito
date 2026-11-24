@@ -70,8 +70,10 @@ function nuovoMondo() {
   token['T_SCADUTO.x.y'] = { aud: CID, email: 'silvio.ambrosio@classlab.it', email_verified: 'true', hd: 'classlab.it', exp: 1000 };
   token['T_ESTERNO.x.y'] = { aud: CID, email: 'silvio.ambrosio@gmail.com', email_verified: 'true', exp: futuro };
   token['T_ALTROCLIENT.x.y'] = { aud: 'altro-client', email: 'silvio.ambrosio@classlab.it', email_verified: 'true', hd: 'classlab.it', exp: futuro };
-  return { get, post, fogli };
+  return { get, post, fogli, token, CID, futuro };
 }
+module.exports = { nuovoMondo };
+if (require.main !== module) return;
 
 let ok = 0;
 function prova(nome, f) { try { f(); ok++; console.log('  ok  ' + nome); } catch (e) { console.log('FAIL  ' + nome + '\n      ' + e.message); process.exitCode = 1; } }
