@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<base href="/">
+<title>Editor rassegna stampa · ClassLab</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14365f">
+<link rel="icon" href="assets/img/favicon.png">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/montserrat-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<!-- grafica del sito: serve all'anteprima, che deve essere identica alla pagina pubblica -->
+<link rel="stylesheet" href="assets/css/style.css?v=9882d378">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+  :root{--ed-bg:#f6f9fc;--ed-line:#e2e8f0;--ed-muted:#64748b;--ed-ink:#0f172a;--ed-bad:#b42318;--ed-ok:#2f7d3b;--ed-r:14px}
+  body{background:var(--ed-bg);font-size:15px}
+  .ed-hidden{display:none!important}
+  .ed-wrap{max-width:900px;margin:0 auto;padding:0 16px}
+  button,select,input,textarea{font:inherit}
+
+  #ed-login,#ed-negato{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  .ed-cardc{background:#fff;border:1px solid var(--ed-line);border-radius:22px;max-width:420px;width:100%;padding:32px 24px;text-align:center;box-shadow:0 10px 30px rgba(20,54,95,.08)}
+  .ed-cardc img{width:84px;height:84px;border-radius:20px}
+  .ed-cardc h1{font-size:23px;margin:14px 0 6px}
+  .ed-cardc p{color:var(--ed-muted);margin:0 0 22px}
+  #gbtn{display:flex;justify-content:center;min-height:44px}
+  #ed-loginErr{color:var(--ed-bad);font-size:14px;margin-top:14px;min-height:1em}
+
+  .ed-top{position:sticky;top:0;z-index:5;background:var(--navy);color:#fff}
+  .ed-bar{display:flex;align-items:center;gap:12px;padding:14px 0}
+  .ed-bar a{color:#fff;opacity:.8;text-decoration:none;font-size:18px}
+  .ed-bar h1{font-size:18px;margin:0;flex:1;color:#fff}
+  .ed-who{font-size:13px;text-align:right;opacity:.9;overflow-wrap:anywhere}
+  .ed-who button{background:rgba(255,255,255,.14);border:0;color:#fff;border-radius:999px;padding:4px 10px;margin-left:6px;cursor:pointer}
+  main.ed-wrap{padding-top:18px;padding-bottom:110px}
+
+  .ed-btn{border:1px solid var(--ed-line);background:#fff;border-radius:10px;padding:9px 14px;cursor:pointer;color:var(--ed-ink);white-space:nowrap;min-height:42px}
+  .ed-btn:hover{border-color:#c4ccd8}
+  .ed-btn.prim{background:var(--blu);border-color:var(--blu);color:#fff}
+  .ed-btn.ok{background:var(--ed-ok);border-color:var(--ed-ok);color:#fff}
+  .ed-btn.danger{color:var(--ed-bad)}
+  .ed-btn.small{padding:5px 10px;font-size:13px;min-height:34px}
+  .ed-btn:disabled{opacity:.5;cursor:default}
+
+  .ed-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+  .ed-tools .ed-seg{display:inline-flex;border:1px solid var(--ed-line);border-radius:10px;overflow:hidden;background:#fff}
+  .ed-seg button{border:0;background:none;padding:8px 12px;cursor:pointer;color:var(--ed-muted);border-left:1px solid var(--ed-line)}
+  .ed-seg button:first-child{border-left:0}
+  .ed-seg button.on{background:var(--navy);color:#fff}
+  .ed-tools .ed-sp{flex:1}
+
+  .ed-riga{background:#fff;border:1px solid var(--ed-line);border-radius:var(--ed-r);padding:12px 14px;margin-bottom:8px;display:flex;gap:12px;align-items:center;cursor:pointer}
+  .ed-riga:hover{border-color:var(--blu)}
+  .ed-riga img,.ed-riga .ed-ph{width:72px;height:48px;border-radius:8px;object-fit:cover;flex:none;background:var(--cielo)}
+  .ed-riga .ed-t{flex:1;min-width:0}
+  .ed-riga b{display:block;color:var(--ed-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ed-riga small{color:var(--ed-muted)}
+  .ed-stato{font-size:12px;font-weight:700;border-radius:999px;padding:2px 10px;flex:none}
+  .ed-stato.bozza{background:#fff4dc;color:#8a5a00}
+  .ed-stato.pubblicata{background:#e7f5ea;color:var(--ed-ok)}
+  .ed-vuoto{text-align:center;color:var(--ed-muted);padding:30px 10px}
+
+  .ed-box{background:#fff;border:1px solid var(--ed-line);border-radius:var(--ed-r);padding:18px;margin-bottom:14px}
+  .ed-box h2{font-size:17px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+  .ed-campo{margin-bottom:12px}
+  .ed-campo label{display:block;font-size:13px;font-weight:600;color:var(--ed-ink);margin-bottom:4px}
+  .ed-campo small{display:block;color:var(--ed-muted);font-size:12px;margin-top:3px}
+  .ed-campo input,.ed-campo textarea{width:100%;padding:10px 11px;border:1px solid var(--ed-line);border-radius:10px;background:#fff;color:var(--ed-ink);font-size:16px}
+  .ed-campo textarea{min-height:110px;resize:vertical}
+  .ed-due{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+  .ed-img{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .ed-img img{width:140px;height:79px;object-fit:cover;border-radius:10px;background:var(--cielo)}
+  .ed-art{border:1px solid var(--ed-line);border-radius:12px;padding:14px;margin-bottom:12px;background:#fbfdff}
+  .ed-art-testa{display:flex;align-items:center;gap:6px;margin-bottom:10px}
+  .ed-art-testa b{flex:1;color:var(--ed-ink)}
+  .ed-aggiungi{width:100%;border:2px dashed var(--blu);color:var(--blu);background:var(--cielo);border-radius:12px;padding:12px;font-weight:700;cursor:pointer}
+  .ed-meta{font-size:12.5px;color:var(--ed-muted);margin-top:-4px;margin-bottom:12px}
+
+  .ed-azioni{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--ed-line);padding:10px 0 calc(10px + env(safe-area-inset-bottom));z-index:6}
+  .ed-azioni .ed-wrap{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+  .ed-azioni .ed-msg{flex:1;font-size:13px;color:var(--ed-muted);min-width:120px}
+  @media (max-width:600px){
+    .ed-due{grid-template-columns:1fr}
+    .ed-azioni .ed-msg{flex-basis:100%}
+    .ed-azioni .ed-btn{flex:1}
+  }
+
+  .ed-modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.5);display:none;align-items:flex-start;justify-content:center;padding:4vh 10px;z-index:20;overflow:auto}
+  .ed-modal-bg.on{display:flex}
+  .ed-modal{background:#fff;border-radius:18px;max-width:480px;width:100%;padding:22px;box-shadow:0 20px 50px rgba(0,0,0,.2)}
+  .ed-modal.largo{max-width:880px;padding:0;overflow:hidden}
+  .ed-modal h2{margin:0 0 10px;font-size:19px}
+  .ed-m-az{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:16px}
+  .ed-prev-testa{background:var(--navy);color:#fff;padding:12px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:sticky;top:0}
+  .ed-prev-testa b{flex:1}
+  .ed-prev-corpo{padding:24px 18px;background:#fff}
+  .ed-prev-corpo .rs-griglia{max-width:360px;margin:0 auto 30px}
+
+  #ed-busy{position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--arancio),var(--blu));display:none;z-index:30;animation:edb 1s linear infinite;background-size:200% 100%}
+  @keyframes edb{to{background-position:-200% 0}}
+  .ed-toast{position:fixed;left:50%;bottom:86px;transform:translateX(-50%);background:var(--ed-ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;display:none;z-index:40;max-width:92vw;text-align:center}
+  .ed-toast.err{background:var(--ed-bad)}
+</style>
+</head>
+<body>
+<div id="ed-busy"></div>
+
+<section id="ed-login" class="ed-hidden">
+  <div class="ed-cardc">
+    <img src="turni/icona-192.png" alt="">
+    <h1>Rassegna stampa</h1>
+    <p>Accedi con il tuo account Google <b>@classlab.it</b>.</p>
+    <div id="gbtn"></div>
+    <div id="ed-loginErr"></div>
+    <p style="margin:18px 0 0"><a href="area-team.html">← Torna all'area team</a></p>
+  </div>
+</section>
+
+<section id="ed-negato" class="ed-hidden">
+  <div class="ed-cardc">
+    <img src="turni/icona-192.png" alt="">
+    <h1>Accesso riservato</h1>
+    <p id="ed-negatoMsg">Questa pagina è riservata agli organizzatori.</p>
+    <p style="margin:0"><a href="area-team.html">← Torna all'area team</a></p>
+  </div>
+</section>
+
+<div id="ed-app" class="ed-hidden">
+  <header class="ed-top">
+    <div class="ed-wrap">
+      <div class="ed-bar">
+        <a href="area-team.html" title="Area team">←</a>
+        <h1>Rassegna stampa</h1>
+        <div class="ed-who" id="ed-who"></div>
+      </div>
+    </div>
+  </header>
+  <main class="ed-wrap" id="ed-main"></main>
+  <div class="ed-azioni ed-hidden" id="ed-azioni"><div class="ed-wrap" id="ed-azioni-in"></div></div>
+</div>
+
+<div class="ed-modal-bg" id="ed-modalBg"><div class="ed-modal" id="ed-modal"></div></div>
+<div class="ed-toast" id="ed-toast"></div>
+
+<script src="turni/config.js"></script>
+<script src="rassegna-stampa/config.js"></script>
+<script src="rassegna-stampa/rassegna.js?v=1"></script>
+<script src="assets/js/team-auth.js?v=bba1f888"></script>
+<script>
+/* =====================================================================
+   CLASSLAB · EDITOR RASSEGNA STAMPA (riservato)
+   ---------------------------------------------------------------------
+   Parla con lo script "ClassLab – Rassegna stampa" (vedi docs/rassegna-stampa/).
+   Il controllo vero è sul server: solo Silvio, Giulio e info@ possono
+   leggere le bozze e scrivere, anche se qualcun altro aprisse questa pagina.
+   ===================================================================== */
+const API_URL = (window.RASSEGNA_CONFIG || {}).API_URL;
+const R = window.Rassegna, esc = R.esc;
+const S = { lista: [], filtro: 'tutte', cur: null, sporco: false };
+
+/* ---------- accesso ---------- */
+function mostra(id){ ['ed-login','ed-negato','ed-app'].forEach(x => document.getElementById(x).classList.toggle('ed-hidden', x !== id)); }
+function negato(msg){ document.getElementById('ed-negatoMsg').textContent = msg; mostra('ed-negato'); }
+function mostraLogin(msg){ mostra('ed-login'); document.getElementById('ed-loginErr').textContent = msg || ''; }
+async function onAccesso(p){
+  document.getElementById('ed-who').innerHTML = esc(p.email || '') + '<button type="button" onclick="esci()">Esci</button>';
+  try { await call('chiSono'); }
+  catch(e){
+    if (e.auth) return;
+    return negato(/riservat/i.test(e.message)
+      ? 'Questa pagina è riservata agli organizzatori (Silvio, Giulio, info@classlab.it).'
+      : 'Impossibile collegarsi allo script: ' + e.message);
+  }
+  mostra('ed-app');
+  apriElenco();
+}
+function esci(){ if (!S.sporco || confirm('Ci sono modifiche non salvate. Uscire comunque?')) { S.sporco = false; TeamAuth.esci(); } }
+const call = (fn, ...args) => TeamAuth.chiama(fn, ...args);
+
+/* ---------- utilità ---------- */
+function toast(t, err){ const el = document.getElementById('ed-toast'); el.textContent = t; el.className = 'ed-toast' + (err ? ' err' : ''); el.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => el.style.display = 'none', err ? 7000 : 3000); }
+function oggi(){ const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function modale(html, largo){ const m = document.getElementById('ed-modal'); m.className = 'ed-modal' + (largo ? ' largo' : ''); m.innerHTML = html; document.getElementById('ed-modalBg').classList.add('on'); }
+function chiudiModale(){ document.getElementById('ed-modalBg').classList.remove('on'); }
+function conferma(titolo, testo, etichetta, pericolo){
+  return new Promise(ok => {
+    modale(`<h2>${esc(titolo)}</h2><p>${esc(testo)}</p><div class="ed-m-az">
+      <button class="ed-btn" type="button" id="ed-no">Annulla</button>
+      <button class="ed-btn ${pericolo ? 'danger' : 'prim'}" type="button" id="ed-si">${esc(etichetta)}</button></div>`);
+    document.getElementById('ed-no').onclick = () => { chiudiModale(); ok(false); };
+    document.getElementById('ed-si').onclick = () => { chiudiModale(); ok(true); };
+  });
+}
+window.addEventListener('beforeunload', e => { if (S.sporco) { e.preventDefault(); e.returnValue = ''; } });
+
+/* ---------- elenco ---------- */
+async function apriElenco(){
+  if (S.sporco && !(await conferma('Modifiche non salvate', 'Uscire senza salvare?', 'Esci senza salvare', true))) return;
+  S.cur = null; S.sporco = false;
+  document.getElementById('ed-azioni').classList.add('ed-hidden');
+  try { S.lista = await call('elenco'); } catch(e){ if (!e.auth) toast(e.message, true); return; }
+  renderElenco();
+}
+function renderElenco(){
+  const conta = s => S.lista.filter(r => s === 'tutte' || r.stato === s).length;
+  const lista = S.lista.filter(r => S.filtro === 'tutte' || r.stato === S.filtro);
+  const tab = (k, t) => `<button type="button" class="${S.filtro === k ? 'on' : ''}" onclick="S.filtro='${k}';renderElenco()">${t} (${conta(k)})</button>`;
+  document.getElementById('ed-main').innerHTML = `
+    <div class="ed-tools">
+      <div class="ed-seg">${tab('tutte','Tutte')}${tab('bozza','Bozze')}${tab('pubblicata','Pubblicate')}</div>
+      <span class="ed-sp"></span>
+      <a class="ed-btn" href="rassegna-stampa/" target="_blank" rel="noopener" style="text-decoration:none">Vedi pagina pubblica ↗</a>
+      <button class="ed-btn prim" type="button" onclick="nuova()">+ Nuova rassegna</button>
+    </div>
+    ${lista.length ? lista.map(r => {
+      const img = R.immagineSicura(r.copertina_url);
+      return `<div class="ed-riga" role="button" tabindex="0" onclick="apri('${esc(r.id)}')" onkeydown="if(event.key==='Enter')apri('${esc(r.id)}')">
+        ${img ? `<img src="${esc(img)}" alt="">` : '<span class="ed-ph"></span>'}
+        <div class="ed-t"><b>${esc(r.titolo)}</b><small>${esc(R.data(r.data))} · ${r.n_articoli} articol${r.n_articoli == 1 ? 'o' : 'i'}</small></div>
+        <span class="ed-stato ${esc(r.stato)}">${r.stato === 'pubblicata' ? 'Pubblicata' : 'Bozza'}</span></div>`;
+    }).join('') : '<div class="ed-vuoto">Nessuna rassegna. Crea la prima con “+ Nuova rassegna”.</div>'}`;
+}
+
+/* ---------- modifica ---------- */
+function articoloVuoto(){ return { testata:'', titolo:'', data:'', link:'', estratto:'', immagine_id:'', immagine_url:'' }; }
+function nuova(){
+  S.cur = { id:'', titolo:'', data:oggi(), introduzione:'', copertina_id:'', copertina_url:'', stato:'bozza', articoli:[articoloVuoto()] };
+  S.sporco = false; renderForm();
+}
+async function apri(id){
+  try { S.cur = await call('leggi', id); S.sporco = false; renderForm(); window.scrollTo(0,0); }
+  catch(e){ if (!e.auth) toast(e.message, true); }
+}
+function campo(etichetta, html, nota){ return `<div class="ed-campo"><label>${etichetta}</label>${html}${nota ? `<small>${nota}</small>` : ''}</div>`; }
+function input(chiave, valore, tipo, extra){ return `<input type="${tipo || 'text'}" value="${esc(valore)}" data-k="${chiave}" ${extra || ''}>`; }
+function bloccoImmagine(dove, url){
+  const img = R.immagineSicura(url);
+  return `<div class="ed-img">${img ? `<img src="${esc(img)}" alt="">` : ''}
+    <label class="ed-btn small" style="margin:0">${img ? 'Cambia immagine' : 'Carica immagine'}
+      <input type="file" accept="image/jpeg,image/png,image/webp" hidden onchange="caricaImg(this,'${dove}')"></label>
+    ${img ? `<button class="ed-btn small danger" type="button" onclick="togliImg('${dove}')">Rimuovi</button>` : ''}</div>`;
+}
+function renderForm(){
+  const c = S.cur, pub = c.stato === 'pubblicata';
+  document.getElementById('ed-main').innerHTML = `
+    <div class="ed-tools"><button class="ed-btn small" type="button" onclick="apriElenco()">← Tutte le rassegne</button>
+      <span class="ed-sp"></span>${c.id ? `<span class="ed-stato ${esc(c.stato)}">${pub ? 'Pubblicata' : 'Bozza'}</span>` : ''}</div>
+    ${c.id ? `<div class="ed-meta">${pub ? `Online all'indirizzo <a href="${esc(R.linkRassegna(c.slug))}" target="_blank" rel="noopener">${esc(R.linkRassegna(c.slug))}</a>. ` : ''}Ultima modifica: ${esc(String(c.modificata_il || '').slice(0,16).replace('T',' '))} · ${esc(c.modificata_da || '')}</div>` : ''}
+    <div class="ed-box" data-dove="r">
+      <h2>Rassegna</h2>
+      ${campo('Titolo *', input('titolo', c.titolo, 'text', 'maxlength="200" required'))}
+      ${campo('Data *', input('data', c.data, 'date', 'required'))}
+      ${campo('Introduzione', `<textarea data-k="introduzione" maxlength="5000">${esc(c.introduzione)}</textarea>`, 'Testo semplice. Lascia una riga vuota per iniziare un nuovo paragrafo.')}
+      ${campo('Immagine di copertina', bloccoImmagine('r', c.copertina_url), 'JPG, PNG o WebP. Viene ridotta automaticamente prima del caricamento.')}
+    </div>
+    <div class="ed-box"><h2>Articoli <small style="color:var(--ed-muted);font-weight:500">(${c.articoli.length})</small></h2>
+      ${c.articoli.map((a, i) => `<div class="ed-art" data-dove="${i}">
+        <div class="ed-art-testa"><b>Articolo ${i + 1}</b>
+          <button class="ed-btn small" type="button" title="Sposta su" ${i === 0 ? 'disabled' : ''} onclick="sposta(${i},-1)">↑</button>
+          <button class="ed-btn small" type="button" title="Sposta giù" ${i === c.articoli.length - 1 ? 'disabled' : ''} onclick="sposta(${i},1)">↓</button>
+          <button class="ed-btn small danger" type="button" onclick="togliArt(${i})">Rimuovi</button></div>
+        <div class="ed-due">${campo('Testata', input('testata', a.testata, 'text', 'maxlength="120" placeholder="es. Il Piccolo"'))}${campo('Data dell\'articolo', input('data', a.data, 'date'))}</div>
+        ${campo('Titolo *', input('titolo', a.titolo, 'text', 'maxlength="300"'))}
+        ${campo('Link all\'articolo originale *', input('link', a.link, 'url', 'placeholder="https://…" inputmode="url"'))}
+        ${campo('Estratto', `<textarea data-k="estratto" maxlength="2000" style="min-height:80px">${esc(a.estratto)}</textarea>`, 'Facoltativo: poche righe, citando la fonte.')}
+        ${campo('Immagine', bloccoImmagine(String(i), a.immagine_url))}
+      </div>`).join('')}
+      <button class="ed-aggiungi" type="button" onclick="aggiungiArt()">+ Aggiungi articolo</button>
+    </div>
+    ${c.id ? `<div class="ed-box"><h2>Zona pericolosa</h2><button class="ed-btn danger" type="button" onclick="elimina()">Elimina rassegna</button>
+      <small style="display:block;color:var(--ed-muted);margin-top:6px">Cancella la rassegna, i suoi articoli e le immagini caricate. Non si può annullare.</small></div>` : ''}`;
+  document.querySelectorAll('#ed-main [data-k]').forEach(el => el.addEventListener('input', leggiCampo));
+  renderAzioni();
+}
+function renderAzioni(){
+  const c = S.cur, pub = c.stato === 'pubblicata';
+  const msg = S.sporco ? 'Modifiche non salvate' : (c.id ? 'Tutto salvato' : 'Nuova rassegna, non ancora salvata');
+  document.getElementById('ed-azioni-in').innerHTML = `
+    <span class="ed-msg">${msg}${pub && S.sporco ? ' · al salvataggio vanno subito online' : ''}</span>
+    <button class="ed-btn" type="button" onclick="anteprima(false)">Anteprima</button>
+    ${pub ? `<button class="ed-btn" type="button" onclick="ritira()">Togli dalla pubblicazione</button>
+             <button class="ed-btn prim" type="button" onclick="salva()" ${S.sporco ? '' : 'disabled'}>Salva modifiche</button>`
+          : `<button class="ed-btn" type="button" onclick="salva()" ${S.sporco || !c.id ? '' : 'disabled'}>Salva bozza</button>
+             <button class="ed-btn ok" type="button" onclick="anteprima(true)">Pubblica…</button>`}`;
+  document.getElementById('ed-azioni').classList.remove('ed-hidden');
+}
+function leggiCampo(e){
+  const el = e.target, dove = el.closest('[data-dove]').dataset.dove, k = el.dataset.k;
+  (dove === 'r' ? S.cur : S.cur.articoli[Number(dove)])[k] = el.value;
+  if (!S.sporco) { S.sporco = true; renderAzioni(); }
+}
+function cambiato(){ S.sporco = true; renderForm(); }
+function aggiungiArt(){ S.cur.articoli.push(articoloVuoto()); cambiato(); const a = document.querySelectorAll('.ed-art'); a[a.length - 1].scrollIntoView({ behavior:'smooth', block:'center' }); }
+async function togliArt(i){
+  const a = S.cur.articoli[i];
+  if ((a.titolo || a.link) && !(await conferma('Rimuovere l\'articolo?', a.titolo || a.link, 'Rimuovi', true))) return;
+  S.cur.articoli.splice(i, 1); cambiato();
+}
+function sposta(i, d){ const a = S.cur.articoli; [a[i], a[i + d]] = [a[i + d], a[i]]; cambiato(); }
+function togliImg(dove){
+  const o = dove === 'r' ? S.cur : S.cur.articoli[Number(dove)], p = dove === 'r' ? 'copertina' : 'immagine';
+  o[p + '_id'] = ''; o[p + '_url'] = ''; cambiato();
+}
+
+/* Riduce l'immagine (lato lungo max 1600 px, JPEG) e la carica su Drive tramite lo script */
+function riduci(file){
+  return new Promise((ok, ko) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight));
+      const cv = document.createElement('canvas');
+      cv.width = Math.round(img.naturalWidth * k); cv.height = Math.round(img.naturalHeight * k);
+      const ctx = cv.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cv.width, cv.height); ctx.drawImage(img, 0, 0, cv.width, cv.height);
+      URL.revokeObjectURL(url);
+      ok(cv.toDataURL('image/jpeg', 0.85).split(',')[1]);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); ko(new Error('Impossibile leggere l\'immagine.')); };
+    img.src = url;
+  });
+}
+async function caricaImg(inp, dove){
+  const f = inp.files && inp.files[0]; if (!f) return;
+  if (!/^image\/(jpeg|png|webp)$/.test(f.type)) return toast('Usa un\'immagine JPG, PNG o WebP.', true);
+  if (f.size > 25 * 1024 * 1024) return toast('Immagine troppo grande (massimo 25 MB).', true);
+  try {
+    toast('Caricamento immagine…');
+    const r = await call('caricaImmagine', f.name, 'image/jpeg', await riduci(f));
+    const o = dove === 'r' ? S.cur : S.cur.articoli[Number(dove)], p = dove === 'r' ? 'copertina' : 'immagine';
+    o[p + '_id'] = r.id; o[p + '_url'] = r.url; cambiato(); toast('Immagine caricata. Ricordati di salvare.');
+  } catch(e){ if (!e.auth) toast(e.message, true); }
+}
+
+/* Controlli prima di salvare (il server li ripete comunque) */
+function problemi(){
+  const c = S.cur, p = [];
+  if (!c.titolo.trim()) p.push('Manca il titolo della rassegna.');
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(c.data)) p.push('Manca la data della rassegna.');
+  c.articoli.forEach((a, i) => {
+    if (!a.titolo.trim()) p.push(`Articolo ${i + 1}: manca il titolo.`);
+    if (!/^https?:\/\/\S+$/i.test(a.link.trim())) p.push(`Articolo ${i + 1}: il link deve iniziare con https://`);
+  });
+  return p;
+}
+async function salva(){
+  const p = problemi(); if (p.length) { toast(p[0], true); return false; }
+  const c = S.cur;
+  try {
+    S.cur = await call('salva', { id:c.id, titolo:c.titolo, data:c.data, introduzione:c.introduzione, copertina_id:c.copertina_id,
+      articoli:c.articoli.map(a => ({ testata:a.testata, titolo:a.titolo, data:a.data, link:a.link.trim(), estratto:a.estratto, immagine_id:a.immagine_id })) });
+    S.sporco = false; renderForm(); toast(S.cur.stato === 'pubblicata' ? 'Salvato: le modifiche sono online.' : 'Bozza salvata.');
+    return true;
+  } catch(e){ if (!e.auth) toast(e.message, true); return false; }
+}
+
+/* Anteprima: identica alla pagina pubblica. Da qui si conferma la pubblicazione. */
+function anteprima(perPubblicare){
+  if (perPubblicare) {
+    const p = problemi(); if (!S.cur.articoli.length) p.unshift('Per pubblicare serve almeno un articolo.');
+    if (p.length) { toast(p[0], true); return; }
+  }
+  modale(`<div class="ed-prev-testa"><b>Anteprima${perPubblicare ? ' prima della pubblicazione' : ''}</b>
+      <button class="ed-btn small" type="button" onclick="chiudiModale()">${perPubblicare ? 'Annulla' : 'Chiudi'}</button>
+      ${perPubblicare ? '<button class="ed-btn small ok" type="button" id="ed-confpub">Pubblica ora</button>' : ''}</div>
+    <div class="ed-prev-corpo">
+      <p style="text-align:center;color:var(--ed-muted);font-size:13px;margin:0 0 10px">Come appare nell'archivio</p>
+      <div class="rs-griglia">${R.scheda(S.cur, true)}</div>
+      <div class="rs-pagina">${R.contenuto(S.cur)}</div></div>`, true);
+  if (perPubblicare) document.getElementById('ed-confpub').onclick = pubblica;
+}
+async function pubblica(){
+  chiudiModale();
+  if ((S.sporco || !S.cur.id) && !(await salva())) return;
+  try { S.cur = await call('impostaStato', S.cur.id, 'pubblicata'); S.sporco = false; renderForm(); toast('Rassegna pubblicata.'); }
+  catch(e){ if (!e.auth) toast(e.message, true); }
+}
+async function ritira(){
+  if (!(await conferma('Togliere dalla pubblicazione?', 'La rassegna torna bozza e sparisce dal sito (entro un minuto). Potrai ripubblicarla.', 'Togli dal sito'))) return;
+  if (S.sporco && !(await salva())) return;
+  try { S.cur = await call('impostaStato', S.cur.id, 'bozza'); S.sporco = false; renderForm(); toast('Rassegna tolta dal sito.'); }
+  catch(e){ if (!e.auth) toast(e.message, true); }
+}
+async function elimina(){
+  if (!(await conferma('Eliminare la rassegna?', `"${S.cur.titolo}" verrà cancellata con tutti gli articoli e le immagini. Non si può annullare.`, 'Elimina definitivamente', true))) return;
+  try { await call('elimina', S.cur.id); S.sporco = false; toast('Rassegna eliminata.'); apriElenco(); }
+  catch(e){ if (!e.auth) toast(e.message, true); }
+}
+
+document.getElementById('ed-modalBg').addEventListener('click', e => { if (e.target.id === 'ed-modalBg') chiudiModale(); });
+
+if (!API_URL) negato('Manca l\'indirizzo dello script in rassegna-stampa/config.js (vedi docs/rassegna-stampa/LEGGIMI.md).');
+else TeamAuth.avvia({
+  api: API_URL, bottone: 'gbtn', onLogin: mostraLogin, onAccesso: onAccesso,
+  onBusy: on => { document.getElementById('ed-busy').style.display = on ? 'block' : 'none'; }
+});
+</script>
+</body>
+</html>
