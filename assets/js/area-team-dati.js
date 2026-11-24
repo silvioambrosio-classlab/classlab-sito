@@ -56,7 +56,9 @@ window.AREA_TEAM = [
     // riservata agli organizzatori (il controllo vero lo fa lo script dei turni)
     solo: ["silvio.ambrosio@classlab.it", "giulio.prodan@classlab.it", "info@classlab.it"]
   },
+  // Scheda News nascosta per ora: per riattivarla togli "nascosta: true" qui sotto
   {
+    nascosta: true,
     titolo: "News",
     descrizione: "Crea, modifica e pubblica le news del sito (rassegna stampa).",
     link: "/news-editor/",

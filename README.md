@@ -64,6 +64,8 @@ I livelli si cambiano dalla pagina `/permessi/`, visibile solo a Silvio, Giulio 
 
 ## News (rassegna stampa)
 
+**Stato: sezione nascosta.** Non è nel menu, nel piè di pagina, nella sitemap né in area team, e le pagine hanno `noindex`. Per riattivarla: rimetti la voce in `assets/js/config.js`, togli `nascosta: true` in `assets/js/area-team-dati.js`, togli il `noindex` da `news/index.html` e `news/notizia.html`, rimetti `/news/` in `sitemap.xml` e collega lo script (`docs/rassegna-stampa/LEGGIMI.md`).
+
 Nel codice e nel foglio la sezione si chiama ancora "rassegna" (schede, script, file in `docs/rassegna-stampa/`): sono nomi interni, non si vedono sul sito.
 
 Una sezione pubblica (**/news/**, voce "News" nel menu e nel piè di pagina) mostra tutte le notizie pubblicate, dalla più recente.
