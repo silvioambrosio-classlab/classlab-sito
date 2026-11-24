@@ -121,7 +121,7 @@
 <section id="ed-negato" class="ed-hidden">
   <div class="ed-cardc">
     <img src="turni/icona-192.png" alt="">
-    <h1>Accesso riservato</h1>
+    <h1 id="ed-negatoTit">Accesso riservato</h1>
     <p id="ed-negatoMsg">Questa pagina è riservata agli organizzatori.</p>
     <p style="margin:0"><a href="area-team.html">← Torna all'area team</a></p>
   </div>
@@ -389,7 +389,10 @@ async function elimina(){
 
 document.getElementById('ed-modalBg').addEventListener('click', e => { if (e.target.id === 'ed-modalBg') chiudiModale(); });
 
-if (!API_URL) negato('Manca l\'indirizzo dello script in news/config.js (vedi docs/rassegna-stampa/LEGGIMI.md).');
+if (!API_URL) {
+  document.getElementById('ed-negatoTit').textContent = 'Editor non ancora collegato';
+  negato('L\'editor funzionerà appena sarà collegato al foglio Google delle news (indirizzo dello script in news/config.js, istruzioni in docs/rassegna-stampa/LEGGIMI.md).');
+}
 else TeamAuth.avvia({
   api: API_URL, bottone: 'gbtn', onLogin: mostraLogin, onAccesso: onAccesso,
   onBusy: on => { document.getElementById('ed-busy').style.display = on ? 'block' : 'none'; }
