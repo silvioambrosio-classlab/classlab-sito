@@ -1,4 +1,6 @@
-# Rassegna stampa: messa online dello script
+# News (rassegna stampa): messa online dello script
+
+Sul sito la sezione si chiama **News** (`/news/`, editor in `/news-editor/`). Il foglio e lo script mantengono il nome "Rassegna stampa".
 
 Da fare **una volta sola**, dopo aver caricato il sito aggiornato.
 
@@ -8,7 +10,7 @@ Da fare **una volta sola**, dopo aver caricato il sito aggiornato.
 4. In Apps Script: **Impostazioni progetto → Proprietà script → Aggiungi**: nome `CARTELLA_ID`, valore l'ID della cartella.
 5. Scegli la funzione `setup` e premi **Esegui** (concedi i permessi). Crea le schede `Rassegne`, `Articoli`, `Log`.
 6. **Distribuisci → Nuova distribuzione → App web**: esegui come **te stesso**, accesso **Chiunque**. Copia l'indirizzo che finisce con `/exec`.
-7. Incolla l'indirizzo in `rassegna-stampa/config.js` (`API_URL`) e carica il file sul sito.
+7. Incolla l'indirizzo in `news/config.js` (`API_URL`) e carica il file sul sito.
 
 ## Quando modifichi lo script
 

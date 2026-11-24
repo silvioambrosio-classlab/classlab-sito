@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<base href="/">
+<title>News | ClassLab ODV</title>
+<meta name="description" content="Gli articoli e le notizie che raccontano ClassLab ODV: i laboratori nelle scuole, gli studenti divulgatori e i risultati del progetto.">
+<meta name="theme-color" content="#14365f">
+<link rel="canonical" href="https://www.classlab.it/news/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="it_IT">
+<meta property="og:site_name" content="ClassLab ODV">
+<meta property="og:title" content="News | ClassLab ODV">
+<meta property="og:description" content="Gli articoli e le notizie che raccontano ClassLab ODV: i laboratori nelle scuole, gli studenti divulgatori e i risultati del progetto.">
+<meta property="og:image" content="https://www.classlab.it/assets/img/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/montserrat-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/style.css?v=0d5ab3b6">
+</head>
+<body>
+<div id="site-header"></div>
+<main id="contenuto">
+
+<section class="testata testata--pattern">
+  <div class="contenitore">
+    <span class="badge">News</span>
+    <h1>Di ClassLab si parla</h1>
+    <p>Gli articoli che raccontano i nostri laboratori nelle scuole e il lavoro degli studenti divulgatori.</p>
+  </div>
+</section>
+
+<section class="sezione sezione--grigia">
+  <div class="contenitore">
+    <div id="rs-elenco" class="rs-griglia" aria-live="polite"></div>
+    <p id="rs-stato" class="rs-stato">Caricamento…</p>
+    <noscript><p class="rs-stato">Per vedere le news è necessario attivare JavaScript.</p></noscript>
+  </div>
+</section>
+
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/config.js?v=66d195de"></script>
+<script src="assets/js/partner-dati.js?v=adf24b54"></script>
+<script src="assets/js/laboratori-dati.js?v=8ffe1dc9"></script>
+<script src="assets/js/main.js?v=2d425212"></script>
+<script src="news/config.js"></script>
+<script src="news/news.js?v=2"></script>
+<script>
+(function () {
+  var elenco = document.getElementById("rs-elenco"), stato = document.getElementById("rs-stato");
+  function messaggio(t, errore) { stato.textContent = t; stato.className = "rs-stato" + (errore ? " rs-stato--errore" : ""); stato.hidden = false; }
+  Rassegna.leggi({ fn: "pubbliche" }).then(function (lista) {
+    if (!lista.length) { messaggio("Presto pubblicheremo qui le prime news."); return; }
+    elenco.innerHTML = lista.map(function (r) { return Rassegna.scheda(r); }).join("");
+    stato.hidden = true;
+  }, function (e) {
+    if (e.nonConfigurato) messaggio("Le news saranno presto disponibili.");
+    else messaggio("Non riusciamo a caricare le news. Riprova tra qualche minuto.", true);
+  });
+})();
+</script>
+</body>
+</html>

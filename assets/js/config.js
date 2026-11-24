@@ -43,7 +43,7 @@ window.CLASSLAB = {
       { testo: "Edizione 2023/24", link: "edizione-2023-24.html" },
       { testo: "Edizione 2022/23", link: "edizione-2022-23.html" }
     ]},
-    { testo: "News", link: "rassegna-stampa/" },
+    { testo: "News", link: "news/" },
     { testo: "Chi siamo", link: "chi-siamo.html" }
   ]
 };

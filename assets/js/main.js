@@ -8,8 +8,8 @@
   var C = window.CLASSLAB || {};
   var pagina = (location.pathname.split("/").pop() || "index.html").toLowerCase();
   if (pagina === "") pagina = "index.html";
-  // Le pagine nella cartella rassegna-stampa/ evidenziano la voce di menu "Rassegna stampa"
-  if (/^\/rassegna-stampa\//i.test(location.pathname)) pagina = "rassegna-stampa/";
+  // Le pagine nella cartella news/ evidenziano la voce di menu "News"
+  if (/^\/news\//i.test(location.pathname)) pagina = "news/";
 
   function esc(s) {
     return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {

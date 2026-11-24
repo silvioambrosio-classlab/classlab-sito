@@ -25,35 +25,35 @@ with sync_playwright() as p:
         return pg
 
     # 1. pubblico vuoto
-    pg = pagina(); pg.goto(B+'/rassegna-stampa/'); pg.wait_for_function("document.getElementById('rs-stato').textContent!=='Caricamento…'")
+    pg = pagina(); pg.goto(B+'/news/'); pg.wait_for_function("document.getElementById('rs-stato').textContent!=='Caricamento…'")
     ok('archivio vuoto: messaggio "presto"', 'Presto' in pg.text_content('#rs-stato'))
-    ok('menu contiene Rassegna stampa ed è evidenziata', pg.locator('nav a[aria-current=page]').first.text_content().strip()=='Rassegna stampa')
-    ok('piè di pagina contiene Rassegna stampa', pg.locator('footer a', has_text='Rassegna stampa').count()==1)
-    pg.goto(B+'/'); ok('dalla home il link del menu porta alla rassegna', pg.locator('nav a', has_text='Rassegna stampa').get_attribute('href')=='rassegna-stampa/')
+    ok('menu contiene Rassegna stampa ed è evidenziata', pg.locator('nav a[aria-current=page]').first.text_content().strip()=='News')
+    ok('piè di pagina contiene Rassegna stampa', pg.locator('footer a', has_text='News').count()==1)
+    pg.goto(B+'/'); ok('dalla home il link del menu porta alla rassegna', pg.locator('nav a', has_text='News').get_attribute('href')=='news/')
 
     # 2. non autenticato -> login; token scaduto lato pagina -> login
-    pg = pagina(); pg.goto(B+'/rassegna-stampa-editor/'); pg.wait_for_selector('#ed-login:not(.ed-hidden)')
+    pg = pagina(); pg.goto(B+'/news-editor/'); pg.wait_for_selector('#ed-login:not(.ed-hidden)')
     ok('editor senza accesso: schermata di login', pg.is_visible('#gbtn'))
     t = 'h.'+base64.urlsafe_b64encode(json.dumps({'email':'silvio.ambrosio@classlab.it','hd':'classlab.it','exp':int(time.time())-10}).encode()).decode().rstrip('=')+'.f'
-    pg = pagina(t); pg.goto(B+'/rassegna-stampa-editor/'); pg.wait_for_selector('#ed-login:not(.ed-hidden)')
+    pg = pagina(t); pg.goto(B+'/news-editor/'); pg.wait_for_selector('#ed-login:not(.ed-hidden)')
     ok('token scaduto (pagina): torna al login', True)
 
     # 3. token che il server considera scaduto
-    pg = pagina(tok('silvio.ambrosio@classlab.it', True)); pg.goto(B+'/rassegna-stampa-editor/'); pg.wait_for_selector('#ed-login:not(.ed-hidden)')
+    pg = pagina(tok('silvio.ambrosio@classlab.it', True)); pg.goto(B+'/news-editor/'); pg.wait_for_selector('#ed-login:not(.ed-hidden)')
     ok('token scaduto (server): login con "Sessione scaduta"', 'scaduta' in pg.text_content('#ed-loginErr'))
 
     # 4. account @classlab.it non organizzatore
-    pg = pagina(tok('mario.rossi@classlab.it')); pg.goto(B+'/rassegna-stampa-editor/'); pg.wait_for_selector('#ed-negato:not(.ed-hidden)')
+    pg = pagina(tok('mario.rossi@classlab.it')); pg.goto(B+'/news-editor/'); pg.wait_for_selector('#ed-negato:not(.ed-hidden)')
     ok('non organizzatore: "Accesso riservato", nessun dato', 'riservata' in pg.text_content('#ed-negatoMsg') and pg.locator('.ed-riga').count()==0)
     pg.goto(B+'/area-team.html'); pg.wait_for_selector('.at-card')
-    ok('non organizzatore: nessuna scheda Rassegna stampa in area team', pg.locator('.at-card', has_text='Rassegna stampa').count()==0)
+    ok('non organizzatore: nessuna scheda Rassegna stampa in area team', pg.locator('.at-card', has_text='News').count()==0)
 
     # 5. organizzatore, da telefono: crea bozza con 2 articoli e immagine
     S = tok('silvio.ambrosio@classlab.it')
     pg = pagina(S); pg.goto(B+'/area-team.html'); pg.wait_for_selector('.at-card')
-    ok('organizzatore: scheda Rassegna stampa in area team', pg.locator('a.at-card', has_text='Rassegna stampa').get_attribute('href')=='/rassegna-stampa-editor/')
-    pg = pagina(S, mobile=True); pg.goto(B+'/rassegna-stampa-editor/'); pg.wait_for_selector('#ed-app:not(.ed-hidden)')
-    pg.click('text=+ Nuova rassegna')
+    ok('organizzatore: scheda Rassegna stampa in area team', pg.locator('a.at-card', has_text='News').get_attribute('href')=='/news-editor/')
+    pg = pagina(S, mobile=True); pg.goto(B+'/news-editor/'); pg.wait_for_selector('#ed-app:not(.ed-hidden)')
+    pg.click('text=+ Nuova notizia')
     pg.fill('[data-dove=r] [data-k=titolo]', 'Prova <b>stampa</b> & scuole')
     pg.fill('[data-dove=r] [data-k=introduzione]', 'Primo paragrafo.\n\nSecondo <script>alert(1)</script>')
     pg.click('text=Salva bozza'); time.sleep(.3)
@@ -72,10 +72,10 @@ with sync_playwright() as p:
     pg.screenshot(path=OUT+'/editor-telefono.png', full_page=True)
 
     # 6. la bozza non si vede dal pubblico
-    pub = pagina(); pub.goto(B+'/rassegna-stampa/'); pub.wait_for_function("document.getElementById('rs-stato').textContent!=='Caricamento…'")
+    pub = pagina(); pub.goto(B+'/news/'); pub.wait_for_function("document.getElementById('rs-stato').textContent!=='Caricamento…'")
     ok('bozza NON visibile nell archivio pubblico', pub.locator('.rs-card').count()==0)
     slug = json.load(urllib.request.urlopen(urllib.request.Request(B+'/api', data=json.dumps({'token':S,'fn':'elenco'}).encode())))['dati'][0]['slug']
-    pub.goto(B+'/rassegna-stampa/rassegna.html?r='+slug); pub.wait_for_selector('.rs-stato--errore')
+    pub.goto(B+'/news/notizia.html?r='+slug); pub.wait_for_selector('.rs-stato--errore')
     ok('bozza NON visibile nemmeno con l indirizzo diretto (e noindex)', 'non trovata' in pub.text_content('#rs-stato') and pub.locator('meta[name=robots][content=noindex]').count()==1)
 
     # 7. riordino, anteprima e pubblicazione
@@ -85,10 +85,10 @@ with sync_playwright() as p:
     ok('anteprima prima di pubblicare, testo non eseguito', pg.locator('.ed-prev-corpo h1').text_content()=='Prova <b>stampa</b> & scuole' and pg.locator('.ed-prev-corpo script').count()==0)
     pg.screenshot(path=OUT+'/anteprima-telefono.png', full_page=False)
     pg.click('#ed-confpub'); pg.wait_for_selector('.ed-stato.pubblicata')
-    ok('pubblicata', 'pubblicata' in pg.text_content('#ed-toast'))
+    ok('pubblicata', 'pubblicata' in pg.text_content('#ed-toast').lower())
 
     # 8. pubblico: archivio e pagina singola, desktop e telefono
-    pub.goto(B+'/rassegna-stampa/'); pub.wait_for_selector('.rs-card')
+    pub.goto(B+'/news/'); pub.wait_for_selector('.rs-card')
     ok('pubblicata: compare nell archivio', pub.locator('.rs-card h2').text_content()=='Prova <b>stampa</b> & scuole')
     pub.click('.rs-card'); pub.wait_for_selector('.rs-art')
     ok('pagina singola: 2 articoli nell ordine giusto con testata e data', pub.locator('.rs-art h3').all_text_contents()==['Secondo pezzo','Studenti in cattedra'] and 'Il Piccolo · 18 novembre 2026' in pub.text_content('.rs-art:nth-of-type(2) .rs-art__fonte'))
@@ -98,18 +98,23 @@ with sync_playwright() as p:
     tel = pagina(mobile=True); tel.goto(pub.url); tel.wait_for_selector('.rs-art')
     ok('pagina singola da telefono senza scorrimento orizzontale', tel.evaluate('document.documentElement.scrollWidth')<=390)
     tel.screenshot(path=OUT+'/rassegna-telefono.png', full_page=True)
-    tel.goto(B+'/rassegna-stampa/'); tel.wait_for_selector('.rs-card'); tel.screenshot(path=OUT+'/archivio-telefono.png', full_page=True)
-    pub.goto(B+'/rassegna-stampa/'); pub.wait_for_selector('.rs-card'); pub.screenshot(path=OUT+'/archivio-desktop.png', full_page=True)
+    tel.goto(B+'/news/'); tel.wait_for_selector('.rs-card'); tel.screenshot(path=OUT+'/archivio-telefono.png', full_page=True)
+    pub.goto(B+'/news/'); pub.wait_for_selector('.rs-card'); pub.screenshot(path=OUT+'/archivio-desktop.png', full_page=True)
 
     # 9. modifica di una pubblicata, ritiro, eliminazione
     pg.fill('[data-dove=r] [data-k=titolo]', 'Titolo aggiornato'); pg.click('text=Salva modifiche'); pg.wait_for_function("document.getElementById('ed-toast').textContent.includes('online')")
     ok('modifica di una pubblicata: stesso indirizzo', json.load(urllib.request.urlopen(B+'/api?fn=pubblica&slug='+slug))['dati']['titolo']=='Titolo aggiornato')
     pg.click('text=Togli dalla pubblicazione'); pg.click('#ed-si'); pg.wait_for_selector('.ed-stato.bozza')
     ok('tolta dalla pubblicazione: sparisce dal pubblico', json.load(urllib.request.urlopen(B+'/api?fn=pubbliche'))['dati']==[])
-    pg.click('text=Elimina rassegna'); pg.click('#ed-no')
+    pg.click('text=Elimina notizia'); pg.click('#ed-no')
     ok('eliminazione annullabile', pg.locator('.ed-stato.bozza').count()==1)
-    pg.click('text=Elimina rassegna'); pg.click('#ed-si'); pg.wait_for_selector('.ed-vuoto')
+    pg.click('text=Elimina notizia'); pg.click('#ed-si'); pg.wait_for_selector('.ed-vuoto')
     ok('eliminata con conferma', True)
+    # 10. vecchi indirizzi inoltrati
+    pg = pagina(); pg.goto(B+'/rassegna-stampa/rassegna.html?r=prova'); pg.wait_for_url('**/news/notizia.html?r=prova')
+    ok('vecchio indirizzo singola -> /news/notizia.html con lo stesso ?r=', True)
+    pg.goto(B+'/rassegna-stampa/'); pg.wait_for_url('**/news/'); ok('vecchio archivio -> /news/', True)
+    pg.goto(B+'/rassegna-stampa-editor/'); pg.wait_for_url('**/news-editor/'); ok('vecchio editor -> /news-editor/', True)
     br.close()
 ok('nessun errore JavaScript nelle pagine', not errori_js)
 if errori_js: print(errori_js)

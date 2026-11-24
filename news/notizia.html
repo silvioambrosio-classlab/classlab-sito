@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<base href="/">
+<title>News | ClassLab ODV</title>
+<meta name="description" content="Le news di ClassLab ODV: gli articoli che raccontano i laboratori nelle scuole e il lavoro degli studenti.">
+<meta name="theme-color" content="#14365f">
+<link rel="canonical" href="https://www.classlab.it/news/">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="it_IT">
+<meta property="og:site_name" content="ClassLab ODV">
+<meta property="og:title" content="News | ClassLab ODV">
+<meta property="og:description" content="Le news di ClassLab ODV: gli articoli che raccontano i laboratori nelle scuole e il lavoro degli studenti.">
+<meta property="og:image" content="https://www.classlab.it/assets/img/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/montserrat-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/style.css?v=0d5ab3b6">
+</head>
+<body>
+<div id="site-header"></div>
+<main id="contenuto">
+<section class="sezione">
+  <div class="contenitore">
+    <div class="rs-pagina">
+      <a class="rs-indietro" href="news/">← Tutte le news</a>
+      <div id="rs-contenuto" aria-live="polite"></div>
+      <p id="rs-stato" class="rs-stato">Caricamento…</p>
+      <noscript><p class="rs-stato">Per vedere le news è necessario attivare JavaScript.</p></noscript>
+    </div>
+  </div>
+</section>
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/config.js?v=66d195de"></script>
+<script src="assets/js/partner-dati.js?v=adf24b54"></script>
+<script src="assets/js/laboratori-dati.js?v=8ffe1dc9"></script>
+<script src="assets/js/main.js?v=2d425212"></script>
+<script src="news/config.js"></script>
+<script src="news/news.js?v=2"></script>
+<script>
+(function () {
+  var cont = document.getElementById("rs-contenuto"), stato = document.getElementById("rs-stato");
+  var slug = new URLSearchParams(location.search).get("r") || "";
+  function messaggio(t, errore) { stato.textContent = t; stato.className = "rs-stato" + (errore ? " rs-stato--errore" : ""); stato.hidden = false; }
+  function meta(sel, attr, val) { var el = document.querySelector(sel); if (el) el.setAttribute(attr, val); }
+  function nonTrovata() {
+    var m = document.createElement("meta"); m.name = "robots"; m.content = "noindex"; document.head.appendChild(m);
+    messaggio("Notizia non trovata. Potrebbe essere stata rimossa.", true);
+  }
+  // Titolo, descrizione e dati per i motori di ricerca, impostati in base alla notizia
+  function seo(r) {
+    var titolo = r.titolo + " | News | ClassLab ODV";
+    var descr = Rassegna.breve(r.introduzione, 155) || "Gli articoli che raccontano ClassLab ODV.";
+    var url = "https://www.classlab.it/news/notizia.html?r=" + encodeURIComponent(slug);
+    var img = Rassegna.immagineSicura(r.copertina_url);
+    document.title = titolo;
+    meta('meta[name="description"]', "content", descr);
+    meta('link[rel="canonical"]', "href", url);
+    meta('meta[property="og:title"]', "content", titolo);
+    meta('meta[property="og:description"]', "content", descr);
+    meta('meta[property="og:url"]', "content", url);
+    if (img) meta('meta[property="og:image"]', "content", img);
+    var ld = document.createElement("script"); ld.type = "application/ld+json";
+    ld.textContent = JSON.stringify({ "@context": "https://schema.org", "@type": "CollectionPage", name: r.titolo, description: descr, url: url,
+      datePublished: r.data, inLanguage: "it", publisher: { "@type": "Organization", name: "ClassLab ODV", url: "https://www.classlab.it/" } });
+    document.head.appendChild(ld);
+  }
+  if (!slug) { nonTrovata(); return; }
+  Rassegna.leggi({ fn: "pubblica", slug: slug }).then(function (r) {
+    cont.innerHTML = Rassegna.contenuto(r);
+    stato.hidden = true;
+    seo(r);
+  }, function (e) {
+    if (e.nonConfigurato) messaggio("Le news saranno presto disponibili.");
+    else if (/non trovata/i.test(e.message)) nonTrovata();
+    else messaggio("Non riusciamo a caricare la notizia. Riprova tra qualche minuto.", true);
+  });
+})();
+</script>
+</body>
+</html>
