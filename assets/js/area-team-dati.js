@@ -55,5 +55,15 @@ window.AREA_TEAM = [
     livelli: [1],
     // riservata agli organizzatori (il controllo vero lo fa lo script dei turni)
     solo: ["silvio.ambrosio@classlab.it", "giulio.prodan@classlab.it", "info@classlab.it"]
+  },
+  {
+    titolo: "Rassegna stampa",
+    descrizione: "Crea, modifica e pubblica le rassegne stampa del sito.",
+    link: "/rassegna-editor/",
+    icona: "documento",
+    nuovaScheda: false,
+    livelli: [1],
+    // riservata agli organizzatori (il controllo vero lo fa lo script della rassegna)
+    solo: ["silvio.ambrosio@classlab.it", "giulio.prodan@classlab.it", "info@classlab.it"]
   }
 ];
