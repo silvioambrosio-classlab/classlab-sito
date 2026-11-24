@@ -506,6 +506,13 @@ a:hover > .partner-link svg, .partner-link:hover svg { transform: translateX(4px
 .area-team .stato { font-size: .9rem; margin: 18px 0 0; }
 [hidden] { display: none !important; }
 
+/* ---------- Menu su schermi larghi: nessuna voce va a capo (con "Rassegna stampa" le voci sono sette) ---------- */
+@media (min-width: 961px) {
+  .nav > ul { gap: 0; }
+  .nav a, .nav button.nav__voce { white-space: nowrap; padding: 10px 9px; font-size: .88rem; }
+  .nav .nav__cta a { padding: 10px 16px; }
+}
+
 /* ---------- Rassegna stampa ---------- */
 .rs-griglia { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 22px; }
 .rs-card { background: #fff; border: 1px solid var(--bordo); border-radius: 20px; box-shadow: var(--ombra); overflow: hidden; transition: transform .15s, border-color .15s; }

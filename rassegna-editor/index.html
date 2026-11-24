@@ -39,6 +39,7 @@
   .bar h1{font-size:18px;margin:0;flex:1;color:#fff;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .bar h1 small{opacity:.7;font-weight:500;margin-left:6px}
   .who{font-size:13px;text-align:right;opacity:.9}
+  @media (max-width:560px){.who .mail{display:none}.who button{margin-left:0}}
   .who button{background:rgba(255,255,255,.14);border:0;color:#fff;border-radius:999px;padding:4px 10px;margin-left:6px;cursor:pointer}
   main.wrap{padding-top:18px;padding-bottom:120px}
 
@@ -176,7 +177,7 @@ const S = { lista: [], filtro: 'tutte', cur: null, sporco: false, occupato: fals
 function mostra(id){ ['login','negato','app'].forEach(x => document.getElementById(x).classList.toggle('hidden', x !== id)); }
 function mostraLogin(msg){ mostra('login'); document.getElementById('loginErr').textContent = msg || ''; }
 function onAccesso(p){
-  document.getElementById('who').innerHTML = esc(p.email || '') + '<button type="button" onclick="esci()">Esci</button>';
+  document.getElementById('who').innerHTML = '<span class="mail">' + esc(p.email || '') + '</span><button type="button" onclick="esci()">Esci</button>';
   vaiElenco();
 }
 function esci(){ if (S.sporco && !confirm('Ci sono modifiche non salvate. Uscire lo stesso?')) return; S.sporco = false; TeamAuth.esci(); }
