@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rassegna stampa | ClassLab ODV</title>
+<meta name="description" content="Rassegna stampa di ClassLab ODV: gli articoli che raccontano i nostri laboratori nelle scuole.">
+<meta name="theme-color" content="#14365f">
+<link rel="canonical" href="https://www.classlab.it/rassegna.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="it_IT">
+<meta property="og:site_name" content="ClassLab ODV">
+<meta property="og:title" content="Rassegna stampa | ClassLab ODV">
+<meta property="og:description" content="Rassegna stampa di ClassLab ODV: gli articoli che raccontano i nostri laboratori nelle scuole.">
+<meta property="og:url" content="https://www.classlab.it/rassegna.html">
+<meta property="og:image" content="https://www.classlab.it/assets/img/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/montserrat-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/style.css?v=9cf1d4a7">
+</head>
+<body>
+<div id="site-header"></div>
+<main id="contenuto">
+
+<div id="rs-pagina"><section class="sezione"><div class="contenitore"><p class="rs-vuoto">Caricamento…</p></div></section></div>
+<noscript><section class="sezione"><div class="contenitore"><p class="rs-vuoto">Per vedere la rassegna serve JavaScript.</p></div></section></noscript>
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/config.js?v=b07b4d15"></script>
+<script src="assets/js/partner-dati.js?v=adf24b54"></script>
+<script src="assets/js/laboratori-dati.js?v=8ffe1dc9"></script>
+<script src="assets/js/main.js?v=488f1cb3"></script>
+<script src="assets/js/rassegna.js?v=fef6dbd9"></script>
+<script>
+(function () {
+  var box = document.getElementById("rs-pagina");
+  var slug = (new URLSearchParams(location.search).get("r") || "").toLowerCase();
+  function msg(t) {
+    box.innerHTML = '<section class="sezione"><div class="contenitore"><p class="rs-vuoto">' + t + '</p><p class="rs-vuoto"><a href="rassegna-stampa.html">← Tutte le rassegne</a></p></div></section>';
+  }
+  function meta(sel, attr, val) { var el = document.querySelector(sel); if (el) el.setAttribute(attr, val); }
+  if (!/^[a-z0-9-]{1,120}$/.test(slug)) {
+    var m = document.createElement("meta"); m.name = "robots"; m.content = "noindex"; document.head.appendChild(m);
+    return msg("Rassegna non trovata.");
+  }
+  Rassegna.leggi({ azione: "rassegna", r: slug }).then(function (r) {
+    var titolo = r.titolo + " | Rassegna stampa | ClassLab ODV";
+    var descr = Rassegna.riassunto(r.introduzione || ("Rassegna stampa di ClassLab ODV del " + Rassegna.dataLunga(r.data) + "."), 155);
+    var url = "https://www.classlab.it/rassegna.html?r=" + encodeURIComponent(r.slug);
+    document.title = titolo;
+    meta('meta[name="description"]', "content", descr);
+    meta('link[rel="canonical"]', "href", url);
+    meta('meta[property="og:title"]', "content", titolo);
+    meta('meta[property="og:description"]', "content", descr);
+    meta('meta[property="og:url"]', "content", url);
+    var img = Rassegna.urlImmagine(r.copertina);
+    if (img) meta('meta[property="og:image"]', "content", img);
+    var ld = {
+      "@context": "https://schema.org", "@type": "CollectionPage", name: r.titolo, description: descr, url: url,
+      datePublished: r.data, inLanguage: "it", publisher: { "@type": "Organization", name: "ClassLab ODV" },
+      mainEntity: { "@type": "ItemList", itemListElement: (r.articoli || []).map(function (a, i) {
+        return { "@type": "ListItem", position: i + 1, item: { "@type": "NewsArticle", headline: a.titolo, url: Rassegna.urlLink(a.link) || undefined, datePublished: a.data || undefined, publisher: { "@type": "Organization", name: a.testata } } };
+      }) }
+    };
+    var s = document.createElement("script"); s.type = "application/ld+json"; s.textContent = JSON.stringify(ld); document.head.appendChild(s);
+    box.innerHTML = Rassegna.pagina(r);
+  }, function (e) {
+    var m = document.createElement("meta"); m.name = "robots"; m.content = "noindex"; document.head.appendChild(m);
+    msg(e.message === "non-configurato" ? "La rassegna stampa sarà presto disponibile." : "Rassegna non trovata o non più disponibile.");
+  });
+})();
+</script>
+</body>
+</html>

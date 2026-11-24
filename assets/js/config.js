@@ -15,6 +15,11 @@ window.CLASSLAB = {
      un'email precompilata da inviare a mano a info@classlab.it.      */
   moduloEndpoint: "https://script.google.com/macros/s/AKfycbwI0Rm-mk4guzrum9im0l33TbN-W6tUUrPbOKFvMiIb72H5QIUlNViLICZ2IqxTaypLEQ/exec",
 
+  /* --- RASSEGNA STAMPA -----------------------------------------------
+     URL "/exec" dell'App web "ClassLab – Rassegna stampa" (Apps Script).
+     Finché è vuoto, la pagina pubblica mostra "sarà presto disponibile". */
+  rassegnaEndpoint: "",
+
   /* Periodo in cui si svolgono le attività (compare nel modulo) */
   periodoAttivita: "dal 12 dicembre al 15 marzo",
 
@@ -43,6 +48,7 @@ window.CLASSLAB = {
       { testo: "Edizione 2023/24", link: "edizione-2023-24.html" },
       { testo: "Edizione 2022/23", link: "edizione-2022-23.html" }
     ]},
+    { testo: "Rassegna stampa", link: "rassegna-stampa.html" },
     { testo: "Chi siamo", link: "chi-siamo.html" }
   ]
 };

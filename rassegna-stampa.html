@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rassegna stampa | ClassLab ODV</title>
+<meta name="description" content="ClassLab sui giornali: la rassegna stampa con gli articoli che raccontano i laboratori scientifici portati dagli studenti nelle scuole.">
+<meta name="theme-color" content="#14365f">
+<link rel="canonical" href="https://www.classlab.it/rassegna-stampa.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="it_IT">
+<meta property="og:site_name" content="ClassLab ODV">
+<meta property="og:title" content="Rassegna stampa | ClassLab ODV">
+<meta property="og:description" content="ClassLab sui giornali: la rassegna stampa con gli articoli che raccontano i laboratori scientifici portati dagli studenti nelle scuole.">
+<meta property="og:url" content="https://www.classlab.it/rassegna-stampa.html">
+<meta property="og:image" content="https://www.classlab.it/assets/img/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/montserrat-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/style.css?v=9cf1d4a7">
+</head>
+<body>
+<div id="site-header"></div>
+<main id="contenuto">
+
+<section class="testata testata--pattern">
+  <div class="contenitore">
+    <span class="badge">Dicono di noi</span>
+    <h1>Rassegna stampa</h1>
+    <p>Gli articoli che raccontano ClassLab, le scuole e gli studenti che fanno scienza insieme.</p>
+  </div>
+</section>
+<section class="sezione">
+  <div class="contenitore">
+    <div class="rs-griglia" id="rs-archivio" aria-live="polite"><p class="rs-vuoto">Caricamento…</p></div>
+    <noscript><p class="rs-vuoto">Per vedere la rassegna stampa serve JavaScript.</p></noscript>
+  </div>
+</section>
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/config.js?v=b07b4d15"></script>
+<script src="assets/js/partner-dati.js?v=adf24b54"></script>
+<script src="assets/js/laboratori-dati.js?v=8ffe1dc9"></script>
+<script src="assets/js/main.js?v=488f1cb3"></script>
+<script src="assets/js/rassegna.js?v=fef6dbd9"></script>
+<script>
+(function () {
+  var box = document.getElementById("rs-archivio");
+  function msg(t) { box.innerHTML = '<p class="rs-vuoto">' + t + "</p>"; }
+  Rassegna.leggi({ azione: "elenco" }).then(function (lista) {
+    lista = (lista || []).slice().sort(Rassegna.perData);
+    if (!lista.length) return msg("Nessuna rassegna pubblicata per ora. Torna presto a trovarci!");
+    box.innerHTML = lista.map(Rassegna.scheda).join("");
+  }, function (e) {
+    msg(e.message === "non-configurato" ? "La rassegna stampa sarà presto disponibile." : "Non riusciamo a caricare le rassegne in questo momento. Riprova tra poco.");
+  });
+})();
+</script>
+</body>
+</html>

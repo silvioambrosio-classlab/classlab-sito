@@ -14,6 +14,7 @@
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
     });
   }
+  if (pagina === "rassegna.html") pagina = "rassegna-stampa.html"; // la singola rassegna evidenzia "Rassegna stampa"
   function attuale(link) { return link.toLowerCase() === pagina || (pagina === "index.html" && link === "./"); }
 
   /* ---------- HEADER ---------- */

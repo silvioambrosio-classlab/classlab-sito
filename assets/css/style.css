@@ -505,3 +505,38 @@ a:hover > .partner-link svg, .partner-link:hover svg { transform: translateX(4px
 .area-team p { color: var(--grigio); }
 .area-team .stato { font-size: .9rem; margin: 18px 0 0; }
 [hidden] { display: none !important; }
+
+/* ---------- Rassegna stampa ---------- */
+.rs-griglia { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 22px; }
+.rs-card { background: #fff; border: 1px solid var(--bordo); border-radius: 20px; box-shadow: var(--ombra); overflow: hidden; transition: transform .15s, border-color .15s; }
+.rs-card:hover { transform: translateY(-3px); border-color: var(--blu); }
+.rs-card__link { display: flex; flex-direction: column; height: 100%; text-decoration: none; color: var(--testo); }
+.rs-card__img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: var(--cielo); }
+.rs-card__img--vuoto { background: var(--navy) url("../img/pattern-scienza.webp") center/260px repeat; opacity: .92; }
+.rs-card__corpo { display: flex; flex-direction: column; gap: 8px; padding: 20px 22px 24px; flex: 1; }
+.rs-card__corpo h2 { font-size: 1.2rem; line-height: 1.3; margin: 0; color: var(--inchiostro); }
+.rs-card__corpo p { margin: 0; color: var(--grigio); font-size: .95rem; flex: 1; }
+.rs-data { font-size: .8rem; font-weight: 700; color: var(--blu); text-transform: uppercase; letter-spacing: .04em; }
+.rs-vai { font-weight: 700; font-size: .92rem; color: var(--blu); text-decoration: none; }
+.rs-vuoto { text-align: center; color: var(--grigio); padding: 40px 12px; }
+.rs-pagina { max-width: 780px; margin: 0 auto; }
+.rs-cover { margin: 0 0 32px; }
+.rs-cover img { width: 100%; border-radius: 18px; box-shadow: var(--ombra); }
+.rs-intro { font-size: 1.1rem; }
+.rs-intro p { margin: 0 0 1.1em; }
+.rs-sezione { font-size: 1.4rem; margin: 40px 0 18px; }
+.rs-articoli { display: grid; gap: 16px; }
+.rs-art { display: flex; gap: 18px; background: #fff; border: 1px solid var(--bordo); border-radius: 18px; padding: 18px; box-shadow: var(--ombra); }
+.rs-art__img { width: 180px; height: 120px; object-fit: cover; border-radius: 12px; flex: none; background: var(--cielo); }
+.rs-art__testo { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.rs-art__testo h3 { margin: 0; font-size: 1.1rem; line-height: 1.35; overflow-wrap: anywhere; }
+.rs-art__testo h3 a { color: var(--inchiostro); text-decoration: none; }
+.rs-art__testo h3 a:hover { color: var(--blu); }
+.rs-art__testo p { margin: 0; font-size: .95rem; color: var(--grigio); }
+.rs-art__meta { font-size: .85rem !important; color: var(--blu) !important; }
+.rs-torna { margin-top: 40px; border-top: 1px solid var(--bordo); padding-top: 24px; font-weight: 700; }
+.rs-torna a { text-decoration: none; }
+@media (max-width: 560px) {
+  .rs-art { flex-direction: column; }
+  .rs-art__img { width: 100%; height: auto; aspect-ratio: 16 / 9; }
+}
