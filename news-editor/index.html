@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <base href="/">
-<title>Editor rassegna stampa · ClassLab</title>
+<title>Editor news · ClassLab</title>
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#14365f">
 <link rel="icon" href="assets/img/favicon.png">
@@ -110,7 +110,7 @@
 <section id="ed-login" class="ed-hidden">
   <div class="ed-cardc">
     <img src="turni/icona-192.png" alt="">
-    <h1>Rassegna stampa</h1>
+    <h1>News</h1>
     <p>Accedi con il tuo account Google <b>@classlab.it</b>.</p>
     <div id="gbtn"></div>
     <div id="ed-loginErr"></div>
@@ -132,7 +132,7 @@
     <div class="ed-wrap">
       <div class="ed-bar">
         <a href="area-team.html" title="Area team">←</a>
-        <h1>Rassegna stampa</h1>
+        <h1>News</h1>
         <div class="ed-who" id="ed-who"></div>
       </div>
     </div>
@@ -145,8 +145,8 @@
 <div class="ed-toast" id="ed-toast"></div>
 
 <script src="turni/config.js"></script>
-<script src="rassegna-stampa/config.js"></script>
-<script src="rassegna-stampa/rassegna.js?v=1"></script>
+<script src="news/config.js"></script>
+<script src="news/rassegna.js?v=e9673110"></script>
 <script src="assets/js/team-auth.js?v=bba1f888"></script>
 <script>
 /* =====================================================================
@@ -211,8 +211,8 @@ function renderElenco(){
     <div class="ed-tools">
       <div class="ed-seg">${tab('tutte','Tutte')}${tab('bozza','Bozze')}${tab('pubblicata','Pubblicate')}</div>
       <span class="ed-sp"></span>
-      <a class="ed-btn" href="rassegna-stampa/" target="_blank" rel="noopener" style="text-decoration:none">Vedi pagina pubblica ↗</a>
-      <button class="ed-btn prim" type="button" onclick="nuova()">+ Nuova rassegna</button>
+      <a class="ed-btn" href="news/" target="_blank" rel="noopener" style="text-decoration:none">Vedi pagina pubblica ↗</a>
+      <button class="ed-btn prim" type="button" onclick="nuova()">+ Nuova news</button>
     </div>
     ${lista.length ? lista.map(r => {
       const img = R.immagineSicura(r.copertina_url);
@@ -220,7 +220,7 @@ function renderElenco(){
         ${img ? `<img src="${esc(img)}" alt="">` : '<span class="ed-ph"></span>'}
         <div class="ed-t"><b>${esc(r.titolo)}</b><small>${esc(R.data(r.data))} · ${r.n_articoli} articol${r.n_articoli == 1 ? 'o' : 'i'}</small></div>
         <span class="ed-stato ${esc(r.stato)}">${r.stato === 'pubblicata' ? 'Pubblicata' : 'Bozza'}</span></div>`;
-    }).join('') : '<div class="ed-vuoto">Nessuna rassegna. Crea la prima con “+ Nuova rassegna”.</div>'}`;
+    }).join('') : '<div class="ed-vuoto">Nessuna news. Crea la prima con “+ Nuova news”.</div>'}`;
 }
 
 /* ---------- modifica ---------- */
@@ -245,11 +245,11 @@ function bloccoImmagine(dove, url){
 function renderForm(){
   const c = S.cur, pub = c.stato === 'pubblicata';
   document.getElementById('ed-main').innerHTML = `
-    <div class="ed-tools"><button class="ed-btn small" type="button" onclick="apriElenco()">← Tutte le rassegne</button>
+    <div class="ed-tools"><button class="ed-btn small" type="button" onclick="apriElenco()">← Tutte le news</button>
       <span class="ed-sp"></span>${c.id ? `<span class="ed-stato ${esc(c.stato)}">${pub ? 'Pubblicata' : 'Bozza'}</span>` : ''}</div>
     ${c.id ? `<div class="ed-meta">${pub ? `Online all'indirizzo <a href="${esc(R.linkRassegna(c.slug))}" target="_blank" rel="noopener">${esc(R.linkRassegna(c.slug))}</a>. ` : ''}Ultima modifica: ${esc(String(c.modificata_il || '').slice(0,16).replace('T',' '))} · ${esc(c.modificata_da || '')}</div>` : ''}
     <div class="ed-box" data-dove="r">
-      <h2>Rassegna</h2>
+      <h2>News</h2>
       ${campo('Titolo *', input('titolo', c.titolo, 'text', 'maxlength="200" required'))}
       ${campo('Data *', input('data', c.data, 'date', 'required'))}
       ${campo('Introduzione', `<textarea data-k="introduzione" maxlength="5000">${esc(c.introduzione)}</textarea>`, 'Testo semplice. Lascia una riga vuota per iniziare un nuovo paragrafo.')}
@@ -269,14 +269,14 @@ function renderForm(){
       </div>`).join('')}
       <button class="ed-aggiungi" type="button" onclick="aggiungiArt()">+ Aggiungi articolo</button>
     </div>
-    ${c.id ? `<div class="ed-box"><h2>Zona pericolosa</h2><button class="ed-btn danger" type="button" onclick="elimina()">Elimina rassegna</button>
-      <small style="display:block;color:var(--ed-muted);margin-top:6px">Cancella la rassegna, i suoi articoli e le immagini caricate. Non si può annullare.</small></div>` : ''}`;
+    ${c.id ? `<div class="ed-box"><h2>Zona pericolosa</h2><button class="ed-btn danger" type="button" onclick="elimina()">Elimina news</button>
+      <small style="display:block;color:var(--ed-muted);margin-top:6px">Cancella la news, i suoi articoli e le immagini caricate. Non si può annullare.</small></div>` : ''}`;
   document.querySelectorAll('#ed-main [data-k]').forEach(el => el.addEventListener('input', leggiCampo));
   renderAzioni();
 }
 function renderAzioni(){
   const c = S.cur, pub = c.stato === 'pubblicata';
-  const msg = S.sporco ? 'Modifiche non salvate' : (c.id ? 'Tutto salvato' : 'Nuova rassegna, non ancora salvata');
+  const msg = S.sporco ? 'Modifiche non salvate' : (c.id ? 'Tutto salvato' : 'Nuova news, non ancora salvata');
   document.getElementById('ed-azioni-in').innerHTML = `
     <span class="ed-msg">${msg}${pub && S.sporco ? ' · al salvataggio vanno subito online' : ''}</span>
     <button class="ed-btn" type="button" onclick="anteprima(false)">Anteprima</button>
@@ -335,8 +335,8 @@ async function caricaImg(inp, dove){
 /* Controlli prima di salvare (il server li ripete comunque) */
 function problemi(){
   const c = S.cur, p = [];
-  if (!c.titolo.trim()) p.push('Manca il titolo della rassegna.');
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(c.data)) p.push('Manca la data della rassegna.');
+  if (!c.titolo.trim()) p.push('Manca il titolo della news.');
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(c.data)) p.push('Manca la data della news.');
   c.articoli.forEach((a, i) => {
     if (!a.titolo.trim()) p.push(`Articolo ${i + 1}: manca il titolo.`);
     if (!/^https?:\/\/\S+$/i.test(a.link.trim())) p.push(`Articolo ${i + 1}: il link deve iniziare con https://`);
@@ -372,24 +372,24 @@ function anteprima(perPubblicare){
 async function pubblica(){
   chiudiModale();
   if ((S.sporco || !S.cur.id) && !(await salva())) return;
-  try { S.cur = await call('impostaStato', S.cur.id, 'pubblicata'); S.sporco = false; renderForm(); toast('Rassegna pubblicata.'); }
+  try { S.cur = await call('impostaStato', S.cur.id, 'pubblicata'); S.sporco = false; renderForm(); toast('News pubblicata.'); }
   catch(e){ if (!e.auth) toast(e.message, true); }
 }
 async function ritira(){
-  if (!(await conferma('Togliere dalla pubblicazione?', 'La rassegna torna bozza e sparisce dal sito (entro un minuto). Potrai ripubblicarla.', 'Togli dal sito'))) return;
+  if (!(await conferma('Togliere dalla pubblicazione?', 'La news torna bozza e sparisce dal sito (entro un minuto). Potrai ripubblicarla.', 'Togli dal sito'))) return;
   if (S.sporco && !(await salva())) return;
-  try { S.cur = await call('impostaStato', S.cur.id, 'bozza'); S.sporco = false; renderForm(); toast('Rassegna tolta dal sito.'); }
+  try { S.cur = await call('impostaStato', S.cur.id, 'bozza'); S.sporco = false; renderForm(); toast('News tolta dal sito.'); }
   catch(e){ if (!e.auth) toast(e.message, true); }
 }
 async function elimina(){
-  if (!(await conferma('Eliminare la rassegna?', `"${S.cur.titolo}" verrà cancellata con tutti gli articoli e le immagini. Non si può annullare.`, 'Elimina definitivamente', true))) return;
-  try { await call('elimina', S.cur.id); S.sporco = false; toast('Rassegna eliminata.'); apriElenco(); }
+  if (!(await conferma('Eliminare la news?', `"${S.cur.titolo}" verrà cancellata con tutti gli articoli e le immagini. Non si può annullare.`, 'Elimina definitivamente', true))) return;
+  try { await call('elimina', S.cur.id); S.sporco = false; toast('News eliminata.'); apriElenco(); }
   catch(e){ if (!e.auth) toast(e.message, true); }
 }
 
 document.getElementById('ed-modalBg').addEventListener('click', e => { if (e.target.id === 'ed-modalBg') chiudiModale(); });
 
-if (!API_URL) negato('Manca l\'indirizzo dello script in rassegna-stampa/config.js (vedi docs/rassegna-stampa/LEGGIMI.md).');
+if (!API_URL) negato('Manca l\'indirizzo dello script in news/config.js (vedi docs/rassegna-stampa/LEGGIMI.md).');
 else TeamAuth.avvia({
   api: API_URL, bottone: 'gbtn', onLogin: mostraLogin, onAccesso: onAccesso,
   onBusy: on => { document.getElementById('ed-busy').style.display = on ? 'block' : 'none'; }

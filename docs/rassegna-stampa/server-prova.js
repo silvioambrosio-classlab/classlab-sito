@@ -25,7 +25,7 @@ http.createServer((req, res) => {
     m.token[tok] = { aud: m.CID, email, email_verified: 'true', hd: 'classlab.it', exp: u.searchParams.get('scaduto') ? 1000 : exp };
     return json({ token: tok });
   }
-  if (u.pathname === '/rassegna-stampa/config.js') { res.writeHead(200, { 'Content-Type': 'text/javascript' }); return res.end(`window.RASSEGNA_CONFIG = { API_URL: 'http://localhost:${PORTA}/api' };`); }
+  if (u.pathname === '/news/config.js') { res.writeHead(200, { 'Content-Type': 'text/javascript' }); return res.end(`window.RASSEGNA_CONFIG = { API_URL: 'http://localhost:${PORTA}/api' };`); }
   let f = path.join(RADICE, decodeURIComponent(u.pathname));
   if (!f.startsWith(RADICE)) { res.writeHead(403); return res.end(); }
   if (fs.existsSync(f) && fs.statSync(f).isDirectory()) f = path.join(f, 'index.html');

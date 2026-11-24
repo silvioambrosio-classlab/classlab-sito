@@ -13,7 +13,7 @@ Si aggiorna caricando i file in questo repository: GitHub Pages pubblica da solo
 | Posta @classlab.it | Google Workspace. Non toccare i record MX |
 | Iscrizioni delle scuole | Foglio Google, tramite uno script Apps Script (schede "Richieste" e "Classi") |
 | Gestionale turni, checklist materiali, permessi | Pagine riservate, con script Apps Script e fogli Google |
-| Rassegna stampa | Foglio "ClassLab – Rassegna stampa" con il suo script Apps Script; immagini nella cartella "Rassegna stampa – immagini" del Drive condiviso |
+| News | Foglio "ClassLab – Rassegna stampa" con il suo script Apps Script; immagini nella cartella "Rassegna stampa – immagini" del Drive condiviso |
 
 ## Cosa modificare per cambiare i contenuti
 
@@ -38,14 +38,14 @@ Dopo aver modificato un file JavaScript o CSS, cambia il numero dopo `?v=` nelle
 
 ## Struttura
 
-- Pagine pubbliche: `index`, `partecipa`, `laboratori`, `chi-siamo`, le quattro `edizione-…`, `rassegna-stampa/`, `404`.
+- Pagine pubbliche: `index`, `partecipa`, `laboratori`, `chi-siamo`, le quattro `edizione-…`, `news/`, `404`.
 - `assets/css/style.css`: grafica del sito. `assets/img/`: immagini e loghi (il logo ClassLab è in versione `.webp` leggera e `.png`).
 - `assets/js/team-auth.js`: accesso con Google usato da tutte le pagine riservate.
 - `area-team.html`: punto di ingresso dell'area riservata.
 - `turni/`: gestionale turni. `materiali/`: checklist materiali. `permessi/`: gestione livelli di accesso.
-- `rassegna-stampa/`: archivio pubblico e pagina della singola rassegna. `rassegna-stampa-editor/`: editor riservato.
+- `news/`: archivio pubblico delle News e pagina della singola news. `news-editor/`: editor riservato.
 - `docs/rassegna-stampa/`: script Apps Script della rassegna, schema del foglio e prove in locale.
-- Le pagine riservate (compreso l'editor della rassegna) non vengono indicizzate dai motori di ricerca (`robots.txt`). La rassegna pubblica sì.
+- Le pagine riservate (compreso l'editor delle News) non vengono indicizzate dai motori di ricerca (`robots.txt`). Le News pubbliche sì.
 
 ## Area team e livelli di accesso
 
@@ -61,21 +61,23 @@ L'accesso è con Google ed è limitato agli account **@classlab.it**. I controll
 
 I livelli si cambiano dalla pagina `/permessi/`, visibile solo a Silvio, Giulio e info@classlab.it.
 
-## Rassegna stampa
+## News
 
-Una sezione pubblica (**/rassegna-stampa/**, nel menu e nel piè di pagina) mostra tutte le rassegne pubblicate, dalla più recente.
-Ogni rassegna ha titolo, data, introduzione, copertina e uno o più articoli con testata, titolo, data, link all'originale, estratto e immagine.
-La pagina di una rassegna ha un indirizzo del tipo `/rassegna-stampa/rassegna.html?r=2026-11-20-titolo`.
+Sul sito la sezione si chiama **News** (prima "Rassegna stampa"). Dietro le quinte foglio, script, schede e cartella `docs/rassegna-stampa/` mantengono il vecchio nome: non rinominarli.
 
-Le rassegne si scrivono dall'editor **/rassegna-stampa-editor/** (scheda "Rassegna stampa" in area team), senza toccare il codice:
-nuova rassegna, salva bozza, anteprima, pubblica, togli dalla pubblicazione, elimina (con conferma). Funziona anche da telefono.
+Una sezione pubblica (**/news/**, nel menu e nel piè di pagina) mostra tutte le news pubblicate, dalla più recente.
+Ogni news ha titolo, data, introduzione, copertina e uno o più articoli con testata, titolo, data, link all'originale, estratto e immagine.
+La pagina di una news ha un indirizzo del tipo `/news/notizia.html?r=2026-11-20-titolo`.
+
+Le news si scrivono dall'editor **/news-editor/** (scheda "News" in area team), senza toccare il codice:
+nuova news, salva bozza, anteprima, pubblica, togli dalla pubblicazione, elimina (con conferma). Funziona anche da telefono.
 Le immagini vengono ridotte nella pagina e caricate su Drive dallo script.
 
 - **Chi può usarlo:** solo Silvio, Giulio e info@classlab.it. La scheda compare solo a loro e il controllo vero è nello script (elenco `ORGANIZZATORI` in `docs/rassegna-stampa/Code.gs`): un altro account @classlab.it viene rifiutato anche conoscendo l'indirizzo.
 - **Cosa vede il pubblico:** solo le rassegne in stato "pubblicata". Le bozze non escono mai dallo script.
 - **Aggiornamento:** pubblicando dall'editor il sito si aggiorna da solo (entro un minuto), senza commit.
 - **Messa online e modifiche allo script:** vedi `docs/rassegna-stampa/LEGGIMI.md`. Lo schema del foglio è in `docs/rassegna-stampa/SCHEMA.md`.
-- **Indirizzo dello script:** `rassegna-stampa/config.js` (`API_URL`). Finché è vuoto la pagina pubblica mostra "presto disponibile".
+- **Indirizzo dello script:** `news/config.js` (`API_URL`). Finché è vuoto la pagina pubblica mostra "presto disponibile".
 - **Prove in locale:** `node docs/rassegna-stampa/test-locale.js` (script, con dati finti); `node docs/rassegna-stampa/server-prova.js` e poi `python3 docs/rassegna-stampa/prova-browser.py` (pagine ed editor nel browser).
 
 ## Regole da ricordare

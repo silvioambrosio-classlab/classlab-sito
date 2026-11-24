@@ -1,15 +1,15 @@
 /* =====================================================================
    CLASSLAB · RASSEGNA STAMPA — funzioni condivise
    ---------------------------------------------------------------------
-   Usato da: rassegna-stampa/ (archivio), rassegna.html (singola rassegna)
-   e dall'anteprima dell'editor (rassegna-stampa-editor/).
+   Usato da: news/ (archivio), rassegna.html (singola rassegna)
+   e dall'anteprima dell'editor (news-editor/).
    Legge i dati dallo script Apps Script (solo rassegne "pubblicate").
    Tutto il testo che arriva dal foglio viene "escapato": nessun HTML
    scritto dagli organizzatori viene mai eseguito.
    ===================================================================== */
 window.Rassegna = (function () {
   "use strict";
-  var BASE = "/rassegna-stampa/";
+  var BASE = "/news/";
 
   function esc(s) {
     return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
@@ -48,7 +48,7 @@ window.Rassegna = (function () {
     });
   }
 
-  function linkRassegna(slug) { return BASE + "rassegna.html?r=" + encodeURIComponent(slug); }
+  function linkRassegna(slug) { return BASE + "notizia.html?r=" + encodeURIComponent(slug); }
 
   /* Scheda dell'archivio */
   function scheda(r, anteprima) {
@@ -60,7 +60,7 @@ window.Rassegna = (function () {
       '<span class="rs-data">' + esc(data(r.data)) + "</span>" +
       "<h2>" + esc(r.titolo) + "</h2>" +
       (r.introduzione ? "<p>" + esc(breve(r.introduzione, 220)) + "</p>" : "") +
-      '<span class="rs-card__vai">Leggi la rassegna →</span></div>';
+      '<span class="rs-card__vai">Leggi tutto →</span></div>';
     return anteprima
       ? '<div class="rs-card">' + corpo + "</div>"
       : '<a class="rs-card" href="' + esc(linkRassegna(r.slug)) + '">' + corpo + "</a>";
@@ -80,7 +80,7 @@ window.Rassegna = (function () {
         (link ? '<a class="rs-art__link" href="' + esc(link) + '" target="_blank" rel="noopener noreferrer">Leggi l’articolo originale ↗</a>' : "") +
         "</article>";
     }).join("");
-    return '<span class="badge">Rassegna stampa</span>' +
+    return '<span class="badge">News</span>' +
       "<h1>" + esc(r.titolo) + "</h1>" +
       '<div class="rs-data">' + esc(data(r.data)) + "</div>" +
       (img ? '<img class="rs-copertina" src="' + esc(img) + '" alt="" width="1200" height="675">' : "") +

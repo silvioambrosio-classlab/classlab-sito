@@ -57,9 +57,9 @@ window.AREA_TEAM = [
     solo: ["silvio.ambrosio@classlab.it", "giulio.prodan@classlab.it", "info@classlab.it"]
   },
   {
-    titolo: "Rassegna stampa",
-    descrizione: "Crea, modifica e pubblica le rassegne stampa del sito.",
-    link: "/rassegna-stampa-editor/",
+    titolo: "News",
+    descrizione: "Crea, modifica e pubblica le news del sito.",
+    link: "/news-editor/",
     icona: "documento",
     nuovaScheda: false,
     // nessun filtro per livello: decide solo l'elenco qui sotto
