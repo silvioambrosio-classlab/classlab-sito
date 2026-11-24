@@ -63,7 +63,7 @@ I livelli si cambiano dalla pagina `/permessi/`, visibile solo a Silvio, Giulio 
 
 ## Rassegna stampa
 
-Una sezione pubblica (**/rassegna-stampa/**, nel menu e nel piè di pagina) mostra tutte le rassegne pubblicate, dalla più recente.
+Una sezione pubblica (**/rassegna-stampa/**, voce "News" nel menu e nel piè di pagina) mostra tutte le rassegne pubblicate, dalla più recente.
 Ogni rassegna ha titolo, data, introduzione, copertina e uno o più articoli con testata, titolo, data, link all'originale, estratto e immagine.
 La pagina di una rassegna ha un indirizzo del tipo `/rassegna-stampa/rassegna.html?r=2026-11-20-titolo`.
 
