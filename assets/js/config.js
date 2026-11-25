@@ -20,6 +20,7 @@ window.CLASSLAB = {
 
   /* --- CONTATTI E DATI LEGALI -------------------------------------- */
   email: "info@classlab.it",
+  pec: "classlab@digpec.it",
   nome: "ClassLab ODV",
   codiceFiscale: "90179350328",
   codiceRUNTS: "181570",

@@ -60,13 +60,15 @@
       '<footer class="footer"><div class="contenitore"><div class="footer__griglia">' +
       '<div><a class="footer__logo" href="index.html"><img src="assets/img/logo-classlab-150.webp" alt="ClassLab" width="150" height="163"></a>' +
       "<p>Laboratori scientifici e peer education per le scuole del Friuli Venezia Giulia e non solo.</p>" +
-      '<p>Scrivici: <a href="mailto:' + esc(C.email) + '">' + esc(C.email) + "</a></p></div>" +
+      '<p>Scrivici: <a href="mailto:' + esc(C.email) + '">' + esc(C.email) + "</a>" +
+      (C.pec ? '<br>PEC: <a href="mailto:' + esc(C.pec) + '">' + esc(C.pec) + "</a>" : "") + "</p></div>" +
       '<div><h4>Il sito</h4><ul>' + linkMenu.map(function (l) { return '<li><a href="' + esc(l.link) + '">' + esc(l.testo) + "</a></li>"; }).join("") + "</ul></div>" +
       '<div><h4>Partecipa</h4><ul><li><a href="partecipa.html#modulo">Iscrivi la tua scuola</a></li><li><a href="partecipa.html#divulgatori">Diventa divulgatore</a></li>' +
       '<li><a href="mailto:' + esc(C.email) + '">Contattaci</a></li>' + social + "</ul></div>" +
       "</div>" +
       '<div class="footer__fondo"><span>© ' + new Date().getFullYear() + " " + esc(C.nome) + " – Tutti i diritti riservati</span>" +
       "<span>Codice fiscale " + esc(C.codiceFiscale) + "</span><span>Codice RUNTS " + esc(C.codiceRUNTS) + "</span>" +
+      (C.pec ? "<span>PEC " + esc(C.pec) + "</span>" : "") +
       "<span>Sede legale: " + esc(C.sedeLegale) + "</span>" +
       '<a class="footer__team" href="area-team.html" rel="nofollow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Area team</a>' +
       "</div></div></footer>";
