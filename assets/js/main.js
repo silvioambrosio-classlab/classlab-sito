@@ -66,11 +66,11 @@
       '<div><h4>Partecipa</h4><ul><li><a href="partecipa.html#modulo">Iscrivi la tua scuola</a></li><li><a href="partecipa.html#divulgatori">Diventa divulgatore</a></li>' +
       '<li><a href="mailto:' + esc(C.email) + '">Contattaci</a></li>' + social + "</ul></div>" +
       "</div>" +
-      '<div class="footer__fondo"><span>© ' + new Date().getFullYear() + " " + esc(C.nome) + " – Tutti i diritti riservati</span>" +
-      "<span>Codice fiscale " + esc(C.codiceFiscale) + "</span><span>Codice RUNTS " + esc(C.codiceRUNTS) + "</span>" +
+      '<div class="footer__fondo"><div class="footer__riga"><span>© ' + new Date().getFullYear() + " " + esc(C.nome) + " – Tutti i diritti riservati</span>" +
+      '<a class="footer__team" href="area-team.html" rel="nofollow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Area team</a></div>' +
+      '<div class="footer__riga footer__legale"><span>Codice fiscale ' + esc(C.codiceFiscale) + "</span><span>Codice RUNTS " + esc(C.codiceRUNTS) + "</span>" +
       (C.pec ? "<span>PEC " + esc(C.pec) + "</span>" : "") +
-      "<span>Sede legale: " + esc(C.sedeLegale) + "</span>" +
-      '<a class="footer__team" href="area-team.html" rel="nofollow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Area team</a>' +
+      "<span>Sede legale: " + esc(C.sedeLegale) + "</span></div>" +
       "</div></div></footer>";
   }
 
