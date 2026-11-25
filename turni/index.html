@@ -130,6 +130,14 @@
   #toast.err{background:#b42318}
   #busy{position:fixed;top:0;left:0;right:0;height:3px;background:var(--accent);display:none;z-index:40;animation:b 1s infinite linear}
   @keyframes b{0%{opacity:.3}50%{opacity:1}100%{opacity:.3}}
+  /* selettore Turni | Checklist (solo livelli abilitati alla checklist) */
+  .vista{display:flex;gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px;margin:0 0 8px;width:max-content;max-width:100%}
+  .vista button{border:0;background:none;border-radius:999px;padding:6px 16px;font:inherit;font-size:14px;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+  .vista button.on{background:var(--accent);color:#fff;font-weight:600}
+  .vista button .n{display:inline-block;min-width:18px;padding:0 5px;border-radius:9px;background:var(--aff);color:#fff;font-size:11px;text-align:center}
+  #checklist{display:block;width:100%;border:0;background:#f6f9fc}
+  body.in-checklist{overflow:hidden}
+  body.in-checklist #tabs,body.in-checklist #main,body.in-checklist #materia,body.in-checklist #reload{display:none!important}
   @media (max-width:640px){
     .turno{grid-template-columns:1fr;gap:6px}
     .posti{justify-content:flex-start}
@@ -161,10 +169,15 @@
       <button class="btn small" id="reload" title="Ricarica dal foglio">Aggiorna</button>
       <button class="btn small ghost" id="logout" title="Esci">Esci</button>
     </div>
+    <nav class="vista" id="vista" aria-label="Sezione" hidden>
+      <button type="button" data-vista="turni" class="on">Turni</button>
+      <button type="button" data-vista="checklist">Checklist materiali</button>
+    </nav>
     <nav class="tabs" id="tabs"></nav>
   </div>
 </header>
 <main class="wrap" id="main"><div class="empty">Caricamento dei turni…</div></main>
+<iframe id="checklist" title="Checklist materiali" hidden></iframe>
 </div>
 
 <div class="modal-bg" id="modalBg"><div class="modal" id="modal"></div></div>
@@ -172,11 +185,12 @@
 
 <script src="config.js"></script>
 <script src="../assets/js/team-auth.js?v=bba1f888"></script>
+<script src="../assets/js/area-team-dati.js?v=dd0b38e1"></script>
 <script>
 /* ---------- configurazione: i valori sono in config.js ---------- */
 const API_URL = (window.TURNI_CONFIG || {}).API_URL;
 
-const S = { dati:null, tab:'miei', persona:'', passate:false, gestione:false, materia:'' };
+const S = { dati:null, tab:'miei', persona:'', passate:false, gestione:false, materia:'', vista:'turni', livello:undefined };
 const GIORNI = ['dom','lun','mar','mer','gio','ven','sab'];
 const MESI = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
 const oggi = (() => { const d = new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); })();
@@ -193,6 +207,7 @@ function onAccesso(p, tok){
   document.getElementById('login').classList.add('hidden');
   document.getElementById('app').classList.remove('hidden');
   carica();
+  ricaricaChecklist(); // dopo un nuovo accesso la checklist riparte con la sessione nuova
 }
 function esci(){ TeamAuth.esci(); }
 function avviaLogin(){
@@ -203,13 +218,71 @@ function avviaLogin(){
 }
 const call = (fn, ...args) => TeamAuth.chiama(fn, ...args);
 async function carica(){
-  try { S.dati = await call('getDati'); render(); }
+  try { S.dati = await call('getDati'); render(); controllaChecklist(); }
   catch(e){ toast(e.message, true); document.getElementById('main').innerHTML = '<div class="empty">Impossibile caricare i turni: '+esc(e.message)+'</div>'; }
 }
 async function azione(fn, args, msg){
   try { S.dati = await call(fn, ...args); render(); if (msg) toast(msg); }
   catch(e){ toast(e.message, true); if (S.token) carica(); }
 }
+
+/* ---------- checklist materiali dentro l'app (solo livelli abilitati) ----------
+   I livelli che vedono la checklist sono quelli della scheda "Checklist materiali"
+   in ../assets/js/area-team-dati.js (oggi 1 e 2): si cambiano solo lì.
+   Gli altri utenti non vedono nessuna differenza. Il controllo vero resta nello script dei materiali. */
+function livelliChecklist(){
+  const v = (window.AREA_TEAM || []).find(x => /\/materiali\/?$/.test(x.link || ''));
+  return v && v.livelli && v.livelli.length ? v.livelli.map(Number) : [1, 2];
+}
+function puoChecklist(){
+  const liv = Number(S.livello || (S.dati && S.dati.utente && S.dati.utente.livello));
+  if (liv) return livelliChecklist().includes(liv);
+  return !!(S.dati && S.dati.utente && S.dati.utente.organizzatore); // server senza "chiSono": solo organizzatori
+}
+async function controllaChecklist(){
+  if (S.livello === undefined){
+    S.livello = null;
+    try { const io = await call('chiSono'); S.livello = io && io.livello ? Number(io.livello) : null; } catch(e){ S.livello = null; }
+  }
+  const ok = puoChecklist();
+  document.getElementById('vista').hidden = !ok;
+  if (!ok){ if (S.vista !== 'turni') mostraVista('turni'); return; }
+  let salvata = ''; try { salvata = localStorage.getItem('turniVista') || ''; } catch(e){}
+  if (location.hash === '#checklist') salvata = 'checklist';
+  if (salvata === 'checklist' && S.vista !== 'checklist') mostraVista('checklist');
+}
+function mostraVista(v){
+  if (v === 'checklist' && !puoChecklist()) v = 'turni';
+  S.vista = v;
+  try { localStorage.setItem('turniVista', v); } catch(e){}
+  document.querySelectorAll('#vista [data-vista]').forEach(b => b.classList.toggle('on', b.dataset.vista === v));
+  const fr = document.getElementById('checklist');
+  document.body.classList.toggle('in-checklist', v === 'checklist');
+  fr.hidden = v !== 'checklist';
+  if (v === 'checklist'){
+    if (!fr.getAttribute('src')) fr.src = '../materiali/?incorporata=1';
+    else try { fr.contentWindow.postMessage({ classlab: 'aggiorna' }, location.origin); } catch(e){}
+    misuraChecklist();
+  }
+  window.scrollTo(0, 0);
+}
+function misuraChecklist(){
+  const fr = document.getElementById('checklist');
+  if (fr.hidden) return;
+  const h = document.querySelector('header.top').offsetHeight;
+  fr.style.height = Math.max(200, window.innerHeight - h) + 'px';
+}
+function ricaricaChecklist(){
+  const fr = document.getElementById('checklist');
+  if (fr.getAttribute('src')) fr.src = '../materiali/?incorporata=1&t=' + Date.now();
+}
+window.addEventListener('resize', misuraChecklist);
+window.addEventListener('message', e => {
+  if (e.origin !== location.origin || !e.data || e.data.classlab !== 'accesso') return;
+  // la sessione è scaduta mentre si usava la checklist: si rientra dalla schermata dell'app
+  mostraLogin('Sessione scaduta: accedi di nuovo.');
+  try { google.accounts.id.prompt(); } catch(err){}
+});
 
 /* ---------- utilità ---------- */
 function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -560,8 +633,9 @@ const unkey = k => { const [m,r,c,t,x] = k.split('|'); return [m, Number(r), Num
 const decode = s => s;
 
 document.addEventListener('click', e => {
-  const el = e.target.closest('[data-installa],[data-modg],[data-riprog],[data-tab],[data-prendi],[data-lascia],[data-posto],[data-txt],[data-coppia],[data-close],#nAdd,#reload,#logout');
+  const el = e.target.closest('[data-vista],[data-installa],[data-modg],[data-riprog],[data-tab],[data-prendi],[data-lascia],[data-posto],[data-txt],[data-coppia],[data-close],#nAdd,#reload,#logout');
   if (!el) { if (e.target.id === 'modalBg') chiudiModal(); return; }
+  if (el.dataset.vista){ mostraVista(el.dataset.vista); return; }
   if (el.hasAttribute('data-installa')){ installa(); return; }
   if (el.dataset.tab){ S.tab = el.dataset.tab; render(); window.scrollTo(0,0); return; }
   if (el.id === 'reload'){ carica(); return; }

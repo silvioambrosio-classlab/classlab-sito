@@ -130,6 +130,10 @@
   .toast.show{opacity:.95}
 
   @media (max-width:600px){.blk.prep .bh .t,.blk.cond .bh .t{flex-basis:100%;order:5;font-size:12px}.dh{gap:10px;padding:12px}}
+  /* dentro l'app turni: niente barra propria (titolo, freccia, Esci li dà già l'app) */
+  html.incorporata .bar{display:none}
+  html.incorporata .tabs{padding-top:4px}
+  html.incorporata #login a{display:none}
   /* stampa: solo l'uscita scelta */
   @media print{
     header.top,.tools,.azioni,.toast,#busy,.chev,.ring{display:none!important}
@@ -145,6 +149,11 @@
 </style>
 </head>
 <body>
+<script>
+  // Aperta dentro l'app Turni (selettore "Checklist materiali"): stessa sessione, niente doppia barra
+  window.INCORPORATA = window.self !== window.top && /[?&]incorporata=1/.test(location.search);
+  if (window.INCORPORATA) document.documentElement.classList.add('incorporata');
+</script>
 <div id="busy"></div>
 
 <section id="login" class="hidden">
@@ -546,6 +555,8 @@ function render(){
 /* ========= Login e server: vedi ../assets/js/team-auth.js ========= */
 function mostraLogin(msg){
   S.token = null;
+  // dentro l'app turni il nuovo accesso lo fa l'app, non questa pagina
+  if (window.INCORPORATA && S.data) { try { parent.postMessage({ classlab:'accesso' }, location.origin); } catch(e){} }
   document.getElementById('app').classList.add('hidden');
   document.getElementById('login').classList.remove('hidden');
   document.getElementById('loginErr').textContent = msg || '';
@@ -608,7 +619,10 @@ document.addEventListener('change', e => {
   if(e.target.id==='area'){ S.area = e.target.value; render(); }
 });
 let tt; function toast(m){ const t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(tt); tt = setTimeout(()=>t.classList.remove('show'), 2600); }
-setInterval(() => { if(!document.hidden && S.token) carica(true); }, 3*60*1000);
+// dentro l'app turni: non aggiornare mentre l'utente è sulla parte Turni
+const nascosta = () => { try { return !!(window.frameElement && !window.frameElement.offsetParent); } catch(e){ return false; } };
+setInterval(() => { if(!document.hidden && !nascosta() && S.token) carica(true); }, 3*60*1000);
+window.addEventListener('message', e => { if(e.origin===location.origin && e.data && e.data.classlab==='aggiorna' && S.token) carica(true); });
 document.addEventListener('visibilitychange', () => { if(!document.hidden && S.token && S.data) carica(true); });
 avviaLogin();
 </script>
