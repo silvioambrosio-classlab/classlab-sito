@@ -138,6 +138,32 @@
   #checklist{display:block;width:100%;border:0;background:#f6f9fc}
   body.in-checklist{overflow:hidden}
   body.in-checklist #tabs,body.in-checklist #main,body.in-checklist #materia,body.in-checklist #reload{display:none!important}
+  /* modulo "Nuova giornata" */
+  .modal.wide{max-width:680px;max-height:calc(100vh - 32px);overflow:auto}
+  .ng-lb{font-size:13px;color:var(--muted);margin:0 0 5px}
+  .ng-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+  .ng-grid input,.ng-grid select{width:100%}
+  .ng-chips{display:flex;flex-wrap:wrap;gap:5px}
+  .ng-ch{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:999px;border:1px solid #c9ced8;background:#fff;font-size:13px;cursor:pointer;user-select:none;color:var(--ink)}
+  .ng-ch.on{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+  .ng-ch .n{font-size:11px;background:var(--accent);color:#fff;border-radius:999px;width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center}
+  .ng-fx{margin-top:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+  .ng-fh{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .ng-tm{display:flex;align-items:center;gap:4px}
+  .ng-tm input{width:100px;padding:6px 8px;border:1px solid var(--line);border-radius:8px}
+  .ng-tm button{width:30px;height:30px;padding:0}
+  .ng-cls{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-top:8px;background:#fff}
+  .ng-cls.man{border-color:var(--aff)}
+  .ng-cls input[type=text]{width:100%}
+  .ng-del{border:0;background:none;color:var(--muted);cursor:pointer;font-size:13px;padding:2px 4px}
+  .ng-lnk{border:0;background:none;color:var(--accent);cursor:pointer;font-size:13px;padding:2px 0}
+  .ng-bdg{font-size:12px;padding:2px 8px;border-radius:999px;background:var(--aff-soft);color:var(--aff-ink)}
+  .ng-av{font-size:13px;color:var(--aff-ink);margin:6px 0 0}
+  .ng-err{font-size:13px;color:#b42318;margin:6px 0 0}
+  .ng-prev{border:1px solid var(--line);border-radius:8px;padding:6px;background:#fff;overflow-x:auto}
+  .ng-prev table{border-collapse:collapse;font-family:Calibri,Arial,sans-serif;font-size:11px;color:#111;width:100%;min-width:520px;table-layout:fixed}
+  .ng-prev td{height:18px;text-align:center;padding:0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ng-prev .bd{border:1px solid #333}.ng-prev .bl{border:1px solid #333;border-right:0}.ng-prev .br{border:1px solid #333;border-left:0}
   @media (max-width:640px){
     .turno{grid-template-columns:1fr;gap:6px}
     .posti{justify-content:flex-start}
@@ -389,16 +415,8 @@ function viewGestione(){
 
 function viewGiornate(){
   let h = `<div class="panel"><h2>Nuova giornata</h2>
-    <div class="form">
-      <label>Materia<select id="nMateria">${(S.dati.materie||[]).map(m => `<option value="${m.id}" ${S.materia===m.id?'selected':''}>${esc(m.nome)}</option>`).join('')}</select></label>
-      <label>Data<input type="date" id="nData"></label>
-      <label>Scuola<input type="text" id="nScuola" placeholder="es. Codermatz"></label>
-      <label>Fasce orarie (separate da virgola)<input type="text" id="nOrari" value="08:00-10:00, 10:00-12:00"></label>
-      <label>Classi per fascia<input type="number" id="nCoppie" min="1" max="4" value="1"></label>
-      <label>Nota (facoltativa)<input type="text" id="nNota" placeholder="es. Fuori città!"></label>
-      <button class="btn primary" id="nAdd">Aggiungi giornata</button>
-    </div>
-    <p class="hint">La giornata viene inserita nel foglio nella posizione giusta per data, con il colore alternato e un posto "C" in ogni turno.</p>
+    <button class="btn primary" id="nApri">+ Nuova giornata</button>
+    <p class="hint">Scegli scuola, fasce orarie, classi ed esperimenti: la giornata viene inserita nel foglio al posto giusto per data, con la formattazione del foglio e un posto "C" per ogni classe.</p>
   </div>
   <div class="tools"><label class="chk"><input type="checkbox" id="passate" ${S.passate?'checked':''}> Mostra giornate passate</label></div>`;
   const lista = giornateVis().filter(g => futura(g) || S.passate);
@@ -524,8 +542,8 @@ function trovaConflitti(nome, extra){
 }
 
 /* ---------- modali ---------- */
-function apriModal(html){ document.getElementById('modal').innerHTML = html; document.getElementById('modalBg').style.display = 'flex'; }
-function chiudiModal(){ document.getElementById('modalBg').style.display = 'none'; }
+function apriModal(html){ const m = document.getElementById('modal'); m.classList.remove('wide'); m.innerHTML = html; document.getElementById('modalBg').style.display = 'flex'; }
+function chiudiModal(){ document.getElementById('modalBg').style.display = 'none'; NG = null; }
 
 function modalPosto(mat, riga, col, testo, tipo){
   const tipi = [['team','Team confermato (verde)'],['fsl','Studente FSL (rosa)'],['affiancare','FSL da affiancare (arancione)'],['libero','Posto libero per il team (C)'],['vuoto','Vuoto']];
@@ -586,6 +604,245 @@ function modalGiornata(mat, riga){
   };
 }
 
+/* ---------- modulo "Nuova giornata" ----------
+   Scelte guidate (fasce, anno, sezione, esperimenti) che producono il testo nel formato del foglio,
+   "2A: Epiteliali-DNA-Batteri". Per i casi particolari (es. "3+4A") una classe si può scrivere a mano:
+   vale solo per quella classe e nessun'altra scelta la modifica. Primaria/secondaria serve solo qui
+   (anni 1-5 o 1-3) e non viene scritta nel foglio. */
+const NG_ESPERIMENTI = { bio: ['Epiteliali','DNA','Batteri','AIRC','Antibiotici','Digestione','Elettroforesi','Cipolla','Foglie'] };
+const NG_COLORI = { bio: ['#c9daf8','#a4c2f4'], fisica: ['#d9ead3','#93c47d'] }; // sfondi alternati delle giornate, come in Codice.js
+const NG_COLONNE = [3,6,9,12];
+const NG_MESI = ['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'];
+let NG = null;
+
+const ngMin = t => { const [h,m] = String(t||'').split(':').map(Number); return (h||0)*60 + (m||0); };
+const ngOra = n => { n = ((n % 1440) + 1440) % 1440; return String(Math.floor(n/60)).padStart(2,'0') + ':' + String(n%60).padStart(2,'0'); };
+const ngNomeBase = s => String(s||'').replace(/\s+[IVX]+$/,'').trim(); // "Dardi V" -> "Dardi"
+const ngNuovaClasse = () => ({ anno:'', sez:'', esp:[], man:false, testo:'' });
+const ngAnni = () => NG.ordine === 'primaria' ? ['1','2','3','4','5'] : NG.ordine === 'secondaria' ? ['1','2','3'] : [];
+const ngTestoGuidato = c => (c.anno && c.sez ? c.anno + c.sez : '?') + ': ' + c.esp.join('-');
+const ngTesto = c => c.man ? c.testo.trim() : ngTestoGuidato(c);
+
+function ngScuole(){
+  return [...new Set(S.dati.giornate.map(g => g.scuola).filter(Boolean))].sort((a,b) => a.localeCompare(b,'it'));
+}
+function ngOrdineScuola(scuola){
+  const o = (S.dati.ordiniScuole || {})[ngNomeBase(scuola)];
+  if (o) return o;
+  // classi di 4ª o 5ª già fatte in questa scuola = primaria
+  const anni = S.dati.giornate.filter(g => ngNomeBase(g.scuola) === ngNomeBase(scuola))
+    .flatMap(g => g.turni.map(t => (/^\s*(\d)/.exec(t.classe) || [])[1])).filter(Boolean);
+  return anni.some(a => a === '4' || a === '5') ? 'primaria' : '';
+}
+function ngEsperimenti(){
+  const base = NG_ESPERIMENTI[NG.materia] || [];
+  const conta = {};
+  S.dati.giornate.filter(g => g.materia === NG.materia).forEach(g => g.turni.forEach(t => {
+    const i = t.classe.indexOf(':'); if (i < 0) return;
+    t.classe.slice(i+1).split('-').map(s => s.trim()).filter(s => /^[A-Za-zÀ-ÿ ]{3,30}$/.test(s)).forEach(s => {
+      const k = base.find(b => b.toLowerCase() === s.toLowerCase()) || s;
+      conta[k] = (conta[k] || 0) + 1;
+    });
+  }));
+  // oltre all'elenco base: esperimenti già usati nel foglio almeno 2 volte (es. per Fisica)
+  const extra = Object.keys(conta).filter(k => !base.includes(k) && conta[k] >= 2).sort((a,b) => conta[b] - conta[a]);
+  return base.concat(extra);
+}
+function ngDataFoglio(iso){
+  if (!iso) return null;
+  // l'anno lo decide il server (agosto-dicembre = primo anno scolastico): qui contano mese e giorno
+  const [, m, d] = iso.split('-').map(Number);
+  return { m, d, testo: d + '-' + NG_MESI[m-1], chiave: (m >= 8 ? 0 : 1) + '-' + String(m).padStart(2,'0') + '-' + String(d).padStart(2,'0') };
+}
+function ngPosizione(){
+  const df = ngDataFoglio(NG.data); if (!df) return null;
+  const chiave = g => { const [, m, d] = g.data.split('-').map(Number); return (m >= 8 ? 0 : 1) + '-' + String(m).padStart(2,'0') + '-' + String(d).padStart(2,'0'); };
+  const lista = S.dati.giornate.filter(g => g.materia === NG.materia).slice().sort((a,b) => a.riga - b.riga);
+  const prec = lista.filter(g => chiave(g) <= df.chiave).pop();
+  const succ = lista.find(g => chiave(g) > df.chiave);
+  const col = NG_COLORI[NG.materia] || ['#eeeeee','#dddddd'];
+  const colore = prec && String(prec.colore).toLowerCase() === col[0] ? col[1] : col[0];
+  return { prec, succ, colore, df };
+}
+
+function modalNuovaGiornata(){
+  const materia = S.materia || ((S.dati.materie||[])[0] || {}).id || 'bio';
+  NG = { materia, data:'', scuola:'', altra:false, ordine:'', nota:'', errori:false,
+    fasce: [{ s:'08:00', e:'10:00', classi:[ngNuovaClasse()] }, { s:'10:00', e:'12:00', classi:[ngNuovaClasse()] }] };
+  apriModal('');
+  document.getElementById('modal').classList.add('wide');
+  ngRender();
+}
+
+function ngCh(testo, on, attr, n){ return `<span class="ng-ch ${on?'on':''}" ${attr}>${n ? `<span class="n">${n}</span>` : ''}${esc(testo)}</span>`; }
+function ngTm(i, k, v){
+  return `<div class="ng-tm"><button class="btn" data-ng="step" data-i="${i}" data-k="${k}" data-d="-5" aria-label="meno 5 minuti">−</button>`
+    + `<input type="time" step="300" value="${v}" data-ngtm="${i}|${k}" aria-label="${k==='s'?'inizio':'fine'}">`
+    + `<button class="btn" data-ng="step" data-i="${i}" data-k="${k}" data-d="5" aria-label="più 5 minuti">+</button></div>`;
+}
+
+function ngErrori(){
+  const e = [];
+  if (!NG.data) e.push('Scegli la data.');
+  if (!NG.scuola.trim()) e.push('Scegli la scuola.');
+  if (!NG.ordine) e.push('Indica se è primaria o secondaria.');
+  if (!NG.fasce.some(f => f.classi.length)) e.push('Aggiungi almeno una classe.');
+  NG.fasce.forEach(f => {
+    if (ngMin(f.e) <= ngMin(f.s)) e.push(`Fascia ${f.s}: la fine deve essere dopo l'inizio.`);
+    f.classi.forEach(c => {
+      if (c.man){ if (!c.testo.trim()) e.push(`Fascia ${f.s}: una classe scritta a mano è vuota.`); }
+      else if (!c.anno || !c.sez || !c.esp.length || !ngAnni().includes(c.anno)) e.push(`Fascia ${f.s}: completa anno, sezione ed esperimenti di ogni classe.`);
+    });
+  });
+  return [...new Set(e)];
+}
+
+function ngRender(){
+  NG.fasce.sort((a,b) => ngMin(a.s) - ngMin(b.s));
+  const scuole = ngScuole();
+  const esperimenti = ngEsperimenti();
+  let h = `<h3>Nuova giornata</h3>
+    <div class="ng-grid">
+      <div><p class="ng-lb">Materia</p><div class="ng-chips">${(S.dati.materie||[]).map(m => ngCh(m.nome, NG.materia===m.id, `data-ng="materia" data-v="${m.id}"`)).join('')}</div></div>
+      <div><p class="ng-lb">Scuola</p><div class="ng-chips">${ngCh('Primaria (elementari)', NG.ordine==='primaria', 'data-ng="ordine" data-v="primaria"')}${ngCh('Secondaria (medie)', NG.ordine==='secondaria', 'data-ng="ordine" data-v="secondaria"')}</div></div>
+      <div><p class="ng-lb">Data</p><input type="date" id="ngData" value="${esc(NG.data)}"></div>
+      <div><p class="ng-lb">Istituto</p>
+        <select id="ngScuolaSel"><option value="">Scegli…</option>${scuole.map(s => `<option ${!NG.altra && s===NG.scuola?'selected':''}>${esc(s)}</option>`).join('')}<option value="__altra" ${NG.altra?'selected':''}>+ Altra scuola…</option></select>
+        ${NG.altra ? `<input type="text" id="ngScuolaTxt" value="${esc(NG.scuola)}" placeholder="Nome della scuola" style="margin-top:6px">` : ''}
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px">
+      <p class="ng-lb" style="margin:0">Fasce orarie (max 4, ordinate per inizio)</p>
+      ${NG.fasce.length < 4 ? '<span class="ng-ch" data-ng="addFascia">+ Fascia</span>' : ''}
+    </div>`;
+  NG.fasce.forEach((f, i) => {
+    const dur = ngMin(f.e) - ngMin(f.s);
+    const sovr = NG.fasce.some((g, j) => j !== i && ngMin(g.s) < ngMin(f.e) && ngMin(f.s) < ngMin(g.e));
+    h += `<div class="ng-fx"><div class="ng-fh">${ngTm(i,'s',f.s)}<span style="color:var(--muted)">→</span>${ngTm(i,'e',f.e)}
+      <span style="font-size:13px;color:var(--muted)">${dur > 0 ? Math.floor(dur/60) + 'h' + (dur%60 ? String(dur%60).padStart(2,'0') : '') : '—'}</span>
+      <span style="flex:1"></span><span class="ng-ch" data-ng="addClasse" data-i="${i}">+ Classe</span>
+      ${NG.fasce.length > 1 ? `<button class="ng-del" data-ng="delFascia" data-i="${i}" aria-label="Togli fascia">Togli fascia</button>` : ''}</div>
+      ${dur <= 0 ? `<p class="ng-err">La fine deve essere dopo l'inizio.</p>` : ''}
+      ${sovr && dur > 0 ? '<p class="ng-av">Si sovrappone a un\'altra fascia: classi in parallelo.</p>' : ''}
+      ${!f.classi.length ? '<p class="hint" style="margin-top:6px">Nessuna classe in questa fascia: resterà solo l\'orario.</p>' : ''}`;
+    f.classi.forEach((c, k) => {
+      const at = `data-i="${i}" data-c="${k}"`;
+      if (c.man){
+        h += `<div class="ng-cls man"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+            <span class="ng-bdg">Scritta a mano</span><button class="ng-lnk" data-ng="guidata" ${at}>Torna alla scelta guidata</button>
+            <span style="flex:1"></span><button class="ng-del" data-ng="delClasse" ${at}>Togli classe</button></div>
+          <input type="text" data-ngtxt="${i}|${k}" value="${esc(c.testo)}" maxlength="120" placeholder="3+4A: Epiteliali-Cipolla-Batteri">
+          <p class="hint" style="margin-top:4px">Scritto nel foglio così com'è. Vale solo per questa classe.</p>
+          ${NG.errori && !c.testo.trim() ? '<p class="ng-err">Scrivi la classe o torna alla scelta guidata.</p>' : ''}</div>`;
+      } else {
+        const anni = ngAnni(), fuori = c.anno && anni.length && !anni.includes(c.anno);
+        const incompleta = NG.errori && (!c.anno || !c.sez || !c.esp.length || fuori);
+        h += `<div class="ng-cls"><div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start">
+            <div><p class="ng-lb">Anno</p><div class="ng-chips">${anni.length ? anni.map(a => ngCh(a, c.anno===a, `data-ng="anno" data-v="${a}" ${at}`)).join('') : '<span class="hint" style="margin:0">Prima scegli primaria o secondaria</span>'}</div></div>
+            <div><p class="ng-lb">Sezione</p><div class="ng-chips">${'ABCDEFG'.split('').map(s => ngCh(s, c.sez===s, `data-ng="sez" data-v="${s}" ${at}`)).join('')}</div></div>
+            <span style="flex:1"></span>
+            <div style="display:flex;gap:10px;align-items:center"><button class="ng-lnk" data-ng="mano" ${at}>Scrivi a mano</button><button class="ng-del" data-ng="delClasse" ${at}>Togli classe</button></div></div>
+          ${fuori ? `<p class="ng-err">L'anno ${esc(c.anno)} non esiste nella secondaria: sceglilo di nuovo.</p>` : ''}
+          <p class="ng-lb" style="margin-top:8px">Esperimenti, in ordine (max 3)</p>
+          <div class="ng-chips">${esperimenti.map(x => { const q = c.esp.indexOf(x); return ngCh(x, q >= 0, `data-ng="esp" data-v="${esc(x)}" ${at}`, q >= 0 ? q+1 : 0); }).join('')}</div>
+          ${incompleta ? '<p class="ng-err">Completa anno, sezione ed esperimenti, oppure scrivi la classe a mano.</p>' : ''}</div>`;
+      }
+    });
+    h += '</div>';
+  });
+  h += `<div style="margin-top:12px"><p class="ng-lb">Nota (facoltativa)</p><input type="text" id="ngNota" value="${esc(NG.nota)}" placeholder="Attenzione agli orari" style="width:100%"></div>
+    <p class="ng-lb" style="margin-top:14px">Anteprima nel foglio</p>
+    <div class="ng-prev" id="ngPrev"></div><p class="hint" id="ngPos"></p>
+    ${NG.errori ? ngErrori().map(x => `<p class="ng-err">${esc(x)}</p>`).join('') : ''}
+    <div class="acts"><button class="btn ghost" data-close>Annulla</button><button class="btn primary" data-ng="salva" id="ngSalva">Aggiungi giornata</button></div>`;
+  const mod = document.getElementById('modal');
+  const scroll = mod.scrollTop;
+  mod.innerHTML = h;
+  mod.scrollTop = scroll;
+  ngAnteprima();
+}
+
+function ngAnteprima(){
+  const pos = ngPosizione();
+  const bg = pos ? pos.colore : (NG_COLORI[NG.materia] || ['#eee'])[0];
+  const coppie = Math.max(1, ...NG.fasce.map(f => f.classi.length));
+  const cols = Math.max(11, NG_COLONNE[NG.fasce.length - 1] + 1);
+  const td = (t, cls, span) => `<td ${span ? 'colspan="2"' : ''} class="${cls||''}" style="background:${bg}">${t}</td>`;
+  const riga = fn => { let r = '', c = 0; while (c < cols){ const fi = [2,5,8,11].indexOf(c); if (fi >= 0 && fi < NG.fasce.length){ r += fn(fi, c); c += 2; } else { r += fn(-1, c); c++; } } return '<tr>' + r + '</tr>'; };
+  let t = riga((fi, c) => fi >= 0 ? td(esc(NG.fasce[fi].s + '-' + NG.fasce[fi].e), 'bd', 1) : td(c === 0 ? '<b>' + esc(pos ? pos.df.testo : '') + '</b>' : c === 1 ? esc(NG.scuola) : ''));
+  for (let k = 0; k < coppie; k++){
+    t += riga((fi, c) => { if (fi < 0) return td(k === 0 && c === 0 ? esc(NG.nota) : ''); return NG.fasce[fi].classi[k] ? `<td class="bl" style="background:${bg}">C</td><td class="br" style="background:${bg}"></td>` : td('') + td(''); });
+    t += riga(fi => { if (fi < 0) return td(''); const c = NG.fasce[fi].classi[k]; return c ? td(esc(ngTesto(c)), 'bd', 1) : td('', '', 1); });
+  }
+  t += riga(fi => fi >= 0 ? td('', '', 1) : td(''));
+  document.getElementById('ngPrev').innerHTML = '<table>' + t + '</table>';
+  const nomeG = g => g ? `«${dataBreve(g.data)} ${g.scuola}»` : '';
+  document.getElementById('ngPos').textContent = !pos ? 'Scegli la data per vedere dove verrà inserita.'
+    : pos.prec && pos.succ ? `Verrà inserita tra ${nomeG(pos.prec)} e ${nomeG(pos.succ)}.`
+    : pos.succ ? `Verrà inserita prima di ${nomeG(pos.succ)}, all'inizio dell'elenco.`
+    : pos.prec ? `Verrà inserita dopo ${nomeG(pos.prec)}, in fondo all'elenco.` : 'Sarà la prima giornata del foglio.';
+}
+
+async function ngSalva(){
+  NG.errori = true;
+  const err = ngErrori();
+  if (err.length){ ngRender(); toast(err[0], true); return; }
+  const d = {
+    materia: NG.materia, data: NG.data, scuola: NG.scuola.trim(), nota: NG.nota.trim(),
+    fasce: NG.fasce.map(f => ({ orario: f.s + '-' + f.e, classi: f.classi.map(ngTesto) })),
+  };
+  const btn = document.getElementById('ngSalva');
+  btn.disabled = true; btn.textContent = 'Salvataggio…';
+  try {
+    S.dati = await call('aggiungiGiornata', d);
+    chiudiModal(); render(); toast('Giornata aggiunta');
+  } catch(e){
+    toast(e.message, true); btn.disabled = false; btn.textContent = 'Aggiungi giornata'; // il modulo resta aperto con i dati inseriti
+  }
+}
+
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-ng]');
+  if (!el || !NG) return;
+  const a = el.dataset.ng, i = Number(el.dataset.i), k = Number(el.dataset.c), v = el.dataset.v;
+  const f = NG.fasce[i], c = f && f.classi[k];
+  if (a === 'salva'){ ngSalva(); return; }
+  if (a === 'materia'){ NG.materia = v; NG.fasce.forEach(x => x.classi.forEach(y => { if (!y.man) y.esp = []; })); }
+  else if (a === 'ordine') NG.ordine = v;
+  else if (a === 'addFascia'){ const u = NG.fasce[NG.fasce.length - 1]; const s = u ? u.e : '08:00'; NG.fasce.push({ s, e: ngOra(ngMin(s) + 120), classi:[ngNuovaClasse()] }); }
+  else if (a === 'delFascia'){ if (!f.classi.length || confirm(`Tolgo la fascia ${f.s}-${f.e} con le sue classi?`)) NG.fasce.splice(i, 1); }
+  else if (a === 'addClasse') f.classi.push(ngNuovaClasse());
+  else if (a === 'delClasse') f.classi.splice(k, 1);
+  else if (a === 'step'){ const ol = ngMin(f.e) - ngMin(f.s); f[el.dataset.k] = ngOra(ngMin(f[el.dataset.k]) + Number(el.dataset.d)); if (el.dataset.k === 's' && ol > 0) f.e = ngOra(ngMin(f.s) + ol); }
+  else if (a === 'anno') c.anno = v;
+  else if (a === 'sez') c.sez = v;
+  else if (a === 'esp'){ const q = c.esp.indexOf(v); if (q >= 0) c.esp.splice(q, 1); else if (c.esp.length < 3) c.esp.push(v); else { toast('Al massimo 3 esperimenti: togline uno prima.', true); return; } }
+  else if (a === 'mano'){ c.man = true; if (!c.testo) c.testo = (c.anno || c.sez || c.esp.length) ? ngTestoGuidato(c) : ''; }
+  else if (a === 'guidata') c.man = false;
+  else return;
+  ngRender();
+});
+document.addEventListener('change', e => {
+  if (!NG) return;
+  const t = e.target;
+  if (t.dataset.ngtm){ const [i, k] = t.dataset.ngtm.split('|'); const f = NG.fasce[Number(i)]; if (!t.value) { ngRender(); return; } const ol = ngMin(f.e) - ngMin(f.s); f[k] = t.value; if (k === 's' && ol > 0) f.e = ngOra(ngMin(f.s) + ol); ngRender(); }
+  else if (t.id === 'ngData'){ NG.data = t.value; ngRender(); }
+  else if (t.id === 'ngScuolaSel'){
+    NG.altra = t.value === '__altra';
+    NG.scuola = NG.altra ? '' : t.value;
+    if (!NG.altra && NG.scuola){ const o = ngOrdineScuola(NG.scuola); if (o) NG.ordine = o; }
+    ngRender();
+    if (NG.altra) document.getElementById('ngScuolaTxt').focus();
+  }
+});
+document.addEventListener('input', e => {
+  if (!NG) return;
+  const t = e.target;
+  if (t.id === 'ngNota'){ NG.nota = t.value; ngAnteprima(); }
+  else if (t.id === 'ngScuolaTxt'){ NG.scuola = t.value; ngAnteprima(); }
+  else if (t.dataset.ngtxt){ const [i, k] = t.dataset.ngtxt.split('|').map(Number); NG.fasce[i].classi[k].testo = t.value; ngAnteprima(); }
+});
+
 /* ---------- collegamento sulla schermata Home ---------- */
 let promptInstalla = null;
 const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
@@ -633,8 +890,10 @@ const unkey = k => { const [m,r,c,t,x] = k.split('|'); return [m, Number(r), Num
 const decode = s => s;
 
 document.addEventListener('click', e => {
-  const el = e.target.closest('[data-vista],[data-installa],[data-modg],[data-riprog],[data-tab],[data-prendi],[data-lascia],[data-posto],[data-txt],[data-coppia],[data-close],#nAdd,#reload,#logout');
-  if (!el) { if (e.target.id === 'modalBg') chiudiModal(); return; }
+  const el = e.target.closest('[data-vista],[data-installa],[data-modg],[data-riprog],[data-tab],[data-prendi],[data-lascia],[data-posto],[data-txt],[data-coppia],[data-close],#nApri,#reload,#logout');
+  // il modulo "Nuova giornata" si chiude solo con Annulla, per non perdere i dati con un clic fuori
+  if (!el) { if (e.target.id === 'modalBg' && !NG) chiudiModal(); return; }
+  if (el.id === 'nApri'){ modalNuovaGiornata(); return; }
   if (el.dataset.vista){ mostraVista(el.dataset.vista); return; }
   if (el.hasAttribute('data-installa')){ installa(); return; }
   if (el.dataset.tab){ S.tab = el.dataset.tab; render(); window.scrollTo(0,0); return; }
@@ -668,25 +927,13 @@ document.addEventListener('click', e => {
     return;
   }
   if (el.dataset.coppia){ const [m,r] = el.dataset.coppia.split('|'); if (confirm('Aggiungo una classe (due righe) in fondo a questa giornata?')) azione('aggiungiCoppia', [m, Number(r)], 'Classe aggiunta'); return; }
-  if (el.id === 'nAdd'){
-    const d = {
-      materia: document.getElementById('nMateria').value,
-      data: document.getElementById('nData').value,
-      scuola: document.getElementById('nScuola').value.trim(),
-      orari: document.getElementById('nOrari').value.split(',').map(s => s.trim()).filter(Boolean),
-      coppie: document.getElementById('nCoppie').value,
-      nota: document.getElementById('nNota').value.trim(),
-    };
-    if (!d.data || !d.scuola){ toast('Inserisci almeno data e scuola.', true); return; }
-    azione('aggiungiGiornata', [d], 'Giornata aggiunta');
-  }
 });
 document.addEventListener('change', e => {
   if (e.target.id === 'persona'){ S.persona = e.target.value; render(); }
   if (e.target.id === 'materia'){ S.materia = e.target.value; render(); }
   if (e.target.id === 'passate'){ S.passate = e.target.checked; render(); }
 });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') chiudiModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !NG) chiudiModal(); });
 
 avviaLogin();
 </script>
