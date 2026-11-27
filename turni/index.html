@@ -606,8 +606,6 @@ function modalGiornata(mat, riga){
    vale solo per quella classe e nessun'altra scelta la modifica. Primaria/secondaria serve solo qui
    (anni 1-5 o 1-3) e non viene scritta nel foglio. */
 const NG_ESPERIMENTI = { bio: ['Epiteliali','DNA','Batteri','AIRC','Antibiotici','Digestione','Elettroforesi','Cipolla','Foglie'] };
-const NG_COLORI = { bio: ['#c9daf8','#a4c2f4'], fisica: ['#d9ead3','#93c47d'] }; // sfondi alternati delle giornate, come in Codice.js
-const NG_MESI = ['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'];
 let NG = null;
 
 const ngMin = t => { const [h,m] = String(t||'').split(':').map(Number); return (h||0)*60 + (m||0); };
@@ -642,22 +640,6 @@ function ngEsperimenti(){
   // oltre all'elenco base: esperimenti già usati nel foglio almeno 2 volte (es. per Fisica)
   const extra = Object.keys(conta).filter(k => !base.includes(k) && conta[k] >= 2).sort((a,b) => conta[b] - conta[a]);
   return base.concat(extra);
-}
-function ngDataFoglio(iso){
-  if (!iso) return null;
-  // l'anno lo decide il server (agosto-dicembre = primo anno scolastico): qui contano mese e giorno
-  const [, m, d] = iso.split('-').map(Number);
-  return { m, d, testo: d + '-' + NG_MESI[m-1], chiave: (m >= 8 ? 0 : 1) + '-' + String(m).padStart(2,'0') + '-' + String(d).padStart(2,'0') };
-}
-function ngPosizione(){
-  const df = ngDataFoglio(NG.data); if (!df) return null;
-  const chiave = g => { const [, m, d] = g.data.split('-').map(Number); return (m >= 8 ? 0 : 1) + '-' + String(m).padStart(2,'0') + '-' + String(d).padStart(2,'0'); };
-  const lista = S.dati.giornate.filter(g => g.materia === NG.materia).slice().sort((a,b) => a.riga - b.riga);
-  const prec = lista.filter(g => chiave(g) <= df.chiave).pop();
-  const succ = lista.find(g => chiave(g) > df.chiave);
-  const col = NG_COLORI[NG.materia] || ['#eeeeee','#dddddd'];
-  const colore = prec && String(prec.colore).toLowerCase() === col[0] ? col[1] : col[0];
-  return { prec, succ, colore, df };
 }
 
 function modalNuovaGiornata(){
@@ -745,27 +727,13 @@ function ngRender(){
     });
     h += '</div>';
   });
-  h += `<div style="margin-top:12px"><p class="ng-lb">Nota (facoltativa)</p><input type="text" id="ngNota" value="${esc(NG.nota)}" placeholder="Attenzione agli orari" style="width:100%"></div>
-    <p class="hint" id="ngPos" style="margin-top:12px"></p>
+  h += `<div style="margin-top:12px"><p class="ng-lb">Nota (facoltativa)</p><input type="text" id="ngNota" value="${esc(NG.nota)}" placeholder="Classi piccole unite" style="width:100%"></div>
     ${NG.errori ? ngErrori().map(x => `<p class="ng-err">${esc(x)}</p>`).join('') : ''}
     <div class="acts"><button class="btn ghost" data-close>Annulla</button><button class="btn primary" data-ng="salva" id="ngSalva">Aggiungi giornata</button></div>`;
   const mod = document.getElementById('modal');
   const scroll = mod.scrollTop;
   mod.innerHTML = h;
   mod.scrollTop = scroll;
-  ngAnteprima();
-}
-
-/* Dove verrà inserita la giornata (l'anteprima del foglio è stata tolta su richiesta di Silvio, 27/11/2026) */
-function ngAnteprima(){
-  const pos = ngPosizione();
-  const nomeG = g => g ? `«${dataBreve(g.data)} ${g.scuola}»` : '';
-  document.getElementById('ngPos').textContent = !pos ? 'Scegli la data per vedere dove verrà inserita.'
-    : pos.prec && pos.succ ? `Verrà inserita tra ${nomeG(pos.prec)} e ${nomeG(pos.succ)}.`
-    : pos.succ ? `Verrà inserita prima di ${nomeG(pos.succ)}, all'inizio dell'elenco.`
-    : pos.prec ? `Verrà inserita dopo ${nomeG(pos.prec)}, in fondo all'elenco.` : 'Sarà la prima giornata del foglio.';
-  if (pos && pos.succ && String(pos.succ.colore).toLowerCase() === pos.colore)
-    document.getElementById('ngPos').textContent += ' Le giornate successive si scambiano i due colori, per mantenere l\'alternanza.';
 }
 
 async function ngSalva(){
@@ -823,9 +791,9 @@ document.addEventListener('change', e => {
 document.addEventListener('input', e => {
   if (!NG) return;
   const t = e.target;
-  if (t.id === 'ngNota'){ NG.nota = t.value; ngAnteprima(); }
-  else if (t.id === 'ngScuolaTxt'){ NG.scuola = t.value; ngAnteprima(); }
-  else if (t.dataset.ngtxt){ const [i, k] = t.dataset.ngtxt.split('|').map(Number); NG.fasce[i].classi[k].testo = t.value; ngAnteprima(); }
+  if (t.id === 'ngNota') NG.nota = t.value;
+  else if (t.id === 'ngScuolaTxt') NG.scuola = t.value;
+  else if (t.dataset.ngtxt){ const [i, k] = t.dataset.ngtxt.split('|').map(Number); NG.fasce[i].classi[k].testo = t.value; }
 });
 
 /* ---------- collegamento sulla schermata Home ---------- */
