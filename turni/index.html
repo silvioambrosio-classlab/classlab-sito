@@ -556,7 +556,7 @@ function trovaConflitti(nome, extra){
 
 /* ---------- modali ---------- */
 function apriModal(html){ const m = document.getElementById('modal'); m.classList.remove('wide'); m.innerHTML = html; document.getElementById('modalBg').style.display = 'flex'; }
-function chiudiModal(){ document.getElementById('modalBg').style.display = 'none'; NG = null; }
+function chiudiModal(){ document.getElementById('modalBg').style.display = 'none'; NG = null; ED = null; }
 
 function modalPosto(mat, riga, col, testo, tipo){
   const tipi = [['team','Team confermato (verde)'],['fsl','Studente FSL (rosa)'],['affiancare','FSL da affiancare (arancione)'],['libero','Posto libero per il team (C)'],['vuoto','Vuoto']];
@@ -568,18 +568,6 @@ function modalPosto(mat, riga, col, testo, tipo){
   document.getElementById('mSave').onclick = () => {
     const nuovo = document.getElementById('mTesto').value, t = document.getElementById('mTipo').value;
     chiudiModal(); azione('modificaPosto', [mat, riga, col, testo, nuovo, t], 'Posto aggiornato');
-  };
-}
-
-function modalTesto(mat, riga, col, testo, etichetta){
-  apriModal(`<h3>${esc(etichetta)}</h3>
-    <div class="row"><input type="text" id="mTesto" value="${esc(testo)}"></div>
-    ${etichetta.startsWith('Classe') ? '<p class="hint">Formato: "4A: Cipolla-Foglie-Batteri"</p>' : ''}
-    ${etichetta === 'Orario' ? '<p class="hint">Formato: "08:00-10:00"</p>' : ''}
-    <div class="acts"><button class="btn ghost" data-close>Annulla</button><button class="btn primary" id="mSave">Salva</button></div>`);
-  document.getElementById('mSave').onclick = () => {
-    const nuovo = document.getElementById('mTesto').value;
-    chiudiModal(); azione('modificaTesto', [mat, riga, col, testo, nuovo], 'Modifica salvata');
   };
 }
 
@@ -629,7 +617,7 @@ const ngMin = t => { const [h,m] = String(t||'').split(':').map(Number); return 
 const ngOra = n => { n = ((n % 1440) + 1440) % 1440; return String(Math.floor(n/60)).padStart(2,'0') + ':' + String(n%60).padStart(2,'0'); };
 const ngNomeBase = s => String(s||'').replace(/\s+[IVX]+$/,'').trim(); // "Dardi V" -> "Dardi"
 const ngNuovaClasse = () => ({ anno:'', sez:'', esp:[], man:false, testo:'' });
-const ngAnni = () => NG.ordine === 'primaria' ? ['1','2','3','4','5'] : NG.ordine === 'secondaria' ? ['1','2','3'] : [];
+const ngAnni = (ordine = NG.ordine) => ordine === 'primaria' ? ['1','2','3','4','5'] : ordine === 'secondaria' ? ['1','2','3'] : [];
 const ngTestoGuidato = c => (c.anno && c.sez ? c.anno + c.sez : '?') + ': ' + c.esp.join('-');
 const ngTesto = c => c.man ? c.testo.trim() : ngTestoGuidato(c);
 
@@ -644,10 +632,10 @@ function ngOrdineScuola(scuola){
     .flatMap(g => g.turni.map(t => (/^\s*(\d)/.exec(t.classe) || [])[1])).filter(Boolean);
   return anni.some(a => a === '4' || a === '5') ? 'primaria' : '';
 }
-function ngEsperimenti(){
-  const base = NG_ESPERIMENTI[NG.materia] || [];
+function ngEsperimenti(materia = NG.materia){
+  const base = NG_ESPERIMENTI[materia] || [];
   const conta = {};
-  S.dati.giornate.filter(g => g.materia === NG.materia).forEach(g => g.turni.forEach(t => {
+  S.dati.giornate.filter(g => g.materia === materia).forEach(g => g.turni.forEach(t => {
     const i = t.classe.indexOf(':'); if (i < 0) return;
     t.classe.slice(i+1).split('-').map(s => s.trim()).filter(s => /^[A-Za-zÀ-ÿ ]{3,30}$/.test(s)).forEach(s => {
       const k = base.find(b => b.toLowerCase() === s.toLowerCase()) || s;
@@ -813,6 +801,157 @@ document.addEventListener('input', e => {
   else if (t.dataset.ngtxt){ const [i, k] = t.dataset.ngtxt.split('|').map(Number); NG.fasce[i].classi[k].testo = t.value; }
 });
 
+/* ---------- modifiche dalla scheda "Gestione" ----------
+   Stesse scelte guidate del modulo "Nuova giornata" per classe, orario e scuola di una giornata esistente.
+   La classe già scritta viene riletta: se non rientra nelle scelte (es. "3+4A") si apre in "Scritta a mano". */
+let ED = null;
+
+function edLeggiClasse(testo, materia){
+  const m = /^\s*([1-5])\s*([A-Ga-g])\s*:\s*(.*)$/.exec(testo || '');
+  const elenco = ngEsperimenti(materia);
+  if (m){
+    const parti = m[3].split('-').map(s => s.trim()).filter(Boolean);
+    const esp = parti.map(p => elenco.find(x => x.toLowerCase() === p.toLowerCase()));
+    if (esp.length && esp.length <= 3 && esp.every(Boolean)) return { anno:m[1], sez:m[2].toUpperCase(), esp, man:false, testo:'' };
+  }
+  return testo && testo.trim() ? { anno:'', sez:'', esp:[], man:true, testo: testo.trim() } : ngNuovaClasse();
+}
+
+function modalModifica(mat, riga, col, testo, etichetta){
+  const tipo = etichetta === 'Orario' ? 'orario' : etichetta === 'Scuola' ? 'scuola' : 'classe';
+  const g = S.dati.giornate.find(x => x.materia === mat && (tipo === 'scuola' ? x.riga === riga
+    : x.turni.some(t => (tipo === 'orario' ? t.rigaOrario : t.rigaClasse) === riga && t.col === col)));
+  const t = g && g.turni.find(x => (tipo === 'orario' ? x.rigaOrario : x.rigaClasse) === riga && x.col === col);
+  ED = { tipo, mat, riga, col, atteso: testo, g, t, errori:false };
+  if (tipo === 'classe'){
+    ED.c = edLeggiClasse(testo, mat);
+    ED.ordine = g ? ngOrdineScuola(g.scuola) : '';
+    if (!ED.ordine && /^[45]$/.test(ED.c.anno)) ED.ordine = 'primaria';
+  } else if (tipo === 'orario'){
+    const mm = minuti(testo);
+    ED.leggibile = !!(mm && mm[1] > mm[0]);
+    ED.s = ED.leggibile ? ngOra(mm[0]) : '08:00';
+    ED.e = ED.leggibile ? ngOra(mm[1]) : '10:00';
+  } else {
+    ED.altra = !ngScuole().includes(testo);
+    ED.scuola = testo;
+  }
+  ED.iniziale = edNuovo(); // salvare senza cambiare nulla non riscrive la cella (es. "A - B" resta com'è)
+  apriModal('');
+  document.getElementById('modal').classList.add('wide');
+  edRender();
+}
+
+function edErrori(){
+  const e = [];
+  if (ED.tipo === 'classe'){
+    const c = ED.c;
+    if (c.man){
+      if (!c.testo.trim()) e.push('Scrivi la classe o torna alla scelta guidata.');
+      else if (/^[=@+]/.test(c.testo.trim())) e.push('Il testo non può iniziare con "=", "@" o "+".');
+    } else {
+      if (!ED.ordine) e.push('Indica se è primaria o secondaria.');
+      if (!c.anno || !c.sez || !c.esp.length || !ngAnni(ED.ordine).includes(c.anno)) e.push('Completa anno, sezione ed esperimenti, oppure scrivi la classe a mano.');
+    }
+  } else if (ED.tipo === 'orario'){
+    if (ngMin(ED.e) <= ngMin(ED.s)) e.push("La fine deve essere dopo l'inizio.");
+  } else {
+    if (!ED.scuola.trim()) e.push('Scegli la scuola.');
+    else if (/^[=@+]/.test(ED.scuola.trim())) e.push('Il nome non può iniziare con "=", "@" o "+".');
+  }
+  return e;
+}
+
+const edNuovo = () => ED.tipo === 'classe' ? ngTesto(ED.c) : ED.tipo === 'orario' ? ED.s + '-' + ED.e : ED.scuola.trim();
+
+function edTm(k, v){
+  return `<div class="ng-tm"><button class="btn" data-ed="step" data-k="${k}" data-d="-5" aria-label="meno 5 minuti">−</button>`
+    + `<input type="time" step="300" value="${v}" data-edtm="${k}" aria-label="${k==='s'?'inizio':'fine'}">`
+    + `<button class="btn" data-ed="step" data-k="${k}" data-d="5" aria-label="più 5 minuti">+</button></div>`;
+}
+
+function edRender(){
+  const g = ED.g, dove = g ? `${dataLunga(g.data)} · ${g.scuola}${ED.t && ED.tipo === 'classe' ? ' · ' + ED.t.orario : ''}` : '';
+  let h = `<h3>${ED.tipo === 'classe' ? 'Classe ed esperimenti' : ED.tipo === 'orario' ? 'Fascia oraria' : 'Scuola'}</h3>
+    ${dove ? `<p class="hint" style="margin:0 0 10px">${esc(dove)}</p>` : ''}`;
+  if (ED.tipo === 'classe'){
+    const c = ED.c;
+    if (c.man){
+      h += `<div class="ng-cls man"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+          <span class="ng-bdg">Scritta a mano</span><button class="ng-lnk" data-ed="guidata">Torna alla scelta guidata</button></div>
+        <input type="text" id="edTxt" value="${esc(c.testo)}" maxlength="120" placeholder="3+4A: Epiteliali-Cipolla-Batteri">
+        <p class="hint" style="margin-top:4px">Scritto nel foglio così com'è.</p></div>`;
+    } else {
+      const anni = ngAnni(ED.ordine), fuori = c.anno && anni.length && !anni.includes(c.anno);
+      h += `<div><p class="ng-lb">Scuola</p><div class="ng-chips">${ngCh('Primaria (elementari)', ED.ordine==='primaria', 'data-ed="ordine" data-v="primaria"')}${ngCh('Secondaria (medie)', ED.ordine==='secondaria', 'data-ed="ordine" data-v="secondaria"')}</div></div>
+        <div class="ng-cls"><div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start">
+          <div><p class="ng-lb">Anno</p><div class="ng-chips">${anni.length ? anni.map(a => ngCh(a, c.anno===a, `data-ed="anno" data-v="${a}"`)).join('') : '<span class="hint" style="margin:0">Prima scegli primaria o secondaria</span>'}</div></div>
+          <div><p class="ng-lb">Sezione</p><div class="ng-chips">${'ABCDEFG'.split('').map(s => ngCh(s, c.sez===s, `data-ed="sez" data-v="${s}"`)).join('')}</div></div>
+          <span style="flex:1"></span><button class="ng-lnk" data-ed="mano">Scrivi a mano</button></div>
+        ${fuori ? `<p class="ng-err">L'anno ${esc(c.anno)} non esiste nella secondaria: sceglilo di nuovo.</p>` : ''}
+        <p class="ng-lb" style="margin-top:8px">Esperimenti, in ordine (max 3)</p>
+        <div class="ng-chips">${ngEsperimenti(ED.mat).map(x => { const q = c.esp.indexOf(x); return ngCh(x, q >= 0, `data-ed="esp" data-v="${esc(x)}"`, q >= 0 ? q+1 : 0); }).join('')}</div></div>`;
+    }
+  } else if (ED.tipo === 'orario'){
+    const dur = ngMin(ED.e) - ngMin(ED.s);
+    h += `<div class="ng-fh">${edTm('s', ED.s)}<span style="color:var(--muted)">→</span>${edTm('e', ED.e)}
+        <span style="font-size:13px;color:var(--muted)">${dur > 0 ? Math.floor(dur/60) + 'h' + (dur%60 ? String(dur%60).padStart(2,'0') : '') : '—'}</span></div>
+      ${!ED.leggibile && ED.atteso ? `<p class="ng-av">Nel foglio c'è «${esc(ED.atteso)}»: scegli inizio e fine.</p>` : ''}
+      <p class="hint" style="margin-top:8px">Cambia l'orario solo di questa fascia; le classi e i nomi restano.</p>`;
+  } else {
+    h += `<select id="edScuolaSel" style="width:100%"><option value="">Scegli…</option>${ngScuole().map(s => `<option ${!ED.altra && s===ED.scuola?'selected':''}>${esc(s)}</option>`).join('')}<option value="__altra" ${ED.altra?'selected':''}>+ Altra scuola…</option></select>
+      ${ED.altra ? `<input type="text" id="edScuolaTxt" value="${esc(ED.scuola)}" placeholder="Nome della scuola" style="margin-top:6px;width:100%">` : ''}`;
+  }
+  if (ED.errori) h += edErrori().map(x => `<p class="ng-err">${esc(x)}</p>`).join('');
+  h += `<div class="acts"><button class="btn ghost" data-close>Annulla</button><button class="btn primary" data-ed="salva">Salva</button></div>`;
+  const mod = document.getElementById('modal');
+  const scroll = mod.scrollTop;
+  mod.innerHTML = h;
+  mod.scrollTop = scroll;
+}
+
+function edSalva(){
+  ED.errori = true;
+  const err = edErrori();
+  if (err.length){ edRender(); toast(err[0], true); return; }
+  const { mat, riga, col, atteso, iniziale } = ED, nuovo = edNuovo();
+  chiudiModal();
+  if (nuovo === iniziale || nuovo === String(atteso || '').trim()) return;
+  azione('modificaTesto', [mat, riga, col, atteso, nuovo], 'Modifica salvata');
+}
+
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-ed]');
+  if (!el || !ED) return;
+  const a = el.dataset.ed, v = el.dataset.v, c = ED.c;
+  if (a === 'salva'){ edSalva(); return; }
+  if (a === 'ordine') ED.ordine = v;
+  else if (a === 'anno') c.anno = v;
+  else if (a === 'sez') c.sez = v;
+  else if (a === 'esp'){ const q = c.esp.indexOf(v); if (q >= 0) c.esp.splice(q, 1); else if (c.esp.length < 3) c.esp.push(v); else { toast('Al massimo 3 esperimenti: togline uno prima.', true); return; } }
+  else if (a === 'mano'){ c.man = true; if (!c.testo) c.testo = (c.anno || c.sez || c.esp.length) ? ngTestoGuidato(c) : ''; }
+  else if (a === 'guidata') c.man = false;
+  else if (a === 'step'){ const k = el.dataset.k, ol = ngMin(ED.e) - ngMin(ED.s); ED[k] = ngOra(ngMin(ED[k]) + Number(el.dataset.d)); if (k === 's' && ol > 0) ED.e = ngOra(ngMin(ED.s) + ol); }
+  else return;
+  edRender();
+});
+document.addEventListener('change', e => {
+  if (!ED) return;
+  const t = e.target;
+  if (t.dataset.edtm){ const k = t.dataset.edtm; if (t.value){ const ol = ngMin(ED.e) - ngMin(ED.s); ED[k] = t.value; if (k === 's' && ol > 0) ED.e = ngOra(ngMin(ED.s) + ol); } edRender(); }
+  else if (t.id === 'edScuolaSel'){
+    ED.altra = t.value === '__altra';
+    ED.scuola = ED.altra ? '' : t.value;
+    edRender();
+    if (ED.altra) document.getElementById('edScuolaTxt').focus();
+  }
+});
+document.addEventListener('input', e => {
+  if (!ED) return;
+  if (e.target.id === 'edTxt') ED.c.testo = e.target.value;
+  else if (e.target.id === 'edScuolaTxt') ED.scuola = e.target.value;
+});
+
 /* ---------- collegamento sulla schermata Home ---------- */
 let promptInstalla = null;
 const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
@@ -888,7 +1027,7 @@ document.addEventListener('click', e => {
     return;
   }
   if (el.dataset.posto){ const [m,r,c,t,tipo] = unkey(decode(el.dataset.posto)); modalPosto(m, r, c, t, tipo); return; }
-  if (el.dataset.txt){ const [m,r,c,t,l] = unkey(decode(el.dataset.txt)); modalTesto(m, r, c, t, l); return; }
+  if (el.dataset.txt){ const [m,r,c,t,l] = unkey(decode(el.dataset.txt)); modalModifica(m, r, c, t, l); return; }
   if (el.dataset.modg){ const [m,r] = el.dataset.modg.split('|'); modalGiornata(m, Number(r)); return; }
   if (el.dataset.riprog){
     const [m,r,on] = el.dataset.riprog.split('|');
