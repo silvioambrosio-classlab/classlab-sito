@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Adesioni · ClassLab</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14365f">
+<link rel="icon" href="../assets/img/favicon.png">
+<link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+<link rel="preload" href="../assets/fonts/montserrat-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+  @font-face{font-family:"Montserrat";src:url("../assets/fonts/montserrat-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:swap}
+  :root{
+    --navy:#14365f; --blu:#0b77b8; --cielo:#e3f2fc; --arancio:#f29a2e;
+    --bg:#f6f9fc; --card:#fff; --ink:#0f172a; --testo:#334155; --muted:#64748b; --line:#e2e8f0;
+    --bad:#b42318; --bad-bg:#fdecea; --warn:#a15c00; --warn-bg:#fff4e0; --ok:#2f7d3b; --ok-bg:#e7f5ea; --info-bg:#eef2f7; --r:14px;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;font-family:"Montserrat",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--testo);font-size:15px;line-height:1.45}
+  button,select,input,textarea{font:inherit}
+  .hidden{display:none!important}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+  a{color:var(--blu)}
+
+  #login,#negato{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  .card-c{background:#fff;border:1px solid var(--line);border-radius:22px;max-width:420px;width:100%;padding:32px 24px;text-align:center;box-shadow:0 10px 30px rgba(20,54,95,.08)}
+  .card-c img{width:84px;height:84px;border-radius:20px}
+  .card-c h1{font-size:23px;margin:14px 0 6px;color:var(--ink)}
+  .card-c p{color:var(--muted);margin:0 0 22px}
+  .card-c a{font-size:14px}
+  #gbtn{display:flex;justify-content:center;min-height:44px}
+  #loginErr{color:var(--bad);font-size:14px;margin-top:14px;min-height:1em}
+
+  header.top{position:sticky;top:0;z-index:5;background:var(--navy);color:#fff}
+  .bar{display:flex;align-items:center;gap:12px;padding:12px 0 6px}
+  .bar a.back{color:#fff;opacity:.8;text-decoration:none;font-size:18px}
+  .bar h1{font-size:18px;margin:0;flex:1;color:#fff}
+  .bar h1 small{opacity:.7;font-weight:500;margin-left:6px}
+  .who{font-size:13px;text-align:right;opacity:.9}
+  .who button{background:rgba(255,255,255,.14);border:0;color:#fff;border-radius:999px;padding:4px 10px;margin-left:6px;cursor:pointer}
+  .tabs{display:flex;gap:4px;overflow-x:auto}
+  .tabs button{background:none;border:0;color:#fff;opacity:.7;padding:10px 14px;cursor:pointer;border-bottom:3px solid transparent;font-weight:600;white-space:nowrap}
+  .tabs button.on{opacity:1;border-bottom-color:var(--arancio)}
+  .demo{background:var(--arancio);color:#1f1300;text-align:center;font-size:13px;font-weight:600;padding:5px 10px}
+
+  main.wrap{padding-top:18px;padding-bottom:90px}
+  .info{background:var(--cielo);color:var(--navy);border-radius:var(--r);padding:12px 16px;font-size:14px;margin-bottom:16px}
+  h2.sez{font-size:17px;color:var(--ink);margin:22px 0 10px}
+
+  .kpi{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+  .kpi div{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:12px 14px}
+  .kpi b{display:block;font-size:24px;color:var(--ink);font-variant-numeric:tabular-nums}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .kpi .rosso b{color:var(--bad)}
+
+  .tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+  .tools input[type=search]{flex:1;min-width:200px}
+  input[type=search],input[type=date],input[type=number],input[type=text],select,textarea{padding:8px 11px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+  textarea{width:100%;min-height:60px}
+  .btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 14px;cursor:pointer;color:var(--ink);white-space:nowrap}
+  .btn:hover{border-color:#c4ccd8}
+  .btn.prim{background:var(--blu);border-color:var(--blu);color:#fff}
+  .btn:disabled{opacity:.5;cursor:default}
+  .btn.small{padding:5px 10px;font-size:13px}
+  .btn.ghost{border-color:transparent;background:none;color:var(--muted)}
+  .btn.danger{color:var(--bad)}
+  label.chk{display:inline-flex;gap:6px;align-items:center;font-size:14px;cursor:pointer}
+
+  .chip{display:inline-block;border-radius:999px;padding:1px 9px;font-size:12px;font-weight:600;background:var(--info-bg);color:var(--testo);white-space:nowrap}
+  .chip.Nuova{background:#fde68a;color:#5c4300}
+  .chip.In-contatto{background:#bfdbfe;color:#0c3a6b}
+  .chip.Confermata,.chip.Calendarizzata,.chip.Data-fissata{background:#bbf7d0;color:#14532d}
+  .chip.Svolta{background:#e2e8f0}
+  .chip.Non-possibile,.chip.Annullata{background:#fecaca;color:#7f1d1d}
+  .chip.errore{background:var(--bad-bg);color:var(--bad)}
+  .chip.avviso{background:var(--warn-bg);color:var(--warn)}
+  .chip.ok{background:var(--ok-bg);color:var(--ok)}
+
+  /* richieste */
+  .ric{background:#fff;border:1px solid var(--line);border-radius:var(--r);margin-bottom:8px}
+  .ric.aperta{border-color:var(--blu);box-shadow:0 0 0 1px var(--blu)}
+  .ric-testa{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:12px 14px;cursor:pointer}
+  .ric-titolo{font-weight:700;color:var(--ink)}
+  .ric-titolo small{font-weight:500;color:var(--muted);margin-left:4px}
+  .ric-meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+  .ric-sint{grid-column:1/-1;font-size:13.5px;color:var(--testo)}
+  .ric-corpo{border-top:1px solid var(--line);padding:14px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+  .ric-corpo h3{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:0 0 8px}
+  .ric-corpo .tutta{grid-column:1/-1}
+  @media (max-width:760px){.ric-corpo{grid-template-columns:1fr}.ric-testa{grid-template-columns:1fr}.ric-meta{justify-content:flex-start}}
+  table.t{width:100%;border-collapse:collapse;font-size:13.5px}
+  table.t th{text-align:left;font-size:12px;color:var(--muted);font-weight:600;padding:5px 8px;border-bottom:1px solid var(--line)}
+  table.t td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+  .scroll{overflow-x:auto}
+  .contatti div{margin-bottom:4px}
+  .testo-orig{background:#f8fafc;border-left:3px solid var(--line);padding:8px 10px;border-radius:6px;font-size:14px;white-space:pre-wrap;margin-bottom:10px}
+  .avvisi{list-style:none;margin:0;padding:0}
+  .avvisi li{padding:6px 10px;border-radius:8px;margin-bottom:5px;font-size:13.5px}
+  .avvisi .errore{background:var(--bad-bg);color:var(--bad)}
+  .avvisi .avviso{background:var(--warn-bg);color:var(--warn)}
+  .avvisi .info{background:var(--info-bg)}
+
+  /* griglia disponibilità */
+  .gr{display:grid;gap:3px;font-size:12px;margin:6px 0 10px;max-width:420px}
+  .gr .h{color:var(--muted);text-align:center;font-weight:600}
+  .gr .g{color:var(--ink);font-weight:600;align-self:center}
+  .gr button{border:1px solid var(--line);background:#fff;border-radius:6px;height:28px;cursor:pointer;color:transparent}
+  .gr button.on{background:var(--blu);border-color:var(--blu);color:#fff}
+  .gr button.on:after{content:"✓"}
+  .gr.ro button{cursor:default}
+  .mesi{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0 10px}
+  .mesi button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:2px 9px;font-size:12px;cursor:pointer}
+  .mesi button.on{background:var(--blu);border-color:var(--blu);color:#fff}
+  .riga{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:8px}
+  .riga label{font-size:12.5px;color:var(--muted);display:flex;flex-direction:column;gap:3px}
+  .letto{font-size:12.5px;color:var(--muted);margin-bottom:8px}
+  .mod{color:var(--arancio);font-weight:700;font-size:12.5px}
+
+  /* pianifica */
+  .pannello{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin-bottom:14px}
+  .pannello h3{margin:0 0 10px;font-size:15px;color:var(--ink)}
+  .iv{display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap}
+  .iv .n{font-size:12.5px;color:var(--muted)}
+  .par{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+  .par label{font-size:12.5px;color:var(--muted);display:flex;flex-direction:column;gap:3px}
+  .sel-ric{columns:2 260px;column-gap:18px}
+  .sel-ric label{display:flex;gap:8px;align-items:flex-start;break-inside:avoid;padding:3px 0;font-size:14px}
+  .sel-ric small{color:var(--muted)}
+  .stat{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+  .giorni{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+  .giorno{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:12px}
+  .giorno h4{margin:0 0 8px;font-size:15px;color:var(--ink);display:flex;justify-content:space-between;gap:8px}
+  .giorno h4 small{color:var(--muted);font-weight:500}
+  .fascia{display:grid;grid-template-columns:62px 1fr;gap:6px;padding:5px 0;border-top:1px dashed var(--line)}
+  .fascia .o{font-size:12.5px;color:var(--muted);font-weight:600;padding-top:3px}
+  .cl{display:block;width:100%;text-align:left;border:0;border-left:4px solid var(--c);background:color-mix(in srgb,var(--c) 10%,#fff);border-radius:6px;padding:4px 8px;margin-bottom:4px;cursor:pointer;font-size:13px;color:var(--ink)}
+  .cl small{color:var(--muted);display:block}
+  .cl.foglio{cursor:default;opacity:.75}
+  .cl.mod{outline:2px solid var(--arancio)}
+  .non li{margin-bottom:4px}
+  .azioni{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+  .vuoto{text-align:center;color:var(--muted);padding:30px 10px}
+
+  .modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:flex-start;justify-content:center;padding:6vh 14px;z-index:20;overflow:auto}
+  .modal-bg.on{display:flex}
+  .modal{background:#fff;border-radius:18px;max-width:500px;width:100%;padding:22px;box-shadow:0 20px 50px rgba(0,0,0,.2)}
+  .modal h2{margin:0 0 6px;font-size:19px;color:var(--ink)}
+  .m-az{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+
+  #busy{position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--arancio),var(--blu));display:none;z-index:30;animation:b 1s linear infinite;background-size:200% 100%}
+  @keyframes b{to{background-position:-200% 0}}
+  .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;display:none;z-index:40;max-width:92vw;text-align:center}
+  .toast.err{background:var(--bad)}
+</style>
+</head>
+<body>
+<div id="busy"></div>
+
+<section id="login" class="hidden">
+  <div class="card-c">
+    <img src="../turni/icona-192.png" alt="">
+    <h1>Adesioni delle scuole</h1>
+    <p>Accedi con il tuo account Google <b>@classlab.it</b>.</p>
+    <div id="gbtn"></div>
+    <div id="loginErr"></div>
+    <p style="margin:18px 0 0"><a href="../area-team.html">← Torna all'area team</a></p>
+  </div>
+</section>
+
+<section id="negato" class="hidden">
+  <div class="card-c">
+    <img src="../turni/icona-192.png" alt="">
+    <h1>Accesso riservato</h1>
+    <p id="negatoMsg">Questa pagina è riservata ai gestori (livello 1).</p>
+    <p style="margin:0"><a href="../area-team.html">← Torna all'area team</a></p>
+  </div>
+</section>
+
+<div id="app" class="hidden">
+  <header class="top">
+    <div id="demoBar" class="demo hidden">Modalità prova: scuole e persone inventate, niente viene salvato online.</div>
+    <div class="wrap">
+      <div class="bar">
+        <a class="back" href="../area-team.html" title="Area team">←</a>
+        <h1>Adesioni<small>Area team</small></h1>
+        <div class="who" id="who"></div>
+      </div>
+      <nav class="tabs" id="tabs">
+        <button type="button" data-tab="richieste" class="on">Richieste</button>
+        <button type="button" data-tab="pianifica">Pianifica</button>
+        <button type="button" data-tab="calendario">Calendario</button>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap" id="main"></main>
+</div>
+
+<div class="modal-bg" id="modalBg"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast"></div>
+
+<script src="../turni/config.js"></script>
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/laboratori-dati.js"></script>
+<script src="../assets/js/team-auth.js?v=bba1f888"></script>
+<script src="logica.js?v=37326b69"></script>
+<script src="demo.js?v=51b21422"></script>
+<script>
+/* =====================================================================
+   CLASSLAB · ADESIONI — lettura delle richieste del modulo del sito,
+   crosscheck, pianificazione delle date.
+   ---------------------------------------------------------------------
+   Dati: schede "Richieste" e "Classi" del foglio "Richieste Scuole",
+   letti dallo script del modulo (Adesioni.js, funzione adesioniDati).
+   I fogli NON vengono modificati: vincoli corretti a mano, proposte
+   accettate e intervalli si salvano nello "stato" dello script.
+   Accesso: solo livello 1 (controllo vero sul server).
+   Prova senza login: /adesioni/?demo (dati inventati).
+   ===================================================================== */
+const A = window.Adesioni;
+const DEMO = new URLSearchParams(location.search).has("demo");
+const API = (window.CLASSLAB || {}).moduloEndpoint;
+const CAT = A.catalogo(window.CLASSLAB_LABORATORI, window.CLASSLAB_PERCORSI_FISICA, window.CLASSLAB_CLASSI);
+const COLORI = ["#0b77b8", "#f29a2e", "#3a9a4a", "#8e44ad", "#c0392b", "#16a085", "#a26a00", "#2c3e50", "#d35400", "#7f8c8d"];
+const MESI_SCUOLA = [8, 9, 10, 11, 0, 1, 2, 3, 4, 5]; // set → giu
+
+const S = {
+  dati: null, ric: [], orfane: [], stato: { versione: 0 }, tab: "richieste",
+  cerca: "", fStato: "", fOrdine: "", soloProblemi: false, ordina: "invio", aperta: null, bozze: {},
+  piano: null, inclusi: null, intervalli: null
+};
+
+/* ---------- accesso ---------- */
+function mostra(id){ ['login','negato','app'].forEach(x => document.getElementById(x).classList.toggle('hidden', x !== id)); }
+function mostraLogin(msg){ mostra('login'); document.getElementById('loginErr').textContent = msg || ''; }
+function busy(on){ document.getElementById('busy').style.display = on ? 'block' : 'none'; }
+const call = (fn, ...args) => TeamAuth.chiama(fn, ...args);
+
+async function carica(){
+  try {
+    const d = DEMO ? JSON.parse(JSON.stringify(window.ADESIONI_DEMO)) : await call('adesioniDati');
+    if (DEMO) {
+      try { d.stato = JSON.parse(localStorage.getItem('adesioniDemoStato') || 'null') || { versione: 0 }; } catch(e){ d.stato = { versione: 0 }; }
+    }
+    S.dati = d;
+    S.stato = d.stato || { versione: 0 };
+    const p = A.prepara(d); S.ric = p.richieste; S.orfane = p.orfane;
+    mostra('app'); render();
+  } catch(e){
+    if (e.auth) return;
+    document.getElementById('negatoMsg').textContent = /riservat|livello/i.test(e.message)
+      ? 'Questa pagina è riservata ai gestori (livello 1). Il livello si imposta nella pagina Permessi.'
+      : 'Impossibile caricare le adesioni: ' + e.message;
+    mostra('negato');
+  }
+}
+
+async function salvaStato(msg){
+  const nuovo = JSON.parse(JSON.stringify(S.stato));
+  if (DEMO) {
+    nuovo.versione = (nuovo.versione || 0) + 1; nuovo.modificato = new Date().toISOString(); nuovo.modificatoDa = 'prova';
+    try { localStorage.setItem('adesioniDemoStato', JSON.stringify(nuovo)); } catch(e){}
+    S.stato = nuovo; if (msg) toast(msg); return true;
+  }
+  try {
+    const r = await call('adesioniSalvaStato', nuovo, S.stato.versione || 0);
+    S.stato.versione = r.versione; S.stato.modificato = r.modificato; S.stato.modificatoDa = r.modificatoDa;
+    if (msg) toast(msg);
+    return true;
+  } catch(e){
+    toast(e.message, true);
+    if (/nel frattempo/.test(e.message)) setTimeout(() => { if (confirm('Un altro gestore ha salvato delle modifiche. Ricaricare i dati? (le tue ultime modifiche non salvate andranno perse)')) carica(); }, 300);
+    return false;
+  }
+}
+
+/* ---------- utilità ---------- */
+function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function toast(t, err){ const el = document.getElementById('toast'); el.textContent = t; el.className = 'toast' + (err ? ' err' : ''); el.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => el.style.display = 'none', err ? 6000 : 3000); }
+function chipStato(s){ return s ? `<span class="chip ${esc(String(s).replace(/\s+/g,'-'))}">${esc(s)}</span>` : ''; }
+function par(){
+  const p = Object.assign({}, A.PARAMETRI, S.stato.parametri || {});
+  if (!p.periodo || !p.periodo.dal) { const y = A.annoScolastico(); p.periodo = { dal: y + '-12-12', al: (y + 1) + '-03-15' }; }
+  return p;
+}
+function nF(){ return par().fasce.length; }
+function vinc(r){
+  const v = A.vincoli(r, S.stato, par());
+  if (v.manuale && (v.griglia.length !== 5 || v.griglia[0].length !== nF())) return A.interpreta(r.giornate, A.annoRichiesta(r), par()); // fasce cambiate
+  return v;
+}
+function statoValido(){ // vincoli manuali compatibili con le fasce attuali
+  const s = JSON.parse(JSON.stringify(S.stato)); const n = nF();
+  Object.keys(s.vincoli || {}).forEach(k => { const g = s.vincoli[k].griglia; if (!g || g.length !== 5 || g[0].length !== n) delete s.vincoli[k]; });
+  return s;
+}
+function avvisi(r){ return A.controlla(r, S.ric, CAT, statoValido(), par()); }
+function coloreScuola(codice){ let h = 0; for (const ch of codice) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return COLORI[h % COLORI.length]; }
+function ric(codice){ return S.ric.find(r => r.codice === codice); }
+function classe(chiave){ for (const r of S.ric){ const c = r.classi.find(x => x.chiave === chiave); if (c) return { r, c }; } return null; }
+function labsTesto(c){ return c.consiglio === 'Sì' ? '<i>consiglio del team</i>' : c.labs.map(esc).join(' · ') || '—'; }
+function labsBreve(c){ return c.consiglio === 'Sì' ? 'consiglio del team' : c.percorso === 'Fisica' ? c.lab1 : c.labs.length + ' lab'; }
+function fasciaT(k){ const f = par().fasce[k]; return f ? A.fasciaTesto(f) : '?'; }
+function dataIt(s){ if (!s) return ''; const d = new Date(s); return isNaN(d) ? esc(s) : d.toLocaleDateString('it-IT', { day:'2-digit', month:'2-digit', year:'numeric' }); }
+function daPianificare(c){ return !c.dataPrevista && !(S.stato.fissate || {})[c.chiave] && A.STATI_ESCLUSI_CLASSE.indexOf(c.stato) < 0; }
+
+/* ---------- schede ---------- */
+document.getElementById('tabs').addEventListener('click', e => {
+  const b = e.target.closest('button[data-tab]'); if (!b) return;
+  S.tab = b.dataset.tab;
+  document.querySelectorAll('#tabs button').forEach(x => x.classList.toggle('on', x === b));
+  render(); window.scrollTo(0, 0);
+});
+function render(){
+  ({ richieste: renderRichieste, pianifica: renderPianifica, calendario: renderCalendario })[S.tab]();
+}
+
+/* =====================================================================
+   RICHIESTE
+   ===================================================================== */
+function renderRichieste(){
+  const tutte = S.ric.map(r => ({ r, av: avvisi(r) }));
+  const classi = S.ric.reduce((s, r) => s + r.classi.length, 0);
+  const studenti = S.ric.reduce((s, r) => s + r.classi.reduce((t, c) => t + (parseInt(c.alunni, 10) || 0), 0), 0);
+  const daPian = S.ric.filter(r => A.STATI_ESCLUSI_RICHIESTA.indexOf(r.stato) < 0).reduce((s, r) => s + r.classi.filter(daPianificare).length, 0);
+  const conErr = tutte.filter(x => x.av.some(a => a.livello === 'errore')).length;
+  const stati = [...new Set(S.ric.map(r => r.stato).filter(Boolean))];
+  const q = S.cerca.trim().toLowerCase();
+  let lista = tutte.filter(({ r, av }) =>
+    (!S.fStato || r.stato === S.fStato) && (!S.fOrdine || r.ordine === S.fOrdine) &&
+    (!S.soloProblemi || av.some(a => a.livello !== 'info')) &&
+    (!q || [r.codice, r.scuola, r.comune, r.referente, r.email, r.giornate].join(' ').toLowerCase().includes(q)));
+  const peso = av => av.filter(a => a.livello === 'errore').length * 100 + av.filter(a => a.livello === 'avviso').length;
+  lista.sort((a, b) => S.ordina === 'scuola' ? a.r.scuola.localeCompare(b.r.scuola)
+    : S.ordina === 'problemi' ? peso(b.av) - peso(a.av)
+    : String(b.r.dataInvio).localeCompare(String(a.r.dataInvio)));
+
+  document.getElementById('main').innerHTML = `
+    <div class="kpi">
+      <div><b>${S.ric.length}</b><span>richieste</span></div>
+      <div><b>${classi}</b><span>classi</span></div>
+      <div><b>${studenti}</b><span>studenti indicati</span></div>
+      <div><b>${daPian}</b><span>classi da pianificare</span></div>
+      <div class="${conErr ? 'rosso' : ''}"><b>${conErr}</b><span>richieste con problemi</span></div>
+    </div>
+    ${S.orfane.length ? `<div class="info" style="background:var(--warn-bg);color:var(--warn)"><b>${S.orfane.length} classi</b> nella scheda Classi hanno un codice che non esiste in Richieste: ${[...new Set(S.orfane.map(c => c.codice))].map(esc).join(', ')}.</div>` : ''}
+    <div class="tools">
+      <input type="search" id="cerca" placeholder="Cerca scuola, comune, referente, codice…" value="${esc(S.cerca)}">
+      <select id="fStato"><option value="">Tutti gli stati</option>${stati.map(s => `<option ${s === S.fStato ? 'selected' : ''}>${esc(s)}</option>`).join('')}</select>
+      <select id="fOrdine"><option value="">Primaria e secondaria</option>
+        <option value="Primaria" ${S.fOrdine === 'Primaria' ? 'selected' : ''}>Primaria</option>
+        <option value="Secondaria di primo grado" ${S.fOrdine === 'Secondaria di primo grado' ? 'selected' : ''}>Secondaria</option></select>
+      <select id="ordina">
+        <option value="invio" ${S.ordina === 'invio' ? 'selected' : ''}>Più recenti</option>
+        <option value="scuola" ${S.ordina === 'scuola' ? 'selected' : ''}>Per scuola</option>
+        <option value="problemi" ${S.ordina === 'problemi' ? 'selected' : ''}>Prima i problemi</option></select>
+      <label class="chk"><input type="checkbox" id="soloProblemi" ${S.soloProblemi ? 'checked' : ''}> Solo con avvisi</label>
+      ${S.dati.urlFoglio ? `<a class="btn small" href="${esc(S.dati.urlFoglio)}" target="_blank" rel="noopener">Apri il foglio ↗</a>` : ''}
+    </div>
+    <div id="lista">${lista.length ? lista.map(x => cardRichiesta(x.r, x.av)).join('') : '<div class="vuoto">Nessuna richiesta trovata.</div>'}</div>`;
+  const m = document.getElementById('main');
+  m.querySelector('#cerca').oninput = e => { S.cerca = e.target.value; renderLista(); };
+  m.querySelector('#fStato').onchange = e => { S.fStato = e.target.value; render(); };
+  m.querySelector('#fOrdine').onchange = e => { S.fOrdine = e.target.value; render(); };
+  m.querySelector('#ordina').onchange = e => { S.ordina = e.target.value; render(); };
+  m.querySelector('#soloProblemi').onchange = e => { S.soloProblemi = e.target.checked; render(); };
+}
+function renderLista(){ // aggiorna solo l'elenco (per non perdere il fuoco nella ricerca)
+  const pos = document.getElementById('cerca').selectionStart;
+  renderRichieste();
+  const c = document.getElementById('cerca'); c.focus(); c.setSelectionRange(pos, pos);
+}
+
+function cardRichiesta(r, av){
+  const nErr = av.filter(a => a.livello === 'errore').length, nAvv = av.filter(a => a.livello === 'avviso').length;
+  const aperta = S.aperta === r.codice;
+  return `<div class="ric${aperta ? ' aperta' : ''}" id="r-${esc(r.codice)}">
+    <div class="ric-testa" onclick="apri('${esc(r.codice)}')">
+      <div class="ric-titolo">${esc(r.scuola)}<small>${esc(r.comune)} · ${esc(r.codice)}</small></div>
+      <div class="ric-meta">
+        ${nErr ? `<span class="chip errore">${nErr} ${nErr === 1 ? 'problema' : 'problemi'}</span>` : ''}
+        ${nAvv ? `<span class="chip avviso">${nAvv} ${nAvv === 1 ? 'avviso' : 'avvisi'}</span>` : ''}
+        ${!nErr && !nAvv ? '<span class="chip ok">ok</span>' : ''}
+        ${chipStato(r.stato)}<span class="chip">${dataIt(r.dataInvio)}</span>
+      </div>
+      <div class="ric-sint">${esc(A.riassunto(r, av, statoValido(), par()))}</div>
+    </div>
+    ${aperta ? dettaglio(r, av) : ''}
+  </div>`;
+}
+function apri(codice){
+  S.aperta = S.aperta === codice ? null : codice;
+  renderRichieste();
+  if (S.aperta) document.getElementById('r-' + codice).scrollIntoView({ block: 'nearest' });
+}
+
+function dettaglio(r, av){
+  const v = S.bozze[r.codice] || vinc(r);
+  const modificata = !!S.bozze[r.codice];
+  const fissate = S.stato.fissate || {};
+  return `<div class="ric-corpo">
+    <div class="contatti">
+      <h3>Referente</h3>
+      <div><b>${esc(r.referente)}</b></div>
+      <div><a href="mailto:${esc(r.email)}">${esc(r.email)}</a></div>
+      <div><a href="tel:${esc(String(r.telefono).replace(/[^\d+]/g, ''))}">${esc(r.telefono)}</a></div>
+      <div style="color:var(--muted);font-size:13px">${esc(r.ordine)} · inviata il ${dataIt(r.dataInvio)}</div>
+      ${r.note ? `<h3 style="margin-top:14px">Note della scuola</h3><div class="testo-orig">${esc(r.note)}</div>` : ''}
+      ${r.noteInterne ? `<h3 style="margin-top:14px">Note interne del team</h3><div class="testo-orig">${esc(r.noteInterne)}</div>` : ''}
+    </div>
+    <div>
+      <h3>Crosscheck</h3>
+      ${av.length ? `<ul class="avvisi">${av.map(a => `<li class="${a.livello}">${esc(a.testo)}</li>`).join('')}</ul>` : '<div class="chip ok">Nessuna incongruenza trovata</div>'}
+    </div>
+    <div class="tutta scroll">
+      <h3>Classi (${r.classi.length})</h3>
+      <table class="t"><thead><tr><th>Classe</th><th>Studenti</th><th>Percorso</th><th>Laboratori</th><th>Stato</th><th>Data</th></tr></thead><tbody>
+      ${r.classi.map(c => { const f = fissate[c.chiave]; return `<tr>
+        <td><b>${esc(c.classe)}</b></td><td>${esc(c.alunni)}</td><td>${esc(c.percorso)}</td><td>${labsTesto(c)}</td><td>${chipStato(c.stato)}</td>
+        <td>${c.dataPrevista ? esc(A.dataBreve(c.dataPrevista)) + ' <small style="color:var(--muted)">(foglio)</small>' : f ? esc(A.dataBreve(f.data) + ' · ' + fasciaT(f.fascia)) + ' <small style="color:var(--muted)">(accettata)</small>' : '—'}</td></tr>`; }).join('')}
+      </tbody></table>
+    </div>
+    <div class="tutta">
+      <h3>Disponibilità ${v.manuale ? '<span class="chip ok">corretta a mano</span>' : `<span class="chip ${v.certezza === 'alta' ? 'ok' : v.certezza === 'media' ? 'avviso' : 'errore'}">lettura automatica: certezza ${esc(v.certezza)}</span>`} ${modificata ? '<span class="mod">● modifiche non salvate</span>' : ''}</h3>
+      <div class="testo-orig">${esc(r.giornate) || '<i>vuoto</i>'}</div>
+      ${v.letto && v.letto.length ? `<div class="letto">Letto: ${esc(v.letto.join(' · '))}</div>` : ''}
+      <div class="letto"><b>Sintesi:</b> ${esc(A.sintesiVincoli(v, par()))}</div>
+      ${grigliaHtml(r.codice, v)}
+      <div class="riga">
+        <label>Dal <input type="date" value="${esc(v.dal)}" onchange="bozza('${esc(r.codice)}','dal',this.value)"></label>
+        <label>Al <input type="date" value="${esc(v.al)}" onchange="bozza('${esc(r.codice)}','al',this.value)"></label>
+        <label style="flex:1;min-width:220px">Solo in queste date (gg/mm, separate da virgola)
+          <input type="text" value="${esc((v.date || []).map(d => d.slice(8, 10) + '/' + d.slice(5, 7)).join(', '))}" onchange="bozza('${esc(r.codice)}','date',this.value)"></label>
+      </div>
+      <div style="font-size:12.5px;color:var(--muted)">Mesi possibili</div>
+      <div class="mesi">${MESI_SCUOLA.map(m => { const on = (!v.mesi || !v.mesi.length || v.mesi.indexOf(m) >= 0) && (v.mesiEsclusi || []).indexOf(m) < 0;
+        return `<button type="button" class="${on ? 'on' : ''}" onclick="bozzaMese('${esc(r.codice)}',${m})">${A.NOMI_MESI[m]}</button>`; }).join('')}</div>
+      <div class="azioni">
+        <button class="btn prim small" type="button" ${modificata ? '' : 'disabled'} onclick="salvaVincoli('${esc(r.codice)}')">Salva disponibilità</button>
+        ${modificata ? `<button class="btn ghost small" type="button" onclick="annullaBozza('${esc(r.codice)}')">Annulla</button>` : ''}
+        ${v.manuale && !modificata ? `<button class="btn small" type="button" onclick="ripristina('${esc(r.codice)}')">Torna alla lettura automatica</button>` : ''}
+      </div>
+    </div>
+  </div>`;
+}
+
+function grigliaHtml(codice, v, sola){
+  const P = par();
+  let h = `<div class="gr${sola ? ' ro' : ''}" style="grid-template-columns:44px repeat(${P.fasce.length},1fr)"><span></span>`;
+  P.fasce.forEach(f => { h += `<span class="h">${esc(A.fasciaTesto(f))}</span>`; });
+  A.GIORNI.forEach((g, i) => {
+    h += `<span class="g">${g}</span>`;
+    P.fasce.forEach((f, k) => {
+      const on = v.griglia[i] && v.griglia[i][k];
+      h += `<button type="button" class="${on ? 'on' : ''}" aria-pressed="${on}" aria-label="${g} ${esc(A.fasciaTesto(f))}" ${sola ? 'disabled' : `onclick="bozzaCella('${esc(codice)}',${i},${k})"`}></button>`;
+    });
+  });
+  return h + '</div>';
+}
+
+/* ---------- modifica dei vincoli ---------- */
+function bozzaDi(codice){
+  if (!S.bozze[codice]) { const v = JSON.parse(JSON.stringify(vinc(ric(codice)))); v.manuale = true; v.certezza = 'manuale'; S.bozze[codice] = v; }
+  return S.bozze[codice];
+}
+function bozzaCella(codice, g, k){ const b = bozzaDi(codice); b.griglia[g][k] = !b.griglia[g][k]; renderRichieste(); }
+function bozzaMese(codice, m){
+  const b = bozzaDi(codice);
+  let on = MESI_SCUOLA.filter(x => (!b.mesi || !b.mesi.length || b.mesi.indexOf(x) >= 0) && (b.mesiEsclusi || []).indexOf(x) < 0);
+  on = on.indexOf(m) >= 0 ? on.filter(x => x !== m) : on.concat(m);
+  b.mesi = on.length === MESI_SCUOLA.length ? null : on; b.mesiEsclusi = [];
+  renderRichieste();
+}
+function bozza(codice, campo, val){
+  const b = bozzaDi(codice);
+  if (campo === 'date') {
+    const y = A.annoRichiesta(ric(codice));
+    b.date = String(val).split(/[,;\s]+/).map(x => x.match(/^(\d{1,2})\/(\d{1,2})$/)).filter(Boolean)
+      .map(m => { const mm = +m[2] - 1; return A.iso(new Date(mm >= 7 ? y : y + 1, mm, +m[1])); });
+  } else b[campo] = val;
+  renderRichieste();
+}
+function annullaBozza(codice){ delete S.bozze[codice]; renderRichieste(); }
+async function salvaVincoli(codice){
+  const b = S.bozze[codice]; if (!b) return;
+  S.stato.vincoli = S.stato.vincoli || {};
+  const prima = S.stato.vincoli[codice];
+  S.stato.vincoli[codice] = { griglia: b.griglia, dal: b.dal || '', al: b.al || '', date: b.date || [], mesi: b.mesi || null, mesiEsclusi: b.mesiEsclusi || [] };
+  if (await salvaStato('Disponibilità di ' + ric(codice).scuola + ' salvata.')) delete S.bozze[codice];
+  else { if (prima) S.stato.vincoli[codice] = prima; else delete S.stato.vincoli[codice]; }
+  renderRichieste();
+}
+async function ripristina(codice){
+  if (!confirm('Tornare alla lettura automatica del testo? La correzione a mano verrà eliminata.')) return;
+  const prima = S.stato.vincoli[codice]; delete S.stato.vincoli[codice];
+  if (!await salvaStato('Ripristinata la lettura automatica.')) S.stato.vincoli[codice] = prima;
+  renderRichieste();
+}
+
+/* =====================================================================
+   PIANIFICA
+   ===================================================================== */
+function intervalliCorrenti(){
+  if (!S.intervalli) S.intervalli = JSON.parse(JSON.stringify((S.stato.pianifica || {}).intervalli || [{ dal: '', al: '' }]));
+  return S.intervalli;
+}
+function pianificabili(){
+  return S.ric.filter(r => A.STATI_ESCLUSI_RICHIESTA.indexOf(r.stato) < 0 && r.classi.some(daPianificare));
+}
+function renderPianifica(){
+  const P = par(), iv = intervalliCorrenti();
+  const lista = pianificabili();
+  if (!S.inclusi) S.inclusi = lista.map(r => r.codice);
+  const giorni = A.giorniAttivita(iv, P);
+  document.getElementById('main').innerHTML = `
+    <div class="info">Indica uno o più periodi (anche a spezzoni: dicembre, poi 10–21 gennaio…). Il calcolo usa solo i giorni feriali, salta le feste nazionali
+      e le chiusure, e rispetta le disponibilità di ogni scuola. <b>Nulla viene scritto sui fogli</b>: la proposta accettata finisce nel Calendario di questa pagina.</div>
+    <div class="pannello">
+      <h3>Periodi</h3>
+      ${iv.map((x, i) => `<div class="iv">
+        <input type="date" value="${esc(x.dal)}" onchange="S.intervalli[${i}].dal=this.value; renderPianifica()"> →
+        <input type="date" value="${esc(x.al)}" onchange="S.intervalli[${i}].al=this.value; renderPianifica()">
+        <span class="n">${x.dal && x.al ? A.giorniAttivita([x], P).length + ' giorni di attività' : ''}</span>
+        ${iv.length > 1 ? `<button class="btn ghost small" type="button" onclick="S.intervalli.splice(${i},1); renderPianifica()">Togli</button>` : ''}
+      </div>`).join('')}
+      <button class="btn small" type="button" onclick="S.intervalli.push({dal:'',al:''}); renderPianifica()">+ Aggiungi periodo</button>
+      <span class="n" style="margin-left:8px;font-size:13px;color:var(--muted)">Totale: <b>${giorni.length}</b> giorni di attività</span>
+    </div>
+    <details class="pannello">
+      <summary style="cursor:pointer;font-weight:700;color:var(--ink)">Regole del calcolo</summary>
+      <div class="par" style="margin-top:12px">
+        <label>Fasce orarie (2 ore)<input type="text" id="pFasce" value="${esc(P.fasce.map(A.fasciaTesto).join(', '))}"></label>
+        <label>Classi in parallelo nella stessa fascia<input type="number" min="1" max="6" id="pPar" value="${P.maxParallelo}"></label>
+        <label>Classi al giorno (massimo)<input type="number" min="1" max="20" id="pGiorno" value="${P.maxClassiGiorno}"></label>
+        <label>Scuole diverse al giorno (massimo)<input type="number" min="1" max="6" id="pScuole" value="${P.maxScuoleGiorno}"></label>
+        <label>Chiusure delle scuole (gg/mm/aaaa, virgola)<input type="text" id="pChiusure" value="${esc((P.chiusure || []).map(d => d.slice(8,10) + '/' + d.slice(5,7) + '/' + d.slice(0,4)).join(', '))}"></label>
+        <label>Periodo delle attività (per gli avvisi)<span style="display:flex;gap:6px"><input type="date" id="pDal" value="${esc(P.periodo.dal)}"><input type="date" id="pAl" value="${esc(P.periodo.al)}"></span></label>
+        <label class="chk" style="flex-direction:row;color:var(--ink)"><input type="checkbox" id="pKit" ${P.kitUnico ? 'checked' : ''}> Un kit per esperimento (niente stesso laboratorio in parallelo)</label>
+      </div>
+      <div class="azioni"><button class="btn small" type="button" onclick="salvaParametri()">Salva le regole</button></div>
+    </details>
+    <div class="pannello">
+      <h3>Scuole da pianificare (${lista.length})</h3>
+      ${lista.length ? `<div class="azioni" style="margin-top:0">
+          <button class="btn ghost small" type="button" onclick="S.inclusi=pianificabili().map(r=>r.codice); renderPianifica()">Tutte</button>
+          <button class="btn ghost small" type="button" onclick="S.inclusi=[]; renderPianifica()">Nessuna</button></div>
+        <div class="sel-ric">${lista.map(r => { const v = vinc(r); const n = r.classi.filter(daPianificare).length;
+          return `<label><input type="checkbox" ${S.inclusi.indexOf(r.codice) >= 0 ? 'checked' : ''} onchange="includi('${esc(r.codice)}', this.checked)">
+            <span><b>${esc(r.scuola)}</b> <small>${esc(r.comune)} · ${n} ${n === 1 ? 'classe' : 'classi'}</small><br>
+            <small>${esc(A.sintesiVincoli(v, P))}${v.certezza === 'bassa' ? ' · <b style="color:var(--bad)">disponibilità da verificare: verrà saltata</b>' : ''}</small></span></label>`; }).join('')}</div>`
+        : '<div class="vuoto">Tutte le classi hanno già una data.</div>'}
+      <div class="azioni"><button class="btn prim" type="button" id="calcola" ${giorni.length && S.inclusi.length ? '' : 'disabled'} onclick="calcola()">Calcola la proposta</button></div>
+    </div>
+    <div id="risultato">${S.piano ? risultatoHtml() : ''}</div>`;
+}
+function includi(codice, on){ S.inclusi = S.inclusi.filter(c => c !== codice); if (on) S.inclusi.push(codice); renderPianifica(); }
+
+function leggiParametri(){
+  const p = Object.assign({}, par());
+  const fasce = document.getElementById('pFasce').value.split(',').map(s => s.trim().match(/^(\d{1,2})(?:[:.](\d{2}))?\s*[-–]\s*(\d{1,2})(?:[:.](\d{2}))?$/)).filter(Boolean)
+    .map(m => ({ inizio: +m[1] * 60 + (+m[2] || 0), fine: +m[3] * 60 + (+m[4] || 0) })).filter(f => f.fine > f.inizio);
+  if (fasce.length) p.fasce = fasce;
+  p.maxParallelo = Math.max(1, +document.getElementById('pPar').value || 1);
+  p.maxClassiGiorno = Math.max(1, +document.getElementById('pGiorno').value || 1);
+  p.maxScuoleGiorno = Math.max(1, +document.getElementById('pScuole').value || 1);
+  p.kitUnico = document.getElementById('pKit').checked;
+  p.chiusure = document.getElementById('pChiusure').value.split(/[,;\s]+/).map(x => x.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)).filter(Boolean)
+    .map(m => m[3] + '-' + String(m[2]).padStart(2, '0') + '-' + String(m[1]).padStart(2, '0'));
+  p.periodo = { dal: document.getElementById('pDal').value, al: document.getElementById('pAl').value };
+  delete p.tentativi;
+  return p;
+}
+async function salvaParametri(){
+  const prima = S.stato.parametri;
+  S.stato.parametri = leggiParametri();
+  if (!await salvaStato('Regole salvate.')) S.stato.parametri = prima;
+  S.piano = null; renderPianifica();
+}
+
+function calcola(){
+  const iv = intervalliCorrenti().filter(x => x.dal && x.al);
+  if (!iv.length) { toast('Indica almeno un periodo completo.', true); return; }
+  const btn = document.getElementById('calcola'); btn.disabled = true; btn.textContent = 'Calcolo in corso…';
+  setTimeout(() => {
+    const t0 = performance.now();
+    S.piano = A.pianifica({ intervalli: iv, richieste: S.ric, codici: S.inclusi, stato: statoValido(), parametri: par() });
+    S.piano.ms = Math.round(performance.now() - t0);
+    S.piano.intervalli = iv;
+    renderPianifica();
+    document.getElementById('risultato').scrollIntoView({ behavior: 'smooth' });
+  }, 30);
+}
+
+function risultatoHtml(){
+  const p = S.piano, st = p.statistiche;
+  const perGiorno = {};
+  p.assegnazioni.forEach(a => { (perGiorno[a.data] = perGiorno[a.data] || []).push(a); });
+  // classi con data dal foglio o già accettate negli stessi giorni: si vedono, non si toccano
+  const fisse = esistentiPerGiorno();
+  const giorni = Object.keys(perGiorno).sort();
+  return `<h2 class="sez">Proposta</h2>
+    <div class="stat">
+      <span class="chip ${st.assegnate === st.classi ? 'ok' : 'avviso'}">${st.assegnate} di ${st.classi} classi sistemate</span>
+      <span class="chip">${st.scuole} scuole · ${st.visite} uscite</span>
+      <span class="chip">${st.giorniUsati} giorni usati su ${st.giorniDisponibili}</span>
+      <span class="chip">calcolo: ${p.ms} ms</span>
+    </div>
+    ${p.nonAssegnate.length ? `<div class="pannello"><h3 style="color:var(--bad)">Non sistemate (${p.nonAssegnate.length})</h3><ul class="non">${p.nonAssegnate.map(n => { const x = classe(n.chiave);
+      return `<li><b>${esc(x ? x.r.scuola + ' · ' + x.c.classe : n.chiave)}</b> — ${esc(n.motivo)}</li>`; }).join('')}</ul></div>` : ''}
+    <div class="azioni">
+      <button class="btn prim" type="button" ${p.assegnazioni.length ? '' : 'disabled'} onclick="accetta()">Accetta la proposta</button>
+      <button class="btn" type="button" onclick="calcola()">Ricalcola</button>
+      <button class="btn" type="button" onclick="esportaCsv(S.piano.assegnazioni, 'proposta')">Scarica CSV</button>
+      <button class="btn" type="button" onclick="copiaTesto(S.piano.assegnazioni)">Copia testo</button>
+    </div>
+    <div class="giorni">${giorni.map(d => giornoHtml(d, perGiorno[d], fisse[d] || [], true)).join('')}</div>`;
+}
+
+function esistentiPerGiorno(){
+  const out = {};
+  const fissate = S.stato.fissate || {};
+  Object.keys(fissate).forEach(ch => { const x = classe(ch); if (x) (out[fissate[ch].data] = out[fissate[ch].data] || []).push({ chiave: ch, codice: x.r.codice, data: fissate[ch].data, fascia: fissate[ch].fascia, accettata: true }); });
+  S.ric.forEach(r => r.classi.forEach(c => { if (c.dataPrevista && !fissate[c.chiave]) (out[c.dataPrevista] = out[c.dataPrevista] || []).push({ chiave: c.chiave, codice: r.codice, data: c.dataPrevista, fascia: null, foglio: true }); }));
+  return out;
+}
+
+function giornoHtml(d, ass, fisse, modificabili){
+  const P = par();
+  const scuole = [...new Set(ass.concat(fisse).map(a => a.codice))];
+  let h = `<div class="giorno"><h4>${esc(A.dataBreve(d))} <small>${ass.length + fisse.length} classi · ${scuole.length} ${scuole.length === 1 ? 'scuola' : 'scuole'}</small></h4>`;
+  P.fasce.forEach((f, k) => {
+    const qui = ass.filter(a => a.fascia === k), quiF = fisse.filter(a => a.fascia === k);
+    if (!qui.length && !quiF.length) return;
+    h += `<div class="fascia"><span class="o">${esc(A.fasciaTesto(f))}</span><div>${quiF.map(a => chipClasse(a, false)).join('')}${qui.map(a => chipClasse(a, modificabili)).join('')}</div></div>`;
+  });
+  const senza = fisse.filter(a => a.fascia === null || a.fascia === undefined);
+  if (senza.length) h += `<div class="fascia"><span class="o">dal foglio</span><div>${senza.map(a => chipClasse(a, false)).join('')}</div></div>`;
+  return h + '</div>';
+}
+function chipClasse(a, modificabile){
+  const x = classe(a.chiave); if (!x) return '';
+  const nota = a.foglio ? ' · data nel foglio' : a.accettata && modificabile !== 'cal' ? ' · già accettata' : '';
+  const az = modificabile === true ? `onclick="modifica('${esc(a.chiave)}')"` : modificabile === 'cal' ? `onclick="libera('${esc(a.chiave)}')"` : '';
+  return `<button type="button" class="cl${!modificabile ? ' foglio' : ''}${a.modificata ? ' mod' : ''}" style="--c:${coloreScuola(x.r.codice)}" ${az} title="${esc(x.c.labs.join(' · '))}">
+    <b>${esc(x.r.scuola)}</b> · ${esc(x.c.classe)}<small>${esc(x.c.percorso)} · ${esc(labsBreve(x.c))}${esc(nota)}</small></button>`;
+}
+
+/* ---------- modifica a mano di una classe nella proposta ---------- */
+function modifica(chiave){
+  const a = S.piano.assegnazioni.find(x => x.chiave === chiave); const x = classe(chiave);
+  const opzioniGiorno = S.piano.giorni.map(d => `<option value="${d}" ${d === a.data ? 'selected' : ''}>${esc(A.dataBreve(d))}</option>`).join('');
+  const opzioniFascia = par().fasce.map((f, k) => `<option value="${k}" ${k === a.fascia ? 'selected' : ''}>${esc(A.fasciaTesto(f))}</option>`).join('');
+  document.getElementById('modal').innerHTML = `
+    <h2>${esc(x.r.scuola)} · ${esc(x.c.classe)}</h2>
+    <p style="margin:0 0 12px;color:var(--muted);font-size:14px">${esc(x.c.percorso)}: ${labsTesto(x.c)}<br>Disponibilità: ${esc(A.sintesiVincoli(vinc(x.r), par()))}</p>
+    <div class="riga"><label>Giorno<select id="mGiorno">${opzioniGiorno}</select></label><label>Fascia<select id="mFascia">${opzioniFascia}</select></label></div>
+    <ul class="avvisi" id="mProblemi"></ul>
+    <div class="m-az">
+      <button class="btn danger" type="button" onclick="togliDallaProposta('${esc(chiave)}')">Togli dalla proposta</button>
+      <span style="flex:1"></span>
+      <button class="btn ghost" type="button" onclick="chiudi()">Annulla</button>
+      <button class="btn prim" type="button" onclick="applicaModifica('${esc(chiave)}')">Sposta</button>
+    </div>`;
+  const aggiorna = () => {
+    const prova = Object.assign({}, a, { data: document.getElementById('mGiorno').value, fascia: +document.getElementById('mFascia').value });
+    const altre = S.piano.assegnazioni.filter(y => y !== a).concat(prova).concat(Object.values(esistentiPerGiorno()).flat().filter(y => y.fascia !== null));
+    const pr = A.verificaAssegnazione(prova, altre, S.ric, statoValido(), par());
+    document.getElementById('mProblemi').innerHTML = pr.length ? pr.map(t => `<li class="avviso">${esc(t)}</li>`).join('') : '<li class="info">Nessun conflitto.</li>';
+  };
+  document.getElementById('mGiorno').onchange = aggiorna; document.getElementById('mFascia').onchange = aggiorna;
+  aggiorna();
+  document.getElementById('modalBg').classList.add('on');
+}
+function applicaModifica(chiave){
+  const a = S.piano.assegnazioni.find(x => x.chiave === chiave);
+  a.data = document.getElementById('mGiorno').value; a.fascia = +document.getElementById('mFascia').value; a.modificata = true;
+  S.piano.assegnazioni.sort((x, y) => x.data.localeCompare(y.data) || x.fascia - y.fascia);
+  chiudi(); renderPianifica();
+}
+function togliDallaProposta(chiave){
+  const a = S.piano.assegnazioni.find(x => x.chiave === chiave);
+  S.piano.assegnazioni = S.piano.assegnazioni.filter(x => x !== a);
+  S.piano.nonAssegnate.push({ chiave, codice: a.codice, motivo: 'Tolta a mano dalla proposta.' });
+  S.piano.statistiche.assegnate--;
+  chiudi(); renderPianifica();
+}
+
+async function accetta(){
+  const n = S.piano.assegnazioni.length;
+  if (!confirm(`Accettare ${n} date? Finiranno nel Calendario di questa pagina (i fogli non vengono modificati).`)) return;
+  const prima = JSON.stringify(S.stato);
+  S.stato.fissate = S.stato.fissate || {};
+  const id = 'p' + Date.now();
+  S.piano.assegnazioni.forEach(a => { S.stato.fissate[a.chiave] = { data: a.data, fascia: a.fascia, piano: id }; });
+  S.stato.pianifica = { intervalli: S.piano.intervalli };
+  S.stato.storico = (S.stato.storico || []).concat({ id, quando: new Date().toISOString(), classi: n, intervalli: S.piano.intervalli }).slice(-30);
+  if (await salvaStato(n + ' date accettate: le trovi nel Calendario.')) { S.piano = null; S.inclusi = null; S.intervalli = null; renderPianifica(); }
+  else S.stato = JSON.parse(prima);
+}
+
+/* =====================================================================
+   CALENDARIO (date accettate + date presenti nel foglio)
+   ===================================================================== */
+function renderCalendario(){
+  const tutte = esistentiPerGiorno();
+  const giorni = Object.keys(tutte).sort();
+  const accettate = Object.keys(S.stato.fissate || {}).map(ch => Object.assign({ chiave: ch, codice: (classe(ch) || { r: {} }).r.codice }, S.stato.fissate[ch])).filter(a => a.codice);
+  // riepilogo per scuola (per preparare le email: nessun invio da qui)
+  const perScuola = {};
+  accettate.forEach(a => { (perScuola[a.codice] = perScuola[a.codice] || []).push(a); });
+  document.getElementById('main').innerHTML = `
+    <div class="info">Date accettate dalle proposte (<b>${accettate.length}</b> classi) e date già scritte nel foglio (colonna "Data prevista", in grigio).
+      Tocca una classe accettata per liberarla. ${S.stato.modificato ? `Ultimo salvataggio: ${dataIt(S.stato.modificato)} da ${esc(S.stato.modificatoDa || '')}.` : ''}</div>
+    <div class="azioni">
+      <button class="btn" type="button" ${accettate.length ? '' : 'disabled'} onclick="esportaCsv(accettateOrdinate(), 'calendario')">Scarica CSV</button>
+      <button class="btn" type="button" ${accettate.length ? '' : 'disabled'} onclick="copiaTesto(accettateOrdinate())">Copia testo</button>
+    </div>
+    ${giorni.length ? `<div class="giorni">${giorni.map(d => giornoHtml(d, tutte[d].filter(a => a.accettata), tutte[d].filter(a => !a.accettata), 'cal')).join('')}</div>` : '<div class="vuoto">Nessuna data ancora. Usa la scheda Pianifica.</div>'}
+    ${Object.keys(perScuola).length ? `<h2 class="sez">Riepilogo per scuola</h2><div class="pannello scroll"><table class="t"><thead><tr><th>Scuola</th><th>Referente</th><th>Date</th></tr></thead><tbody>
+      ${Object.keys(perScuola).map(cod => { const r = ric(cod); const vis = perScuola[cod].sort((a, b) => a.data.localeCompare(b.data) || a.fascia - b.fascia);
+        return `<tr><td><b>${esc(r.scuola)}</b><br><small>${esc(r.comune)} · ${esc(r.codice)}</small></td><td>${esc(r.referente)}<br><small>${esc(r.email)}</small></td>
+          <td>${vis.map(a => esc(A.dataBreve(a.data) + ' ' + fasciaT(a.fascia) + ' · ' + classe(a.chiave).c.classe)).join('<br>')}</td></tr>`; }).join('')}
+      </tbody></table></div>` : ''}`;
+}
+function accettateOrdinate(){
+  return Object.keys(S.stato.fissate || {}).map(ch => Object.assign({ chiave: ch, codice: (classe(ch) || { r: {} }).r.codice }, S.stato.fissate[ch]))
+    .filter(a => a.codice).sort((a, b) => a.data.localeCompare(b.data) || a.fascia - b.fascia);
+}
+async function libera(chiave){
+  const x = classe(chiave);
+  if (!confirm(`Liberare ${x.r.scuola} · ${x.c.classe}? Tornerà tra le classi da pianificare.`)) return;
+  const prima = S.stato.fissate[chiave]; delete S.stato.fissate[chiave];
+  if (!await salvaStato('Data liberata.')) S.stato.fissate[chiave] = prima;
+  renderCalendario();
+}
+
+/* ---------- esportazione ---------- */
+function righe(ass){
+  return ass.map(a => { const x = classe(a.chiave); return [a.data, A.dataBreve(a.data).split(' ')[0], fasciaT(a.fascia), x.r.scuola, x.r.comune, x.r.codice, x.c.classe, x.c.alunni,
+    x.c.percorso, x.c.consiglio === 'Sì' ? 'consiglio del team' : x.c.labs.join(' / '), x.r.referente, x.r.email, x.r.telefono]; });
+}
+function esportaCsv(ass, nome){
+  const testa = ['Data', 'Giorno', 'Fascia', 'Scuola', 'Comune', 'Codice', 'Classe', 'Studenti', 'Percorso', 'Laboratori', 'Referente', 'Email', 'Telefono'];
+  const cella = v => { let s = String(v ?? ''); if (/^[=+\-@]/.test(s)) s = "'" + s; return /[;"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+  const csv = '﻿' + [testa].concat(righe(ass)).map(r => r.map(cella).join(';')).join('\r\n');
+  const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  const l = document.createElement('a'); l.href = url; l.download = 'classlab-' + nome + '-' + A.iso(new Date()) + '.csv';
+  document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+function copiaTesto(ass){
+  let t = '', ultimo = '';
+  ass.slice().sort((a, b) => a.data.localeCompare(b.data) || a.fascia - b.fascia).forEach(a => {
+    const x = classe(a.chiave);
+    if (a.data !== ultimo) { t += (t ? '\n' : '') + A.dataBreve(a.data).toUpperCase() + '\n'; ultimo = a.data; }
+    t += '  ' + fasciaT(a.fascia) + '  ' + x.r.scuola + ' (' + x.r.comune + ') – ' + x.c.classe + ' – ' + x.c.percorso + ': ' + (x.c.consiglio === 'Sì' ? 'consiglio del team' : x.c.labs.join(', ')) + '\n';
+  });
+  navigator.clipboard.writeText(t).then(() => toast('Testo copiato.'), () => toast('Copia non riuscita.', true));
+}
+
+/* ---------- finestra ---------- */
+function chiudi(){ document.getElementById('modalBg').classList.remove('on'); }
+document.getElementById('modalBg').addEventListener('click', e => { if (e.target.id === 'modalBg') chiudi(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') chiudi(); });
+window.addEventListener('beforeunload', e => { if (Object.keys(S.bozze).length) { e.preventDefault(); e.returnValue = ''; } });
+
+/* ---------- avvio ---------- */
+if (DEMO) {
+  document.getElementById('demoBar').classList.remove('hidden');
+  document.getElementById('who').innerHTML = 'prova';
+  carica();
+} else if (!API) {
+  mostraLogin('Manca moduloEndpoint in assets/js/config.js.');
+} else {
+  TeamAuth.avvia({
+    api: API, bottone: 'gbtn', onLogin: mostraLogin, onBusy: busy,
+    onAccesso: (p) => { document.getElementById('who').innerHTML = esc(p.email || '') + '<button type="button" onclick="TeamAuth.esci()">Esci</button>'; carica(); }
+  });
+}
+</script>
+</body>
+</html>

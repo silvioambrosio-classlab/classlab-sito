@@ -47,6 +47,15 @@ window.AREA_TEAM = [
     livelli: [1, 2, 3, 4, 5]
   },
   {
+    titolo: "Adesioni delle scuole",
+    descrizione: "Richieste dal modulo del sito: riassunti, controlli e calendario proposto.",
+    link: "/adesioni/",
+    icona: "foglio",
+    nuovaScheda: false,
+    // solo gestori (il controllo vero lo fa lo script del modulo, Adesioni.js)
+    livelli: [1]
+  },
+  {
     titolo: "Permessi del team",
     descrizione: "Chi vede cosa: cambia il livello di accesso di ogni persona.",
     link: "/permessi/",
