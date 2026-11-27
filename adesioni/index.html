@@ -48,7 +48,9 @@
 
   main.wrap{padding-top:18px;padding-bottom:90px}
   .info{background:var(--cielo);color:var(--navy);border-radius:var(--r);padding:12px 16px;font-size:14px;margin-bottom:16px}
-  h2.sez{font-size:17px;color:var(--ink);margin:22px 0 10px}
+  .info.warn{background:var(--warn-bg);color:var(--warn)}
+  .info.ok{background:var(--ok-bg);color:var(--ok)}
+  h2.sez{font-size:17px;color:var(--ink);margin:24px 0 10px}
 
   .kpi{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:16px}
   .kpi div{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:12px 14px}
@@ -58,11 +60,11 @@
 
   .tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
   .tools input[type=search]{flex:1;min-width:200px}
-  input[type=search],input[type=date],input[type=number],input[type=text],select,textarea{padding:8px 11px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
-  textarea{width:100%;min-height:60px}
+  input[type=search],input[type=date],input[type=number],input[type=text],select,textarea{padding:8px 11px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);max-width:100%}
   .btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 14px;cursor:pointer;color:var(--ink);white-space:nowrap}
   .btn:hover{border-color:#c4ccd8}
   .btn.prim{background:var(--blu);border-color:var(--blu);color:#fff}
+  .btn.verde{background:var(--ok);border-color:var(--ok);color:#fff}
   .btn:disabled{opacity:.5;cursor:default}
   .btn.small{padding:5px 10px;font-size:13px}
   .btn.ghost{border-color:transparent;background:none;color:var(--muted)}
@@ -70,7 +72,7 @@
   label.chk{display:inline-flex;gap:6px;align-items:center;font-size:14px;cursor:pointer}
 
   .chip{display:inline-block;border-radius:999px;padding:1px 9px;font-size:12px;font-weight:600;background:var(--info-bg);color:var(--testo);white-space:nowrap}
-  .chip.Nuova{background:#fde68a;color:#5c4300}
+  .chip.Nuova,.chip.nuova{background:#fde68a;color:#5c4300}
   .chip.In-contatto{background:#bfdbfe;color:#0c3a6b}
   .chip.Confermata,.chip.Calendarizzata,.chip.Data-fissata{background:#bbf7d0;color:#14532d}
   .chip.Svolta{background:#e2e8f0}
@@ -78,6 +80,7 @@
   .chip.errore{background:var(--bad-bg);color:var(--bad)}
   .chip.avviso{background:var(--warn-bg);color:var(--warn)}
   .chip.ok{background:var(--ok-bg);color:var(--ok)}
+  .chip.blocco{background:#ede9fe;color:#4c1d95}
 
   /* richieste */
   .ric{background:#fff;border:1px solid var(--line);border-radius:var(--r);margin-bottom:8px}
@@ -102,53 +105,58 @@
   .avvisi .errore{background:var(--bad-bg);color:var(--bad)}
   .avvisi .avviso{background:var(--warn-bg);color:var(--warn)}
   .avvisi .info{background:var(--info-bg)}
+  dl.extra{display:grid;grid-template-columns:max-content 1fr;gap:4px 12px;font-size:13.5px;margin:0}
+  dl.extra dt{color:var(--muted)}
+  dl.extra dd{margin:0}
 
-  /* griglia disponibilità */
-  .gr{display:grid;gap:3px;font-size:12px;margin:6px 0 10px;max-width:420px}
-  .gr .h{color:var(--muted);text-align:center;font-weight:600}
-  .gr .g{color:var(--ink);font-weight:600;align-self:center}
-  .gr button{border:1px solid var(--line);background:#fff;border-radius:6px;height:28px;cursor:pointer;color:transparent}
-  .gr button.on{background:var(--blu);border-color:var(--blu);color:#fff}
-  .gr button.on:after{content:"✓"}
-  .gr.ro button{cursor:default}
+  /* disponibilità per giorno */
+  .gg{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:6px 0 10px;max-width:640px}
+  .g1{border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center;background:#fff}
+  .g1.on{border-color:var(--blu);background:var(--cielo)}
+  .g1 button.nome{border:0;background:none;font-weight:700;color:var(--ink);cursor:pointer;width:100%;padding:2px 0}
+  .g1.on button.nome{color:var(--navy)}
+  .g1 .o{font-size:12px;color:var(--muted);min-height:1.3em}
+  .g1 select{width:100%;padding:4px;font-size:12.5px;margin-top:4px}
+  .g1.off select{visibility:hidden}
+  @media (max-width:520px){.gg{grid-template-columns:repeat(3,minmax(0,1fr))}}
   .mesi{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0 10px}
   .mesi button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:2px 9px;font-size:12px;cursor:pointer}
   .mesi button.on{background:var(--blu);border-color:var(--blu);color:#fff}
-  .riga{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:8px}
-  .riga label{font-size:12.5px;color:var(--muted);display:flex;flex-direction:column;gap:3px}
+  .campi{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;align-items:start;margin-bottom:10px}
+  .campi label{font-size:12.5px;color:var(--muted);display:flex;flex-direction:column;gap:4px;font-weight:600}
+  .campi label small{font-weight:400}
   .letto{font-size:12.5px;color:var(--muted);margin-bottom:8px}
   .mod{color:var(--arancio);font-weight:700;font-size:12.5px}
 
-  /* pianifica */
-  .pannello{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin-bottom:14px}
-  .pannello h3{margin:0 0 10px;font-size:15px;color:var(--ink)}
-  .iv{display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap}
+  /* calendario */
+  .pannello{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:14px}
+  .pannello h3{margin:0 0 12px;font-size:15px;color:var(--ink)}
+  .regole{margin:0;padding-left:20px;font-size:14px}
+  .regole li{margin-bottom:4px}
+  .iv{display:grid;grid-template-columns:minmax(0,170px) auto minmax(0,170px) 1fr auto;gap:8px;align-items:center;margin-bottom:8px}
+  .iv input{width:100%;min-width:0}
   .iv .n{font-size:12.5px;color:var(--muted)}
-  .par{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
-  .par label{font-size:12.5px;color:var(--muted);display:flex;flex-direction:column;gap:3px}
-  .sel-ric{columns:2 260px;column-gap:18px}
-  .sel-ric label{display:flex;gap:8px;align-items:flex-start;break-inside:avoid;padding:3px 0;font-size:14px}
-  .sel-ric small{color:var(--muted)}
+  @media (max-width:560px){.iv{grid-template-columns:minmax(0,1fr) minmax(0,1fr);padding-bottom:8px;border-bottom:1px dashed var(--line)}.iv .freccia{display:none}.iv .n{grid-column:1/-1}}
+  @media (max-width:420px){.iv{grid-template-columns:minmax(0,1fr)}}
+  .campi input{width:100%;min-width:0}
+  @media (max-width:520px){.campi label[style*="span 2"]{grid-column:auto!important}}
+  .stato-cal{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
   .stat{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
-  .giorni{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
-  .giorno{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:12px}
-  .giorno h4{margin:0 0 8px;font-size:15px;color:var(--ink);display:flex;justify-content:space-between;gap:8px}
+  .giorni{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:12px}
+  .giorno{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:12px;min-width:0}
+  .giorno h4{margin:0 0 8px;font-size:15px;color:var(--ink);display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 8px}
   .giorno h4 small{color:var(--muted);font-weight:500}
-  .fascia{display:grid;grid-template-columns:62px 1fr;gap:6px;padding:5px 0;border-top:1px dashed var(--line)}
-  .fascia .o{font-size:12.5px;color:var(--muted);font-weight:600;padding-top:3px}
-  .cl{display:block;width:100%;text-align:left;border:0;border-left:4px solid var(--c);background:color-mix(in srgb,var(--c) 10%,#fff);border-radius:6px;padding:4px 8px;margin-bottom:4px;cursor:pointer;font-size:13px;color:var(--ink)}
-  .cl small{color:var(--muted);display:block}
-  .cl.foglio{cursor:default;opacity:.75}
-  .cl.mod{outline:2px solid var(--arancio)}
-  .non li{margin-bottom:4px}
+  .visita{border-left:4px solid var(--c);background:color-mix(in srgb,var(--c) 7%,#fff);border-radius:8px;padding:8px 10px;margin-bottom:8px}
+  .visita .s{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 8px;font-size:14px;color:var(--ink)}
+  .visita .s small{color:var(--muted);font-weight:500}
+  .turno{display:grid;grid-template-columns:64px 1fr;gap:6px;padding:4px 0;border-top:1px dashed var(--line);font-size:13px}
+  .turno .o{color:var(--muted);font-weight:600}
+  .cl{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:6px;padding:1px 7px;margin:0 4px 3px 0;color:var(--ink)}
+  .cl.lock{border-color:#7c3aed}
+  .cl button{border:0;background:none;color:#7c3aed;cursor:pointer;padding:0 0 0 4px;font-size:12px}
+  .non li,.cambi li{margin-bottom:4px;font-size:14px}
   .azioni{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
   .vuoto{text-align:center;color:var(--muted);padding:30px 10px}
-
-  .modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:flex-start;justify-content:center;padding:6vh 14px;z-index:20;overflow:auto}
-  .modal-bg.on{display:flex}
-  .modal{background:#fff;border-radius:18px;max-width:500px;width:100%;padding:22px;box-shadow:0 20px 50px rgba(0,0,0,.2)}
-  .modal h2{margin:0 0 6px;font-size:19px;color:var(--ink)}
-  .m-az{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
 
   #busy{position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--arancio),var(--blu));display:none;z-index:30;animation:b 1s linear infinite;background-size:200% 100%}
   @keyframes b{to{background-position:-200% 0}}
@@ -185,93 +193,127 @@
     <div class="wrap">
       <div class="bar">
         <a class="back" href="../area-team.html" title="Area team">←</a>
-        <h1>Adesioni<small>Area team</small></h1>
+        <h1>Adesioni<small>Area team · 2027/28</small></h1>
         <div class="who" id="who"></div>
       </div>
       <nav class="tabs" id="tabs">
         <button type="button" data-tab="richieste" class="on">Richieste</button>
-        <button type="button" data-tab="pianifica">Pianifica</button>
-        <button type="button" data-tab="calendario">Calendario</button>
+        <button type="button" data-tab="calendario">Calendario 2027/28</button>
       </nav>
     </div>
   </header>
   <main class="wrap" id="main"></main>
 </div>
 
-<div class="modal-bg" id="modalBg"><div class="modal" id="modal"></div></div>
 <div class="toast" id="toast"></div>
 
 <script src="../turni/config.js"></script>
-<script src="../assets/js/config.js"></script>
 <script src="../assets/js/laboratori-dati.js"></script>
 <script src="../assets/js/team-auth.js?v=bba1f888"></script>
-<script src="logica.js?v=37326b69"></script>
+<script src="logica.js?v=84984cf3"></script>
 <script src="demo.js?v=51b21422"></script>
 <script>
 /* =====================================================================
-   CLASSLAB · ADESIONI — lettura delle richieste del modulo del sito,
-   crosscheck, pianificazione delle date.
+   CLASSLAB · ADESIONI 2027/28
    ---------------------------------------------------------------------
-   Dati: schede "Richieste" e "Classi" del foglio "Richieste Scuole",
-   letti dallo script del modulo (Adesioni.js, funzione adesioniDati).
-   I fogli NON vengono modificati: vincoli corretti a mano, proposte
-   accettate e intervalli si salvano nello "stato" dello script.
-   Accesso: solo livello 1 (controllo vero sul server).
-   Prova senza login: /adesioni/?demo (dati inventati).
+   - Richieste: lette per intero dal foglio delle risposte al modulo
+     ("ClassLab - Richieste scuole"), MAI modificato. Riassunti e crosscheck.
+   - Calendario: calcolato dallo script dei turni e scritto nelle schede
+     "Turni 2027/28 BIO" e "Turni 2027/28 FISICA" del file turni.
+     Si ricalcola da solo a ogni nuova richiesta (controllo ogni 10 minuti)
+     finché il calendario è PROVVISORIO. Le modifiche fatte a mano nelle
+     schede (o dal gestionale) restano bloccate.
+   Regole: meno giornate per scuola → meno persone → max 3 interventi a
+   persona al giorno (una coppia per classe) → giorni e orari delle scuole
+   → un kit per esperimento nello stesso turno. 2 ore per classe.
+   Accesso: solo livello 1 (controllo vero nello script dei turni).
+   Prova senza login: /adesioni/?demo (dati inventati, calcolo nel browser).
    ===================================================================== */
 const A = window.Adesioni;
 const DEMO = new URLSearchParams(location.search).has("demo");
-const API = (window.CLASSLAB || {}).moduloEndpoint;
+const API = (window.TURNI_CONFIG || {}).API_URL;
 const CAT = A.catalogo(window.CLASSLAB_LABORATORI, window.CLASSLAB_PERCORSI_FISICA, window.CLASSLAB_CLASSI);
 const COLORI = ["#0b77b8", "#f29a2e", "#3a9a4a", "#8e44ad", "#c0392b", "#16a085", "#a26a00", "#2c3e50", "#d35400", "#7f8c8d"];
 const MESI_SCUOLA = [8, 9, 10, 11, 0, 1, 2, 3, 4, 5]; // set → giu
+const CAMPI_NOTI = ["riga", "codice", "dataInvio", "stato", "scuola", "comune", "ordine", "nClassi", "totAlunni", "referente", "email", "telefono",
+  "giornate", "note", "riepilogo", "privacy", "noteInterne", "altri"];
 
-const S = {
-  dati: null, ric: [], orfane: [], stato: { versione: 0 }, tab: "richieste",
-  cerca: "", fStato: "", fOrdine: "", soloProblemi: false, ordina: "invio", aperta: null, bozze: {},
-  piano: null, inclusi: null, intervalli: null
+const S = { dati: null, ric: [], orfane: [], stato: { versione: 0 }, cal: null, tab: "richieste",
+  cerca: "", fStato: "", fOrdine: "", soloProblemi: false, soloNuove: false, ordina: "invio", aperta: null, bozze: {}, intervalli: null };
+
+/* ---------- server (script dei turni) oppure simulazione in modalità prova ---------- */
+const call = (fn, ...args) => DEMO ? Demo[fn](...args) : TeamAuth.chiama(fn, ...args);
+
+/* In modalità prova il "server" è qui: stesso calcolo (logica.js), stato nel browser. */
+const Demo = {
+  _leggi(){ try { return JSON.parse(localStorage.getItem('adesioniDemo2') || 'null') || {}; } catch(e){ return {}; } },
+  _scrivi(x){ try { localStorage.setItem('adesioniDemo2', JSON.stringify(x)); } catch(e){} },
+  _calcola(mem){
+    const d = window.ADESIONI_DEMO, prep = A.prepara(d), stato = mem.stato || {};
+    const prima = (mem.cal && mem.cal.assegnazioni) || [];
+    const bloccate = Object.assign({}, stato.bloccate || {});
+    if (mem.cal && mem.cal.definitivo) prima.forEach(a => { if (!bloccate[a.chiave]) bloccate[a.chiave] = { data: a.data, turno: a.turno, motivo: 'definitivo' }; });
+    const iv = (stato.intervalli || []).filter(x => x.dal && x.al);
+    const p = A.pianifica({ intervalli: iv, richieste: prep.richieste, parametri: parametri(stato), precedente: prima,
+      stato: { vincoli: stato.vincoli, fissate: bloccate, escluse: stato.escluse } });
+    const ass = p.assegnazioni.concat(Object.keys(bloccate).map(k => ({ chiave: k, codice: k.split('|')[0], data: bloccate[k].data, turno: bloccate[k].turno, bloccata: bloccate[k].motivo || 'mano' })));
+    const pr = {}; prima.forEach(a => pr[a.chiave] = a);
+    const cambi = ass.filter(a => !pr[a.chiave] || pr[a.chiave].data !== a.data || pr[a.chiave].turno !== a.turno)
+      .map(a => ({ chiave: a.chiave, prima: pr[a.chiave] ? { data: pr[a.chiave].data, turno: pr[a.chiave].turno } : null, dopo: { data: a.data, turno: a.turno } }));
+    const codPrima = (mem.cal && mem.cal.codici) || [];
+    mem.cal = { assegnazioni: ass, nonAssegnate: p.nonAssegnate, statistiche: p.statistiche, definitivo: !!(mem.cal && mem.cal.definitivo),
+      calcolato: new Date().toISOString(), codici: prep.richieste.map(r => r.codice),
+      nuove: prep.richieste.map(r => r.codice).filter(c => codPrima.length && codPrima.indexOf(c) < 0), cambi: codPrima.length ? cambi : [], avvisi: [] };
+    return mem.cal;
+  },
+  adesioniDati(){
+    const mem = this._leggi();
+    // periodi di esempio, come quelli di Silvio: dicembre, 10-21 gennaio, marzo-aprile (2027/28)
+    mem.stato = mem.stato || { versione: 0, intervalli: [{ dal: '2027-12-01', al: '2027-12-22' }, { dal: '2028-01-10', al: '2028-01-21' }, { dal: '2028-03-01', al: '2028-04-28' }] };
+    if (!mem.cal) { this._calcola(mem); this._scrivi(mem); }
+    return Promise.resolve(Object.assign(JSON.parse(JSON.stringify(window.ADESIONI_DEMO)), { stato: mem.stato, calendario: mem.cal }));
+  },
+  adesioniSalvaStato(stato, versione){
+    const mem = this._leggi(); mem.stato = Object.assign({}, mem.stato || {}, stato, { versione: ((mem.stato || {}).versione || 0) + 1, modificato: new Date().toISOString(), modificatoDa: 'prova' });
+    this._scrivi(mem); return Promise.resolve({ versione: mem.stato.versione, modificato: mem.stato.modificato, modificatoDa: 'prova' });
+  },
+  adesioniRicalcola(){ const mem = this._leggi(); const c = this._calcola(mem); this._scrivi(mem); return Promise.resolve(c); },
+  adesioniSblocca(chiave){ const mem = this._leggi(); const s = mem.stato || {};
+    if (s.bloccate) delete s.bloccate[chiave]; if (s.escluse) delete s.escluse[chiave]; mem.stato = s; const c = this._calcola(mem); this._scrivi(mem); return Promise.resolve(c); },
+  adesioniDefinitivo(on){ const mem = this._leggi(); mem.cal = mem.cal || {}; mem.cal.definitivo = !!on; this._scrivi(mem); return Promise.resolve(mem.cal); }
 };
 
 /* ---------- accesso ---------- */
 function mostra(id){ ['login','negato','app'].forEach(x => document.getElementById(x).classList.toggle('hidden', x !== id)); }
 function mostraLogin(msg){ mostra('login'); document.getElementById('loginErr').textContent = msg || ''; }
 function busy(on){ document.getElementById('busy').style.display = on ? 'block' : 'none'; }
-const call = (fn, ...args) => TeamAuth.chiama(fn, ...args);
 
 async function carica(){
   try {
-    const d = DEMO ? JSON.parse(JSON.stringify(window.ADESIONI_DEMO)) : await call('adesioniDati');
-    if (DEMO) {
-      try { d.stato = JSON.parse(localStorage.getItem('adesioniDemoStato') || 'null') || { versione: 0 }; } catch(e){ d.stato = { versione: 0 }; }
-    }
-    S.dati = d;
-    S.stato = d.stato || { versione: 0 };
+    const d = await call('adesioniDati');
+    S.dati = d; S.stato = d.stato || { versione: 0 }; S.cal = d.calendario || null;
     const p = A.prepara(d); S.ric = p.richieste; S.orfane = p.orfane;
+    S.intervalli = null;
     mostra('app'); render();
   } catch(e){
     if (e.auth) return;
-    document.getElementById('negatoMsg').textContent = /riservat|livello/i.test(e.message)
+    document.getElementById('negatoMsg').textContent = /riservat|livello|organizzator/i.test(e.message)
       ? 'Questa pagina è riservata ai gestori (livello 1). Il livello si imposta nella pagina Permessi.'
       : 'Impossibile caricare le adesioni: ' + e.message;
     mostra('negato');
   }
 }
 
-async function salvaStato(msg){
-  const nuovo = JSON.parse(JSON.stringify(S.stato));
-  if (DEMO) {
-    nuovo.versione = (nuovo.versione || 0) + 1; nuovo.modificato = new Date().toISOString(); nuovo.modificatoDa = 'prova';
-    try { localStorage.setItem('adesioniDemoStato', JSON.stringify(nuovo)); } catch(e){}
-    S.stato = nuovo; if (msg) toast(msg); return true;
-  }
+/** Salva una parte dello stato (vincoli, intervalli, chiusure, periodo). */
+async function salvaStato(parte, msg){
   try {
-    const r = await call('adesioniSalvaStato', nuovo, S.stato.versione || 0);
-    S.stato.versione = r.versione; S.stato.modificato = r.modificato; S.stato.modificatoDa = r.modificatoDa;
+    const r = await call('adesioniSalvaStato', parte, S.stato.versione || 0);
+    Object.assign(S.stato, parte, { versione: r.versione, modificato: r.modificato, modificatoDa: r.modificatoDa });
     if (msg) toast(msg);
     return true;
   } catch(e){
     toast(e.message, true);
-    if (/nel frattempo/.test(e.message)) setTimeout(() => { if (confirm('Un altro gestore ha salvato delle modifiche. Ricaricare i dati? (le tue ultime modifiche non salvate andranno perse)')) carica(); }, 300);
+    if (/nel frattempo/.test(e.message)) setTimeout(() => { if (confirm('Un altro gestore ha salvato delle modifiche. Ricaricare i dati?')) carica(); }, 300);
     return false;
   }
 }
@@ -280,31 +322,22 @@ async function salvaStato(msg){
 function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function toast(t, err){ const el = document.getElementById('toast'); el.textContent = t; el.className = 'toast' + (err ? ' err' : ''); el.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => el.style.display = 'none', err ? 6000 : 3000); }
 function chipStato(s){ return s ? `<span class="chip ${esc(String(s).replace(/\s+/g,'-'))}">${esc(s)}</span>` : ''; }
-function par(){
-  const p = Object.assign({}, A.PARAMETRI, S.stato.parametri || {});
-  if (!p.periodo || !p.periodo.dal) { const y = A.annoScolastico(); p.periodo = { dal: y + '-12-12', al: (y + 1) + '-03-15' }; }
+function parametri(stato){
+  const p = Object.assign({}, A.PARAMETRI, { chiusure: (stato || {}).chiusure || [], periodo: (stato || {}).periodo || null });
+  if (!p.periodo || !p.periodo.dal) { const y = A.ANNO_INIZIO; p.periodo = { dal: y + '-12-12', al: (y + 1) + '-03-15' }; }
   return p;
 }
-function nF(){ return par().fasce.length; }
-function vinc(r){
-  const v = A.vincoli(r, S.stato, par());
-  if (v.manuale && (v.griglia.length !== 5 || v.griglia[0].length !== nF())) return A.interpreta(r.giornate, A.annoRichiesta(r), par()); // fasce cambiate
-  return v;
-}
-function statoValido(){ // vincoli manuali compatibili con le fasce attuali
-  const s = JSON.parse(JSON.stringify(S.stato)); const n = nF();
-  Object.keys(s.vincoli || {}).forEach(k => { const g = s.vincoli[k].griglia; if (!g || g.length !== 5 || g[0].length !== n) delete s.vincoli[k]; });
-  return s;
-}
-function avvisi(r){ return A.controlla(r, S.ric, CAT, statoValido(), par()); }
+function par(){ return parametri(S.stato); }
+function vinc(r){ return A.vincoli(r, S.stato); }
+function avvisi(r){ return A.controlla(r, S.ric, CAT, S.stato, par()); }
 function coloreScuola(codice){ let h = 0; for (const ch of codice) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return COLORI[h % COLORI.length]; }
 function ric(codice){ return S.ric.find(r => r.codice === codice); }
 function classe(chiave){ for (const r of S.ric){ const c = r.classi.find(x => x.chiave === chiave); if (c) return { r, c }; } return null; }
 function labsTesto(c){ return c.consiglio === 'Sì' ? '<i>consiglio del team</i>' : c.labs.map(esc).join(' · ') || '—'; }
-function labsBreve(c){ return c.consiglio === 'Sì' ? 'consiglio del team' : c.percorso === 'Fisica' ? c.lab1 : c.labs.length + ' lab'; }
-function fasciaT(k){ const f = par().fasce[k]; return f ? A.fasciaTesto(f) : '?'; }
 function dataIt(s){ if (!s) return ''; const d = new Date(s); return isNaN(d) ? esc(s) : d.toLocaleDateString('it-IT', { day:'2-digit', month:'2-digit', year:'numeric' }); }
-function daPianificare(c){ return !c.dataPrevista && !(S.stato.fissate || {})[c.chiave] && A.STATI_ESCLUSI_CLASSE.indexOf(c.stato) < 0; }
+function oraIt(s){ const d = new Date(s); return isNaN(d) ? '' : d.toLocaleString('it-IT', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' }); }
+function nuove(){ return (S.cal && S.cal.nuove) || []; }
+function assegnazioneDi(chiave){ return S.cal ? S.cal.assegnazioni.find(a => a.chiave === chiave) : null; }
 
 /* ---------- schede ---------- */
 document.getElementById('tabs').addEventListener('click', e => {
@@ -313,9 +346,7 @@ document.getElementById('tabs').addEventListener('click', e => {
   document.querySelectorAll('#tabs button').forEach(x => x.classList.toggle('on', x === b));
   render(); window.scrollTo(0, 0);
 });
-function render(){
-  ({ richieste: renderRichieste, pianifica: renderPianifica, calendario: renderCalendario })[S.tab]();
-}
+function render(){ (S.tab === 'calendario' ? renderCalendario : renderRichieste)(); }
 
 /* =====================================================================
    RICHIESTE
@@ -324,13 +355,14 @@ function renderRichieste(){
   const tutte = S.ric.map(r => ({ r, av: avvisi(r) }));
   const classi = S.ric.reduce((s, r) => s + r.classi.length, 0);
   const studenti = S.ric.reduce((s, r) => s + r.classi.reduce((t, c) => t + (parseInt(c.alunni, 10) || 0), 0), 0);
-  const daPian = S.ric.filter(r => A.STATI_ESCLUSI_RICHIESTA.indexOf(r.stato) < 0).reduce((s, r) => s + r.classi.filter(daPianificare).length, 0);
+  const inCal = S.cal ? S.cal.assegnazioni.length : 0;
   const conErr = tutte.filter(x => x.av.some(a => a.livello === 'errore')).length;
   const stati = [...new Set(S.ric.map(r => r.stato).filter(Boolean))];
   const q = S.cerca.trim().toLowerCase();
+  const nv = nuove();
   let lista = tutte.filter(({ r, av }) =>
     (!S.fStato || r.stato === S.fStato) && (!S.fOrdine || r.ordine === S.fOrdine) &&
-    (!S.soloProblemi || av.some(a => a.livello !== 'info')) &&
+    (!S.soloProblemi || av.some(a => a.livello !== 'info')) && (!S.soloNuove || nv.indexOf(r.codice) >= 0) &&
     (!q || [r.codice, r.scuola, r.comune, r.referente, r.email, r.giornate].join(' ').toLowerCase().includes(q)));
   const peso = av => av.filter(a => a.livello === 'errore').length * 100 + av.filter(a => a.livello === 'avviso').length;
   lista.sort((a, b) => S.ordina === 'scuola' ? a.r.scuola.localeCompare(b.r.scuola)
@@ -338,14 +370,16 @@ function renderRichieste(){
     : String(b.r.dataInvio).localeCompare(String(a.r.dataInvio)));
 
   document.getElementById('main').innerHTML = `
+    ${nv.length ? `<div class="info warn"><b>${nv.length} ${nv.length === 1 ? 'nuova richiesta' : 'nuove richieste'}</b> dall'ultimo calcolo: ${nv.map(c => esc((ric(c) || {}).scuola || c)).join(', ')}.
+      Controlli rifatti su tutte le richieste; il calendario è stato ricalcolato insieme a tutte le altre.</div>` : ''}
     <div class="kpi">
       <div><b>${S.ric.length}</b><span>richieste</span></div>
       <div><b>${classi}</b><span>classi</span></div>
       <div><b>${studenti}</b><span>studenti indicati</span></div>
-      <div><b>${daPian}</b><span>classi da pianificare</span></div>
+      <div><b>${inCal}</b><span>classi nel calendario</span></div>
       <div class="${conErr ? 'rosso' : ''}"><b>${conErr}</b><span>richieste con problemi</span></div>
     </div>
-    ${S.orfane.length ? `<div class="info" style="background:var(--warn-bg);color:var(--warn)"><b>${S.orfane.length} classi</b> nella scheda Classi hanno un codice che non esiste in Richieste: ${[...new Set(S.orfane.map(c => c.codice))].map(esc).join(', ')}.</div>` : ''}
+    ${S.orfane.length ? `<div class="info warn"><b>${S.orfane.length} classi</b> nella scheda Classi hanno un codice che non esiste in Richieste: ${[...new Set(S.orfane.map(c => c.codice))].map(esc).join(', ')}.</div>` : ''}
     <div class="tools">
       <input type="search" id="cerca" placeholder="Cerca scuola, comune, referente, codice…" value="${esc(S.cerca)}">
       <select id="fStato"><option value="">Tutti gli stati</option>${stati.map(s => `<option ${s === S.fStato ? 'selected' : ''}>${esc(s)}</option>`).join('')}</select>
@@ -357,20 +391,17 @@ function renderRichieste(){
         <option value="scuola" ${S.ordina === 'scuola' ? 'selected' : ''}>Per scuola</option>
         <option value="problemi" ${S.ordina === 'problemi' ? 'selected' : ''}>Prima i problemi</option></select>
       <label class="chk"><input type="checkbox" id="soloProblemi" ${S.soloProblemi ? 'checked' : ''}> Solo con avvisi</label>
-      ${S.dati.urlFoglio ? `<a class="btn small" href="${esc(S.dati.urlFoglio)}" target="_blank" rel="noopener">Apri il foglio ↗</a>` : ''}
+      ${nv.length ? `<label class="chk"><input type="checkbox" id="soloNuove" ${S.soloNuove ? 'checked' : ''}> Solo nuove</label>` : ''}
+      ${S.dati.urlRisposte ? `<a class="btn small" href="${esc(S.dati.urlRisposte)}" target="_blank" rel="noopener">Foglio risposte ↗</a>` : ''}
     </div>
     <div id="lista">${lista.length ? lista.map(x => cardRichiesta(x.r, x.av)).join('') : '<div class="vuoto">Nessuna richiesta trovata.</div>'}</div>`;
   const m = document.getElementById('main');
-  m.querySelector('#cerca').oninput = e => { S.cerca = e.target.value; renderLista(); };
+  m.querySelector('#cerca').oninput = e => { S.cerca = e.target.value; const pos = e.target.selectionStart; renderRichieste(); const c = document.getElementById('cerca'); c.focus(); c.setSelectionRange(pos, pos); };
   m.querySelector('#fStato').onchange = e => { S.fStato = e.target.value; render(); };
   m.querySelector('#fOrdine').onchange = e => { S.fOrdine = e.target.value; render(); };
   m.querySelector('#ordina').onchange = e => { S.ordina = e.target.value; render(); };
   m.querySelector('#soloProblemi').onchange = e => { S.soloProblemi = e.target.checked; render(); };
-}
-function renderLista(){ // aggiorna solo l'elenco (per non perdere il fuoco nella ricerca)
-  const pos = document.getElementById('cerca').selectionStart;
-  renderRichieste();
-  const c = document.getElementById('cerca'); c.focus(); c.setSelectionRange(pos, pos);
+  const sn = m.querySelector('#soloNuove'); if (sn) sn.onchange = e => { S.soloNuove = e.target.checked; render(); };
 }
 
 function cardRichiesta(r, av){
@@ -380,12 +411,13 @@ function cardRichiesta(r, av){
     <div class="ric-testa" onclick="apri('${esc(r.codice)}')">
       <div class="ric-titolo">${esc(r.scuola)}<small>${esc(r.comune)} · ${esc(r.codice)}</small></div>
       <div class="ric-meta">
+        ${nuove().indexOf(r.codice) >= 0 ? '<span class="chip nuova">nuova</span>' : ''}
         ${nErr ? `<span class="chip errore">${nErr} ${nErr === 1 ? 'problema' : 'problemi'}</span>` : ''}
         ${nAvv ? `<span class="chip avviso">${nAvv} ${nAvv === 1 ? 'avviso' : 'avvisi'}</span>` : ''}
         ${!nErr && !nAvv ? '<span class="chip ok">ok</span>' : ''}
         ${chipStato(r.stato)}<span class="chip">${dataIt(r.dataInvio)}</span>
       </div>
-      <div class="ric-sint">${esc(A.riassunto(r, av, statoValido(), par()))}</div>
+      <div class="ric-sint">${esc(A.riassunto(r, av, S.stato))}</div>
     </div>
     ${aperta ? dettaglio(r, av) : ''}
   </div>`;
@@ -399,7 +431,8 @@ function apri(codice){
 function dettaglio(r, av){
   const v = S.bozze[r.codice] || vinc(r);
   const modificata = !!S.bozze[r.codice];
-  const fissate = S.stato.fissate || {};
+  const altri = Object.keys(r.altri || {}).filter(k => String(r.altri[k]).trim());
+  const cod = esc(r.codice);
   return `<div class="ric-corpo">
     <div class="contatti">
       <h3>Referente</h3>
@@ -409,6 +442,7 @@ function dettaglio(r, av){
       <div style="color:var(--muted);font-size:13px">${esc(r.ordine)} · inviata il ${dataIt(r.dataInvio)}</div>
       ${r.note ? `<h3 style="margin-top:14px">Note della scuola</h3><div class="testo-orig">${esc(r.note)}</div>` : ''}
       ${r.noteInterne ? `<h3 style="margin-top:14px">Note interne del team</h3><div class="testo-orig">${esc(r.noteInterne)}</div>` : ''}
+      ${altri.length ? `<h3 style="margin-top:14px">Altre colonne del foglio</h3><dl class="extra">${altri.map(k => `<dt>${esc(k)}</dt><dd>${esc(r.altri[k])}</dd>`).join('')}</dl>` : ''}
     </div>
     <div>
       <h3>Crosscheck</h3>
@@ -416,56 +450,50 @@ function dettaglio(r, av){
     </div>
     <div class="tutta scroll">
       <h3>Classi (${r.classi.length})</h3>
-      <table class="t"><thead><tr><th>Classe</th><th>Studenti</th><th>Percorso</th><th>Laboratori</th><th>Stato</th><th>Data</th></tr></thead><tbody>
-      ${r.classi.map(c => { const f = fissate[c.chiave]; return `<tr>
-        <td><b>${esc(c.classe)}</b></td><td>${esc(c.alunni)}</td><td>${esc(c.percorso)}</td><td>${labsTesto(c)}</td><td>${chipStato(c.stato)}</td>
-        <td>${c.dataPrevista ? esc(A.dataBreve(c.dataPrevista)) + ' <small style="color:var(--muted)">(foglio)</small>' : f ? esc(A.dataBreve(f.data) + ' · ' + fasciaT(f.fascia)) + ' <small style="color:var(--muted)">(accettata)</small>' : '—'}</td></tr>`; }).join('')}
+      <table class="t"><thead><tr><th>Classe</th><th>Studenti</th><th>Percorso</th><th>Laboratori</th><th>Calendario 2027/28</th></tr></thead><tbody>
+      ${r.classi.map(c => { const a = assegnazioneDi(c.chiave); return `<tr>
+        <td><b>${esc(c.classe)}</b></td><td>${esc(c.alunni)}</td><td>${esc(c.percorso)}</td><td>${labsTesto(c)}</td>
+        <td>${a ? esc(A.dataBreve(a.data) + ' · ' + A.turnoTesto(a.turno)) + (a.bloccata ? ' <span class="chip blocco">bloccata</span>' : '') : '—'}</td></tr>`; }).join('')}
       </tbody></table>
     </div>
     <div class="tutta">
       <h3>Disponibilità ${v.manuale ? '<span class="chip ok">corretta a mano</span>' : `<span class="chip ${v.certezza === 'alta' ? 'ok' : v.certezza === 'media' ? 'avviso' : 'errore'}">lettura automatica: certezza ${esc(v.certezza)}</span>`} ${modificata ? '<span class="mod">● modifiche non salvate</span>' : ''}</h3>
       <div class="testo-orig">${esc(r.giornate) || '<i>vuoto</i>'}</div>
       ${v.letto && v.letto.length ? `<div class="letto">Letto: ${esc(v.letto.join(' · '))}</div>` : ''}
-      <div class="letto"><b>Sintesi:</b> ${esc(A.sintesiVincoli(v, par()))}</div>
-      ${grigliaHtml(r.codice, v)}
-      <div class="riga">
-        <label>Dal <input type="date" value="${esc(v.dal)}" onchange="bozza('${esc(r.codice)}','dal',this.value)"></label>
-        <label>Al <input type="date" value="${esc(v.al)}" onchange="bozza('${esc(r.codice)}','al',this.value)"></label>
-        <label style="flex:1;min-width:220px">Solo in queste date (gg/mm, separate da virgola)
-          <input type="text" value="${esc((v.date || []).map(d => d.slice(8, 10) + '/' + d.slice(5, 7)).join(', '))}" onchange="bozza('${esc(r.codice)}','date',this.value)"></label>
+      <div class="letto"><b>Sintesi:</b> ${esc(A.sintesiVincoli(v))}. Ogni classe dura 2 ore; per ogni giorno: quanti turni in linea ci stanno.</div>
+      <div class="gg">${A.GIORNI.map((g, i) => { const x = v.giorni[i]; const o = x.on && x.finestre ? A.orariTesto(x.finestre) : x.on ? 'orari non indicati' : 'no';
+        return `<div class="g1 ${x.on ? 'on' : 'off'}">
+          <button type="button" class="nome" aria-pressed="${x.on}" onclick="bozzaGiorno('${cod}',${i})">${g}</button>
+          <div class="o">${esc(o)}</div>
+          <select aria-label="Turni ${g}" onchange="bozzaTurni('${cod}',${i},this.value)">
+            <option value="" ${!x.turni ? 'selected' : ''}>${A.PARAMETRI.turniGiorno} turni (std)</option>
+            ${[1,2,3,4].map(n => `<option value="${n}" ${x.turni === n ? 'selected' : ''}>${n} ${n === 1 ? 'turno' : 'turni'}</option>`).join('')}
+          </select></div>`; }).join('')}</div>
+      <div class="campi">
+        <label>Dal<input type="date" value="${esc(v.dal)}" onchange="bozza('${cod}','dal',this.value)"></label>
+        <label>Al<input type="date" value="${esc(v.al)}" onchange="bozza('${cod}','al',this.value)"></label>
+        <label style="grid-column:span 2">Solo in queste date <small>gg/mm, separate da virgola</small>
+          <input type="text" value="${esc((v.date || []).map(d => d.slice(8, 10) + '/' + d.slice(5, 7)).join(', '))}" onchange="bozza('${cod}','date',this.value)"></label>
       </div>
-      <div style="font-size:12.5px;color:var(--muted)">Mesi possibili</div>
+      <div style="font-size:12.5px;color:var(--muted);font-weight:600">Mesi possibili</div>
       <div class="mesi">${MESI_SCUOLA.map(m => { const on = (!v.mesi || !v.mesi.length || v.mesi.indexOf(m) >= 0) && (v.mesiEsclusi || []).indexOf(m) < 0;
-        return `<button type="button" class="${on ? 'on' : ''}" onclick="bozzaMese('${esc(r.codice)}',${m})">${A.NOMI_MESI[m]}</button>`; }).join('')}</div>
+        return `<button type="button" class="${on ? 'on' : ''}" onclick="bozzaMese('${cod}',${m})">${A.NOMI_MESI[m]}</button>`; }).join('')}</div>
       <div class="azioni">
-        <button class="btn prim small" type="button" ${modificata ? '' : 'disabled'} onclick="salvaVincoli('${esc(r.codice)}')">Salva disponibilità</button>
-        ${modificata ? `<button class="btn ghost small" type="button" onclick="annullaBozza('${esc(r.codice)}')">Annulla</button>` : ''}
-        ${v.manuale && !modificata ? `<button class="btn small" type="button" onclick="ripristina('${esc(r.codice)}')">Torna alla lettura automatica</button>` : ''}
+        <button class="btn prim small" type="button" ${modificata ? '' : 'disabled'} onclick="salvaVincoli('${cod}')">Salva e ricalcola</button>
+        ${modificata ? `<button class="btn ghost small" type="button" onclick="annullaBozza('${cod}')">Annulla</button>` : ''}
+        ${v.manuale && !modificata ? `<button class="btn small" type="button" onclick="ripristina('${cod}')">Torna alla lettura automatica</button>` : ''}
       </div>
     </div>
   </div>`;
 }
 
-function grigliaHtml(codice, v, sola){
-  const P = par();
-  let h = `<div class="gr${sola ? ' ro' : ''}" style="grid-template-columns:44px repeat(${P.fasce.length},1fr)"><span></span>`;
-  P.fasce.forEach(f => { h += `<span class="h">${esc(A.fasciaTesto(f))}</span>`; });
-  A.GIORNI.forEach((g, i) => {
-    h += `<span class="g">${g}</span>`;
-    P.fasce.forEach((f, k) => {
-      const on = v.griglia[i] && v.griglia[i][k];
-      h += `<button type="button" class="${on ? 'on' : ''}" aria-pressed="${on}" aria-label="${g} ${esc(A.fasciaTesto(f))}" ${sola ? 'disabled' : `onclick="bozzaCella('${esc(codice)}',${i},${k})"`}></button>`;
-    });
-  });
-  return h + '</div>';
-}
-
-/* ---------- modifica dei vincoli ---------- */
+/* ---------- correzione delle disponibilità ---------- */
 function bozzaDi(codice){
   if (!S.bozze[codice]) { const v = JSON.parse(JSON.stringify(vinc(ric(codice)))); v.manuale = true; v.certezza = 'manuale'; S.bozze[codice] = v; }
   return S.bozze[codice];
 }
-function bozzaCella(codice, g, k){ const b = bozzaDi(codice); b.griglia[g][k] = !b.griglia[g][k]; renderRichieste(); }
+function bozzaGiorno(codice, g){ const b = bozzaDi(codice); const x = b.giorni[g]; x.on = !x.on; if (!x.on) { x.finestre = null; x.turni = null; } renderRichieste(); }
+function bozzaTurni(codice, g, val){ const b = bozzaDi(codice); const x = b.giorni[g]; x.on = true; x.turni = val ? +val : null; renderRichieste(); }
 function bozzaMese(codice, m){
   const b = bozzaDi(codice);
   let on = MESI_SCUOLA.filter(x => (!b.mesi || !b.mesi.length || b.mesi.indexOf(x) >= 0) && (b.mesiEsclusi || []).indexOf(x) < 0);
@@ -485,293 +513,219 @@ function bozza(codice, campo, val){
 function annullaBozza(codice){ delete S.bozze[codice]; renderRichieste(); }
 async function salvaVincoli(codice){
   const b = S.bozze[codice]; if (!b) return;
-  S.stato.vincoli = S.stato.vincoli || {};
-  const prima = S.stato.vincoli[codice];
-  S.stato.vincoli[codice] = { griglia: b.griglia, dal: b.dal || '', al: b.al || '', date: b.date || [], mesi: b.mesi || null, mesiEsclusi: b.mesiEsclusi || [] };
-  if (await salvaStato('Disponibilità di ' + ric(codice).scuola + ' salvata.')) delete S.bozze[codice];
-  else { if (prima) S.stato.vincoli[codice] = prima; else delete S.stato.vincoli[codice]; }
+  const vincoli = Object.assign({}, S.stato.vincoli || {});
+  vincoli[codice] = { giorni: b.giorni, dal: b.dal || '', al: b.al || '', date: b.date || [], mesi: b.mesi || null, mesiEsclusi: b.mesiEsclusi || [] };
+  if (await salvaStato({ vincoli }, 'Disponibilità di ' + ric(codice).scuola + ' salvata.')) { delete S.bozze[codice]; await ricalcola(true); }
   renderRichieste();
 }
 async function ripristina(codice){
   if (!confirm('Tornare alla lettura automatica del testo? La correzione a mano verrà eliminata.')) return;
-  const prima = S.stato.vincoli[codice]; delete S.stato.vincoli[codice];
-  if (!await salvaStato('Ripristinata la lettura automatica.')) S.stato.vincoli[codice] = prima;
+  const vincoli = Object.assign({}, S.stato.vincoli || {}); delete vincoli[codice];
+  if (await salvaStato({ vincoli }, 'Ripristinata la lettura automatica.')) await ricalcola(true);
   renderRichieste();
 }
 
 /* =====================================================================
-   PIANIFICA
+   CALENDARIO 2027/28
    ===================================================================== */
-function intervalliCorrenti(){
-  if (!S.intervalli) S.intervalli = JSON.parse(JSON.stringify((S.stato.pianifica || {}).intervalli || [{ dal: '', al: '' }]));
+function intervalli(){
+  if (!S.intervalli) S.intervalli = JSON.parse(JSON.stringify(S.stato.intervalli && S.stato.intervalli.length ? S.stato.intervalli : [{ dal: '', al: '' }]));
   return S.intervalli;
 }
-function pianificabili(){
-  return S.ric.filter(r => A.STATI_ESCLUSI_RICHIESTA.indexOf(r.stato) < 0 && r.classi.some(daPianificare));
-}
-function renderPianifica(){
-  const P = par(), iv = intervalliCorrenti();
-  const lista = pianificabili();
-  if (!S.inclusi) S.inclusi = lista.map(r => r.codice);
+function renderCalendario(){
+  const P = par(), iv = intervalli(), cal = S.cal;
   const giorni = A.giorniAttivita(iv, P);
+  const ivModificati = JSON.stringify(iv.filter(x => x.dal || x.al)) !== JSON.stringify((S.stato.intervalli || []).filter(x => x.dal || x.al));
   document.getElementById('main').innerHTML = `
-    <div class="info">Indica uno o più periodi (anche a spezzoni: dicembre, poi 10–21 gennaio…). Il calcolo usa solo i giorni feriali, salta le feste nazionali
-      e le chiusure, e rispetta le disponibilità di ogni scuola. <b>Nulla viene scritto sui fogli</b>: la proposta accettata finisce nel Calendario di questa pagina.</div>
     <div class="pannello">
-      <h3>Periodi</h3>
-      ${iv.map((x, i) => `<div class="iv">
-        <input type="date" value="${esc(x.dal)}" onchange="S.intervalli[${i}].dal=this.value; renderPianifica()"> →
-        <input type="date" value="${esc(x.al)}" onchange="S.intervalli[${i}].al=this.value; renderPianifica()">
-        <span class="n">${x.dal && x.al ? A.giorniAttivita([x], P).length + ' giorni di attività' : ''}</span>
-        ${iv.length > 1 ? `<button class="btn ghost small" type="button" onclick="S.intervalli.splice(${i},1); renderPianifica()">Togli</button>` : ''}
-      </div>`).join('')}
-      <button class="btn small" type="button" onclick="S.intervalli.push({dal:'',al:''}); renderPianifica()">+ Aggiungi periodo</button>
-      <span class="n" style="margin-left:8px;font-size:13px;color:var(--muted)">Totale: <b>${giorni.length}</b> giorni di attività</span>
-    </div>
-    <details class="pannello">
-      <summary style="cursor:pointer;font-weight:700;color:var(--ink)">Regole del calcolo</summary>
-      <div class="par" style="margin-top:12px">
-        <label>Fasce orarie (2 ore)<input type="text" id="pFasce" value="${esc(P.fasce.map(A.fasciaTesto).join(', '))}"></label>
-        <label>Classi in parallelo nella stessa fascia<input type="number" min="1" max="6" id="pPar" value="${P.maxParallelo}"></label>
-        <label>Classi al giorno (massimo)<input type="number" min="1" max="20" id="pGiorno" value="${P.maxClassiGiorno}"></label>
-        <label>Scuole diverse al giorno (massimo)<input type="number" min="1" max="6" id="pScuole" value="${P.maxScuoleGiorno}"></label>
-        <label>Chiusure delle scuole (gg/mm/aaaa, virgola)<input type="text" id="pChiusure" value="${esc((P.chiusure || []).map(d => d.slice(8,10) + '/' + d.slice(5,7) + '/' + d.slice(0,4)).join(', '))}"></label>
-        <label>Periodo delle attività (per gli avvisi)<span style="display:flex;gap:6px"><input type="date" id="pDal" value="${esc(P.periodo.dal)}"><input type="date" id="pAl" value="${esc(P.periodo.al)}"></span></label>
-        <label class="chk" style="flex-direction:row;color:var(--ink)"><input type="checkbox" id="pKit" ${P.kitUnico ? 'checked' : ''}> Un kit per esperimento (niente stesso laboratorio in parallelo)</label>
+      <div class="stato-cal">
+        <div>${cal && cal.definitivo
+          ? '<span class="chip ok">Calendario DEFINITIVO</span> Le date non si spostano più da sole; le nuove richieste vengono sistemate attorno.'
+          : '<span class="chip avviso">Calendario PROVVISORIO</span> Si ricalcola da solo a ogni nuova richiesta. Iscrizioni ai turni 2027/28 chiuse.'}
+          ${cal && cal.calcolato ? `<div class="letto" style="margin:6px 0 0">Ultimo calcolo: ${esc(oraIt(cal.calcolato))}${S.dati.urlTurni ? ` · <a href="${esc(S.dati.urlTurni)}" target="_blank" rel="noopener">schede Turni 2027/28 ↗</a>` : ''}</div>` : ''}</div>
+        <div class="azioni" style="margin:0">
+          <button class="btn" type="button" onclick="ricalcola()">Ricalcola ora</button>
+          ${cal && cal.definitivo
+            ? `<button class="btn ghost" type="button" onclick="definitivo(false)">Torna provvisorio</button>`
+            : `<button class="btn verde" type="button" ${cal && cal.assegnazioni.length ? '' : 'disabled'} onclick="definitivo(true)">Calendario definitivo</button>`}
+        </div>
       </div>
-      <div class="azioni"><button class="btn small" type="button" onclick="salvaParametri()">Salva le regole</button></div>
-    </details>
-    <div class="pannello">
-      <h3>Scuole da pianificare (${lista.length})</h3>
-      ${lista.length ? `<div class="azioni" style="margin-top:0">
-          <button class="btn ghost small" type="button" onclick="S.inclusi=pianificabili().map(r=>r.codice); renderPianifica()">Tutte</button>
-          <button class="btn ghost small" type="button" onclick="S.inclusi=[]; renderPianifica()">Nessuna</button></div>
-        <div class="sel-ric">${lista.map(r => { const v = vinc(r); const n = r.classi.filter(daPianificare).length;
-          return `<label><input type="checkbox" ${S.inclusi.indexOf(r.codice) >= 0 ? 'checked' : ''} onchange="includi('${esc(r.codice)}', this.checked)">
-            <span><b>${esc(r.scuola)}</b> <small>${esc(r.comune)} · ${n} ${n === 1 ? 'classe' : 'classi'}</small><br>
-            <small>${esc(A.sintesiVincoli(v, P))}${v.certezza === 'bassa' ? ' · <b style="color:var(--bad)">disponibilità da verificare: verrà saltata</b>' : ''}</small></span></label>`; }).join('')}</div>`
-        : '<div class="vuoto">Tutte le classi hanno già una data.</div>'}
-      <div class="azioni"><button class="btn prim" type="button" id="calcola" ${giorni.length && S.inclusi.length ? '' : 'disabled'} onclick="calcola()">Calcola la proposta</button></div>
     </div>
-    <div id="risultato">${S.piano ? risultatoHtml() : ''}</div>`;
-}
-function includi(codice, on){ S.inclusi = S.inclusi.filter(c => c !== codice); if (on) S.inclusi.push(codice); renderPianifica(); }
 
-function leggiParametri(){
-  const p = Object.assign({}, par());
-  const fasce = document.getElementById('pFasce').value.split(',').map(s => s.trim().match(/^(\d{1,2})(?:[:.](\d{2}))?\s*[-–]\s*(\d{1,2})(?:[:.](\d{2}))?$/)).filter(Boolean)
-    .map(m => ({ inizio: +m[1] * 60 + (+m[2] || 0), fine: +m[3] * 60 + (+m[4] || 0) })).filter(f => f.fine > f.inizio);
-  if (fasce.length) p.fasce = fasce;
-  p.maxParallelo = Math.max(1, +document.getElementById('pPar').value || 1);
-  p.maxClassiGiorno = Math.max(1, +document.getElementById('pGiorno').value || 1);
-  p.maxScuoleGiorno = Math.max(1, +document.getElementById('pScuole').value || 1);
-  p.kitUnico = document.getElementById('pKit').checked;
-  p.chiusure = document.getElementById('pChiusure').value.split(/[,;\s]+/).map(x => x.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)).filter(Boolean)
-    .map(m => m[3] + '-' + String(m[2]).padStart(2, '0') + '-' + String(m[1]).padStart(2, '0'));
-  p.periodo = { dal: document.getElementById('pDal').value, al: document.getElementById('pAl').value };
-  delete p.tentativi;
-  return p;
-}
-async function salvaParametri(){
-  const prima = S.stato.parametri;
-  S.stato.parametri = leggiParametri();
-  if (!await salvaStato('Regole salvate.')) S.stato.parametri = prima;
-  S.piano = null; renderPianifica();
-}
+    <div class="pannello">
+      <h3>Periodi delle attività</h3>
+      ${iv.map((x, i) => `<div class="iv">
+        <input type="date" aria-label="Dal" value="${esc(x.dal)}" onchange="S.intervalli[${i}].dal=this.value; renderCalendario()">
+        <span class="freccia">→</span>
+        <input type="date" aria-label="Al" value="${esc(x.al)}" onchange="S.intervalli[${i}].al=this.value; renderCalendario()">
+        <span class="n">${x.dal && x.al ? A.giorniAttivita([x], P).length + ' giorni di attività' : ''}</span>
+        ${iv.length > 1 ? `<button class="btn ghost small" type="button" onclick="S.intervalli.splice(${i},1); renderCalendario()">Togli</button>` : '<span></span>'}
+      </div>`).join('')}
+      <div class="azioni" style="margin-bottom:0">
+        <button class="btn small" type="button" onclick="S.intervalli.push({dal:'',al:''}); renderCalendario()">+ Aggiungi periodo</button>
+        <span class="letto" style="margin:0;align-self:center">Totale: <b>${giorni.length}</b> giorni feriali, senza feste e chiusure</span>
+        ${ivModificati ? `<button class="btn prim small" type="button" onclick="salvaPeriodi()">Salva e ricalcola</button>` : ''}
+      </div>
+    </div>
 
-function calcola(){
-  const iv = intervalliCorrenti().filter(x => x.dal && x.al);
-  if (!iv.length) { toast('Indica almeno un periodo completo.', true); return; }
-  const btn = document.getElementById('calcola'); btn.disabled = true; btn.textContent = 'Calcolo in corso…';
-  setTimeout(() => {
-    const t0 = performance.now();
-    S.piano = A.pianifica({ intervalli: iv, richieste: S.ric, codici: S.inclusi, stato: statoValido(), parametri: par() });
-    S.piano.ms = Math.round(performance.now() - t0);
-    S.piano.intervalli = iv;
-    renderPianifica();
-    document.getElementById('risultato').scrollIntoView({ behavior: 'smooth' });
-  }, 30);
+    <details class="pannello">
+      <summary style="cursor:pointer;font-weight:700;color:var(--ink)">Come viene calcolato · chiusure</summary>
+      <ol class="regole" style="margin-top:12px">
+        <li><b>Meno giornate possibili</b> nella stessa scuola.</li>
+        <li><b>Meno persone possibili.</b> Ogni classe ha una coppia; ogni persona fa <b>al massimo 3 interventi al giorno</b> e ci si può dare il cambio.</li>
+        <li><b>Giorni e orari indicati dalle scuole.</b> Ogni classe dura 2 ore; se la scuola non dà orari, la giornata conta ${A.PARAMETRI.turniGiorno} turni.</li>
+        <li><b>Un kit per esperimento:</b> nello stesso turno lo stesso laboratorio non si ripete, nemmeno tra scuole diverse.</li>
+        <li>Le modifiche fatte a mano nelle schede Turni 2027/28 o dal gestionale restano <b>bloccate</b>.</li>
+      </ol>
+      <div class="campi" style="margin-top:14px">
+        <label style="grid-column:span 2">Chiusure delle scuole <small>gg/mm/aaaa, separate da virgola (feste nazionali già escluse)</small>
+          <input type="text" id="pChiusure" value="${esc((P.chiusure || []).map(d => d.slice(8,10) + '/' + d.slice(5,7) + '/' + d.slice(0,4)).join(', '))}"></label>
+        <label>Inizio attività <small>per gli avvisi</small><input type="date" id="pDal" value="${esc(P.periodo.dal)}"></label>
+        <label>Fine attività <small>per gli avvisi</small><input type="date" id="pAl" value="${esc(P.periodo.al)}"></label>
+      </div>
+      <button class="btn small" type="button" onclick="salvaRegole()">Salva e ricalcola</button>
+    </details>
+
+    <div id="risultato">${risultatoHtml()}</div>`;
 }
 
 function risultatoHtml(){
-  const p = S.piano, st = p.statistiche;
+  const cal = S.cal;
+  if (!cal || !cal.assegnazioni) return '<div class="vuoto">Indica i periodi e salva: il calendario si calcola da solo.</div>';
+  const st = cal.statistiche || {};
   const perGiorno = {};
-  p.assegnazioni.forEach(a => { (perGiorno[a.data] = perGiorno[a.data] || []).push(a); });
-  // classi con data dal foglio o già accettate negli stessi giorni: si vedono, non si toccano
-  const fisse = esistentiPerGiorno();
+  cal.assegnazioni.forEach(a => { ((perGiorno[a.data] = perGiorno[a.data] || {})[a.codice] = perGiorno[a.data][a.codice] || []).push(a); });
   const giorni = Object.keys(perGiorno).sort();
-  return `<h2 class="sez">Proposta</h2>
+  const persone = giorni.reduce((s, d) => s + Object.values(perGiorno[d]).reduce((t, ass) => t + A.persone(ass), 0), 0);
+  const visite = giorni.reduce((s, d) => s + Object.keys(perGiorno[d]).length, 0);
+  const bloccate = cal.assegnazioni.filter(a => a.bloccata).length;
+  const cambi = (cal.cambi || []).filter(c => c.prima);
+  return `
+    ${(cal.avvisi || []).length ? `<div class="info warn">${cal.avvisi.map(esc).join('<br>')}</div>` : ''}
     <div class="stat">
-      <span class="chip ${st.assegnate === st.classi ? 'ok' : 'avviso'}">${st.assegnate} di ${st.classi} classi sistemate</span>
-      <span class="chip">${st.scuole} scuole · ${st.visite} uscite</span>
-      <span class="chip">${st.giorniUsati} giorni usati su ${st.giorniDisponibili}</span>
-      <span class="chip">calcolo: ${p.ms} ms</span>
+      <span class="chip ${cal.nonAssegnate && cal.nonAssegnate.length ? 'avviso' : 'ok'}">${cal.assegnazioni.length} classi in calendario</span>
+      <span class="chip">${visite} uscite in ${giorni.length} giorni</span>
+      <span class="chip">${persone} presenze (persone × giornata)</span>
+      ${bloccate ? `<span class="chip blocco">${bloccate} bloccate a mano</span>` : ''}
     </div>
-    ${p.nonAssegnate.length ? `<div class="pannello"><h3 style="color:var(--bad)">Non sistemate (${p.nonAssegnate.length})</h3><ul class="non">${p.nonAssegnate.map(n => { const x = classe(n.chiave);
-      return `<li><b>${esc(x ? x.r.scuola + ' · ' + x.c.classe : n.chiave)}</b> — ${esc(n.motivo)}</li>`; }).join('')}</ul></div>` : ''}
+    ${cambi.length ? `<details class="pannello"><summary style="cursor:pointer;font-weight:700;color:var(--ink)">${cambi.length} classi spostate dall'ultimo calcolo</summary>
+      <ul class="cambi" style="margin-top:10px">${cambi.map(c => { const x = classe(c.chiave); return x ? `<li><b>${esc(x.r.scuola)} · ${esc(x.c.classe)}</b>: ${esc(A.dataBreve(c.prima.data) + ' ' + A.turnoTesto(c.prima.turno))} → ${esc(A.dataBreve(c.dopo.data) + ' ' + A.turnoTesto(c.dopo.turno))}</li>` : ''; }).join('')}</ul></details>` : ''}
+    ${cal.nonAssegnate && cal.nonAssegnate.length ? `<div class="pannello"><h3 style="color:var(--bad)">Non sistemate (${cal.nonAssegnate.length})</h3><ul class="non">${cal.nonAssegnate.map(n => { const x = classe(n.chiave);
+      const sb = /Tolta a mano/.test(n.motivo) ? ` <button class="btn small" type="button" onclick="sblocca('${esc(n.chiave)}')">Sblocca</button>` : '';
+      return `<li><b>${esc(x ? x.r.scuola + ' · ' + x.c.classe : n.chiave)}</b> — ${esc(n.motivo)}${sb}</li>`; }).join('')}</ul></div>` : ''}
     <div class="azioni">
-      <button class="btn prim" type="button" ${p.assegnazioni.length ? '' : 'disabled'} onclick="accetta()">Accetta la proposta</button>
-      <button class="btn" type="button" onclick="calcola()">Ricalcola</button>
-      <button class="btn" type="button" onclick="esportaCsv(S.piano.assegnazioni, 'proposta')">Scarica CSV</button>
-      <button class="btn" type="button" onclick="copiaTesto(S.piano.assegnazioni)">Copia testo</button>
+      <button class="btn" type="button" ${cal.assegnazioni.length ? '' : 'disabled'} onclick="esportaCsv()">Scarica CSV</button>
+      <button class="btn" type="button" ${cal.assegnazioni.length ? '' : 'disabled'} onclick="copiaTesto()">Copia testo</button>
     </div>
-    <div class="giorni">${giorni.map(d => giornoHtml(d, perGiorno[d], fisse[d] || [], true)).join('')}</div>`;
+    <div class="giorni">${giorni.map(d => giornoHtml(d, perGiorno[d])).join('')}</div>
+    ${riepilogoScuole()}`;
 }
 
-function esistentiPerGiorno(){
-  const out = {};
-  const fissate = S.stato.fissate || {};
-  Object.keys(fissate).forEach(ch => { const x = classe(ch); if (x) (out[fissate[ch].data] = out[fissate[ch].data] || []).push({ chiave: ch, codice: x.r.codice, data: fissate[ch].data, fascia: fissate[ch].fascia, accettata: true }); });
-  S.ric.forEach(r => r.classi.forEach(c => { if (c.dataPrevista && !fissate[c.chiave]) (out[c.dataPrevista] = out[c.dataPrevista] || []).push({ chiave: c.chiave, codice: r.codice, data: c.dataPrevista, fascia: null, foglio: true }); }));
-  return out;
+function giornoHtml(d, perScuola){
+  const cod = Object.keys(perScuola);
+  const tot = cod.reduce((s, c) => s + perScuola[c].length, 0);
+  const pers = cod.reduce((s, c) => s + A.persone(perScuola[c]), 0);
+  return `<div class="giorno"><h4>${esc(A.dataBreve(d))} <small>${tot} ${tot === 1 ? 'classe' : 'classi'} · ${pers} persone</small></h4>
+    ${cod.map(c => { const r = ric(c); const ass = perScuola[c].slice().sort((a, b) => a.turno - b.turno);
+      const turni = [...new Set(ass.map(a => a.turno))].sort((a, b) => a - b);
+      const v = r ? vinc(r) : null; const x = v ? v.giorni[A.giornoSett(d)] : null;
+      const orari = x && x.finestre ? A.orariTesto(x.finestre) : '';
+      return `<div class="visita" style="--c:${coloreScuola(c)}">
+        <div class="s"><b>${esc(r ? r.scuola : c)}</b><small>${A.persone(ass)} persone · ${esc(A.modalita(ass))}</small></div>
+        ${orari ? `<div class="letto" style="margin:2px 0 4px">Orari della scuola: ${esc(orari)}</div>` : ''}
+        ${turni.map(t => `<div class="turno"><span class="o">${A.turnoTesto(t)}</span><div>${ass.filter(a => a.turno === t).map(chipClasse).join('')}</div></div>`).join('')}
+      </div>`; }).join('')}
+  </div>`;
 }
-
-function giornoHtml(d, ass, fisse, modificabili){
-  const P = par();
-  const scuole = [...new Set(ass.concat(fisse).map(a => a.codice))];
-  let h = `<div class="giorno"><h4>${esc(A.dataBreve(d))} <small>${ass.length + fisse.length} classi · ${scuole.length} ${scuole.length === 1 ? 'scuola' : 'scuole'}</small></h4>`;
-  P.fasce.forEach((f, k) => {
-    const qui = ass.filter(a => a.fascia === k), quiF = fisse.filter(a => a.fascia === k);
-    if (!qui.length && !quiF.length) return;
-    h += `<div class="fascia"><span class="o">${esc(A.fasciaTesto(f))}</span><div>${quiF.map(a => chipClasse(a, false)).join('')}${qui.map(a => chipClasse(a, modificabili)).join('')}</div></div>`;
-  });
-  const senza = fisse.filter(a => a.fascia === null || a.fascia === undefined);
-  if (senza.length) h += `<div class="fascia"><span class="o">dal foglio</span><div>${senza.map(a => chipClasse(a, false)).join('')}</div></div>`;
-  return h + '</div>';
-}
-function chipClasse(a, modificabile){
+function chipClasse(a){
   const x = classe(a.chiave); if (!x) return '';
-  const nota = a.foglio ? ' · data nel foglio' : a.accettata && modificabile !== 'cal' ? ' · già accettata' : '';
-  const az = modificabile === true ? `onclick="modifica('${esc(a.chiave)}')"` : modificabile === 'cal' ? `onclick="libera('${esc(a.chiave)}')"` : '';
-  return `<button type="button" class="cl${!modificabile ? ' foglio' : ''}${a.modificata ? ' mod' : ''}" style="--c:${coloreScuola(x.r.codice)}" ${az} title="${esc(x.c.labs.join(' · '))}">
-    <b>${esc(x.r.scuola)}</b> · ${esc(x.c.classe)}<small>${esc(x.c.percorso)} · ${esc(labsBreve(x.c))}${esc(nota)}</small></button>`;
+  const titolo = x.c.percorso + ': ' + (x.c.consiglio === 'Sì' ? 'consiglio del team' : x.c.labs.join(', '));
+  return `<span class="cl${a.bloccata ? ' lock' : ''}" title="${esc(titolo)}">${esc(x.c.classe)}${x.c.percorso === 'Fisica' ? ' ⚡' : ''}${a.bloccata
+    ? `<button type="button" title="Bloccata (modificata a mano): sblocca" onclick="sblocca('${esc(a.chiave)}')">🔒</button>` : ''}</span>`;
+}
+function riepilogoScuole(){
+  const per = {};
+  S.cal.assegnazioni.forEach(a => { (per[a.codice] = per[a.codice] || []).push(a); });
+  const cod = Object.keys(per); if (!cod.length) return '';
+  return `<h2 class="sez">Riepilogo per scuola</h2><div class="pannello scroll"><table class="t"><thead><tr><th>Scuola</th><th>Referente</th><th>Giornate</th></tr></thead><tbody>
+    ${cod.map(c => { const r = ric(c); if (!r) return ''; const perData = {};
+      per[c].forEach(a => { (perData[a.data] = perData[a.data] || []).push(a); });
+      return `<tr><td><b>${esc(r.scuola)}</b><br><small>${esc(r.comune)} · ${esc(r.codice)}</small></td><td>${esc(r.referente)}<br><small>${esc(r.email)}</small></td>
+        <td>${Object.keys(perData).sort().map(d => `${esc(A.dataBreve(d))}: ${perData[d].length} ${perData[d].length === 1 ? 'classe' : 'classi'}, ${A.persone(perData[d])} persone, ${esc(A.modalita(perData[d]))}`).join('<br>')}</td></tr>`; }).join('')}
+  </tbody></table></div>`;
 }
 
-/* ---------- modifica a mano di una classe nella proposta ---------- */
-function modifica(chiave){
-  const a = S.piano.assegnazioni.find(x => x.chiave === chiave); const x = classe(chiave);
-  const opzioniGiorno = S.piano.giorni.map(d => `<option value="${d}" ${d === a.data ? 'selected' : ''}>${esc(A.dataBreve(d))}</option>`).join('');
-  const opzioniFascia = par().fasce.map((f, k) => `<option value="${k}" ${k === a.fascia ? 'selected' : ''}>${esc(A.fasciaTesto(f))}</option>`).join('');
-  document.getElementById('modal').innerHTML = `
-    <h2>${esc(x.r.scuola)} · ${esc(x.c.classe)}</h2>
-    <p style="margin:0 0 12px;color:var(--muted);font-size:14px">${esc(x.c.percorso)}: ${labsTesto(x.c)}<br>Disponibilità: ${esc(A.sintesiVincoli(vinc(x.r), par()))}</p>
-    <div class="riga"><label>Giorno<select id="mGiorno">${opzioniGiorno}</select></label><label>Fascia<select id="mFascia">${opzioniFascia}</select></label></div>
-    <ul class="avvisi" id="mProblemi"></ul>
-    <div class="m-az">
-      <button class="btn danger" type="button" onclick="togliDallaProposta('${esc(chiave)}')">Togli dalla proposta</button>
-      <span style="flex:1"></span>
-      <button class="btn ghost" type="button" onclick="chiudi()">Annulla</button>
-      <button class="btn prim" type="button" onclick="applicaModifica('${esc(chiave)}')">Sposta</button>
-    </div>`;
-  const aggiorna = () => {
-    const prova = Object.assign({}, a, { data: document.getElementById('mGiorno').value, fascia: +document.getElementById('mFascia').value });
-    const altre = S.piano.assegnazioni.filter(y => y !== a).concat(prova).concat(Object.values(esistentiPerGiorno()).flat().filter(y => y.fascia !== null));
-    const pr = A.verificaAssegnazione(prova, altre, S.ric, statoValido(), par());
-    document.getElementById('mProblemi').innerHTML = pr.length ? pr.map(t => `<li class="avviso">${esc(t)}</li>`).join('') : '<li class="info">Nessun conflitto.</li>';
-  };
-  document.getElementById('mGiorno').onchange = aggiorna; document.getElementById('mFascia').onchange = aggiorna;
-  aggiorna();
-  document.getElementById('modalBg').classList.add('on');
+/* ---------- azioni ---------- */
+async function salvaPeriodi(){
+  const iv = intervalli().filter(x => x.dal && x.al && x.al >= x.dal);
+  if (!iv.length) { toast('Indica almeno un periodo completo (dal → al).', true); return; }
+  if (await salvaStato({ intervalli: iv }, 'Periodi salvati.')) { S.intervalli = null; await ricalcola(true); }
 }
-function applicaModifica(chiave){
-  const a = S.piano.assegnazioni.find(x => x.chiave === chiave);
-  a.data = document.getElementById('mGiorno').value; a.fascia = +document.getElementById('mFascia').value; a.modificata = true;
-  S.piano.assegnazioni.sort((x, y) => x.data.localeCompare(y.data) || x.fascia - y.fascia);
-  chiudi(); renderPianifica();
+async function salvaRegole(){
+  const chiusure = document.getElementById('pChiusure').value.split(/[,;\s]+/).map(x => x.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)).filter(Boolean)
+    .map(m => m[3] + '-' + String(m[2]).padStart(2, '0') + '-' + String(m[1]).padStart(2, '0'));
+  const periodo = { dal: document.getElementById('pDal').value, al: document.getElementById('pAl').value };
+  if (await salvaStato({ chiusure, periodo }, 'Regole salvate.')) await ricalcola(true);
 }
-function togliDallaProposta(chiave){
-  const a = S.piano.assegnazioni.find(x => x.chiave === chiave);
-  S.piano.assegnazioni = S.piano.assegnazioni.filter(x => x !== a);
-  S.piano.nonAssegnate.push({ chiave, codice: a.codice, motivo: 'Tolta a mano dalla proposta.' });
-  S.piano.statistiche.assegnate--;
-  chiudi(); renderPianifica();
+async function ricalcola(silenzioso){
+  try {
+    busy(true);
+    await call('adesioniRicalcola');
+    await carica(); // rilegge richieste e calendario: tutto allineato
+    if (!silenzioso) toast('Calendario ricalcolato e schede Turni 2027/28 aggiornate.');
+  } catch(e){ toast(e.message, true); render(); }
+  finally { busy(false); }
 }
-
-async function accetta(){
-  const n = S.piano.assegnazioni.length;
-  if (!confirm(`Accettare ${n} date? Finiranno nel Calendario di questa pagina (i fogli non vengono modificati).`)) return;
-  const prima = JSON.stringify(S.stato);
-  S.stato.fissate = S.stato.fissate || {};
-  const id = 'p' + Date.now();
-  S.piano.assegnazioni.forEach(a => { S.stato.fissate[a.chiave] = { data: a.data, fascia: a.fascia, piano: id }; });
-  S.stato.pianifica = { intervalli: S.piano.intervalli };
-  S.stato.storico = (S.stato.storico || []).concat({ id, quando: new Date().toISOString(), classi: n, intervalli: S.piano.intervalli }).slice(-30);
-  if (await salvaStato(n + ' date accettate: le trovi nel Calendario.')) { S.piano = null; S.inclusi = null; S.intervalli = null; renderPianifica(); }
-  else S.stato = JSON.parse(prima);
-}
-
-/* =====================================================================
-   CALENDARIO (date accettate + date presenti nel foglio)
-   ===================================================================== */
-function renderCalendario(){
-  const tutte = esistentiPerGiorno();
-  const giorni = Object.keys(tutte).sort();
-  const accettate = Object.keys(S.stato.fissate || {}).map(ch => Object.assign({ chiave: ch, codice: (classe(ch) || { r: {} }).r.codice }, S.stato.fissate[ch])).filter(a => a.codice);
-  // riepilogo per scuola (per preparare le email: nessun invio da qui)
-  const perScuola = {};
-  accettate.forEach(a => { (perScuola[a.codice] = perScuola[a.codice] || []).push(a); });
-  document.getElementById('main').innerHTML = `
-    <div class="info">Date accettate dalle proposte (<b>${accettate.length}</b> classi) e date già scritte nel foglio (colonna "Data prevista", in grigio).
-      Tocca una classe accettata per liberarla. ${S.stato.modificato ? `Ultimo salvataggio: ${dataIt(S.stato.modificato)} da ${esc(S.stato.modificatoDa || '')}.` : ''}</div>
-    <div class="azioni">
-      <button class="btn" type="button" ${accettate.length ? '' : 'disabled'} onclick="esportaCsv(accettateOrdinate(), 'calendario')">Scarica CSV</button>
-      <button class="btn" type="button" ${accettate.length ? '' : 'disabled'} onclick="copiaTesto(accettateOrdinate())">Copia testo</button>
-    </div>
-    ${giorni.length ? `<div class="giorni">${giorni.map(d => giornoHtml(d, tutte[d].filter(a => a.accettata), tutte[d].filter(a => !a.accettata), 'cal')).join('')}</div>` : '<div class="vuoto">Nessuna data ancora. Usa la scheda Pianifica.</div>'}
-    ${Object.keys(perScuola).length ? `<h2 class="sez">Riepilogo per scuola</h2><div class="pannello scroll"><table class="t"><thead><tr><th>Scuola</th><th>Referente</th><th>Date</th></tr></thead><tbody>
-      ${Object.keys(perScuola).map(cod => { const r = ric(cod); const vis = perScuola[cod].sort((a, b) => a.data.localeCompare(b.data) || a.fascia - b.fascia);
-        return `<tr><td><b>${esc(r.scuola)}</b><br><small>${esc(r.comune)} · ${esc(r.codice)}</small></td><td>${esc(r.referente)}<br><small>${esc(r.email)}</small></td>
-          <td>${vis.map(a => esc(A.dataBreve(a.data) + ' ' + fasciaT(a.fascia) + ' · ' + classe(a.chiave).c.classe)).join('<br>')}</td></tr>`; }).join('')}
-      </tbody></table></div>` : ''}`;
-}
-function accettateOrdinate(){
-  return Object.keys(S.stato.fissate || {}).map(ch => Object.assign({ chiave: ch, codice: (classe(ch) || { r: {} }).r.codice }, S.stato.fissate[ch]))
-    .filter(a => a.codice).sort((a, b) => a.data.localeCompare(b.data) || a.fascia - b.fascia);
-}
-async function libera(chiave){
+async function sblocca(chiave){
   const x = classe(chiave);
-  if (!confirm(`Liberare ${x.r.scuola} · ${x.c.classe}? Tornerà tra le classi da pianificare.`)) return;
-  const prima = S.stato.fissate[chiave]; delete S.stato.fissate[chiave];
-  if (!await salvaStato('Data liberata.')) S.stato.fissate[chiave] = prima;
-  renderCalendario();
+  if (!confirm(`Sbloccare ${x ? x.r.scuola + ' · ' + x.c.classe : chiave}? Il calcolo potrà spostarla di nuovo.`)) return;
+  try { S.cal = await call('adesioniSblocca', chiave); toast('Sbloccata e ricalcolato.'); } catch(e){ toast(e.message, true); }
+  render();
+}
+async function definitivo(on){
+  const msg = on
+    ? 'Rendere DEFINITIVO il calendario 2027/28?\n\nLe date non si sposteranno più da sole, si apriranno le iscrizioni ai turni e potrete confermare alle scuole. Le richieste nuove verranno sistemate senza spostare le altre.'
+    : 'Tornare al calendario PROVVISORIO? Le date torneranno a spostarsi da sole e le iscrizioni ai turni 2027/28 si chiuderanno.';
+  if (!confirm(msg)) return;
+  try { S.cal = await call('adesioniDefinitivo', on); toast(on ? 'Calendario definitivo.' : 'Calendario di nuovo provvisorio.'); } catch(e){ toast(e.message, true); }
+  render();
 }
 
 /* ---------- esportazione ---------- */
-function righe(ass){
-  return ass.map(a => { const x = classe(a.chiave); return [a.data, A.dataBreve(a.data).split(' ')[0], fasciaT(a.fascia), x.r.scuola, x.r.comune, x.r.codice, x.c.classe, x.c.alunni,
-    x.c.percorso, x.c.consiglio === 'Sì' ? 'consiglio del team' : x.c.labs.join(' / '), x.r.referente, x.r.email, x.r.telefono]; });
+function righe(){
+  return S.cal.assegnazioni.slice().sort((a, b) => a.data.localeCompare(b.data) || a.codice.localeCompare(b.codice) || a.turno - b.turno).map(a => {
+    const x = classe(a.chiave); if (!x) return null;
+    const stessa = S.cal.assegnazioni.filter(y => y.codice === a.codice && y.data === a.data);
+    return [a.data, A.dataBreve(a.data).split(' ')[0], A.turnoTesto(a.turno), A.modalita(stessa), A.persone(stessa), x.r.scuola, x.r.comune, x.r.codice, x.c.classe, x.c.alunni,
+      x.c.percorso, x.c.consiglio === 'Sì' ? 'consiglio del team' : x.c.labs.join(' / '), a.bloccata ? 'sì' : '', x.r.referente, x.r.email, x.r.telefono];
+  }).filter(Boolean);
 }
-function esportaCsv(ass, nome){
-  const testa = ['Data', 'Giorno', 'Fascia', 'Scuola', 'Comune', 'Codice', 'Classe', 'Studenti', 'Percorso', 'Laboratori', 'Referente', 'Email', 'Telefono'];
+function esportaCsv(){
+  const testa = ['Data', 'Giorno', 'Turno', 'Modalità', 'Persone (scuola, giorno)', 'Scuola', 'Comune', 'Codice', 'Classe', 'Studenti', 'Percorso', 'Laboratori', 'Bloccata', 'Referente', 'Email', 'Telefono'];
   const cella = v => { let s = String(v ?? ''); if (/^[=+\-@]/.test(s)) s = "'" + s; return /[;"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
-  const csv = '﻿' + [testa].concat(righe(ass)).map(r => r.map(cella).join(';')).join('\r\n');
+  const csv = '﻿' + [testa].concat(righe()).map(r => r.map(cella).join(';')).join('\r\n');
   const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
-  const l = document.createElement('a'); l.href = url; l.download = 'classlab-' + nome + '-' + A.iso(new Date()) + '.csv';
+  const l = document.createElement('a'); l.href = url; l.download = 'classlab-calendario-2027-28-' + A.iso(new Date()) + '.csv';
   document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(url), 2000);
 }
-function copiaTesto(ass){
+function copiaTesto(){
   let t = '', ultimo = '';
-  ass.slice().sort((a, b) => a.data.localeCompare(b.data) || a.fascia - b.fascia).forEach(a => {
-    const x = classe(a.chiave);
-    if (a.data !== ultimo) { t += (t ? '\n' : '') + A.dataBreve(a.data).toUpperCase() + '\n'; ultimo = a.data; }
-    t += '  ' + fasciaT(a.fascia) + '  ' + x.r.scuola + ' (' + x.r.comune + ') – ' + x.c.classe + ' – ' + x.c.percorso + ': ' + (x.c.consiglio === 'Sì' ? 'consiglio del team' : x.c.labs.join(', ')) + '\n';
+  righe().forEach(r => {
+    if (r[0] !== ultimo) { t += (t ? '\n' : '') + A.dataBreve(r[0]).toUpperCase() + '\n'; ultimo = r[0]; }
+    t += '  ' + r[2] + '  ' + r[5] + ' (' + r[6] + ') – ' + r[8] + ' – ' + r[10] + ': ' + r[11] + '\n';
   });
   navigator.clipboard.writeText(t).then(() => toast('Testo copiato.'), () => toast('Copia non riuscita.', true));
 }
 
-/* ---------- finestra ---------- */
-function chiudi(){ document.getElementById('modalBg').classList.remove('on'); }
-document.getElementById('modalBg').addEventListener('click', e => { if (e.target.id === 'modalBg') chiudi(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') chiudi(); });
 window.addEventListener('beforeunload', e => { if (Object.keys(S.bozze).length) { e.preventDefault(); e.returnValue = ''; } });
 
 /* ---------- avvio ---------- */
 if (DEMO) {
   document.getElementById('demoBar').classList.remove('hidden');
-  document.getElementById('who').innerHTML = 'prova';
+  document.getElementById('who').textContent = 'prova';
   carica();
 } else if (!API) {
-  mostraLogin('Manca moduloEndpoint in assets/js/config.js.');
+  mostraLogin('Manca API_URL in turni/config.js.');
 } else {
   TeamAuth.avvia({
     api: API, bottone: 'gbtn', onLogin: mostraLogin, onBusy: busy,

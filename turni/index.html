@@ -70,6 +70,10 @@
   .day.resched{background:#f3f4f6;border-style:dashed}
   .day.resched .turni{opacity:.55}
   .tag.resched{background:#fde8e8;color:#b42318;font-weight:600}
+.tag.prov{background:#fff4e0;color:#a15c00;font-weight:600}
+.anno-div{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin:34px 0 6px;padding-top:14px;border-top:3px solid var(--navy, #14365f)}
+.anno-div span{font-size:20px;font-weight:800;color:var(--navy, #14365f)}
+.anno-div small{color:#a15c00;font-weight:600}
   .day.today{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
   .day-h{display:flex;gap:14px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line)}
   .date{width:54px;text-align:center;flex:none;line-height:1.1}
@@ -321,7 +325,15 @@ function haPersona(t, nome){ return t.posti.some(p => p.persone.some(x => eqNome
 function liberi(t){ return t.posti.filter(p => p.libero && p.tipo !== 'affiancare'); }
 function daAffiancare(t){ return t.posti.filter(p => p.tipo === 'affiancare'); }
 function futura(g){ return g.data >= oggi; }
-function attiva(g){ return futura(g) && !g.riprogrammare; }
+function attiva(g){ return futura(g) && !chiusa(g); }
+// Giornata in cui non ci si può segnare: da riprogrammare, oppure anno 2027/28 con calendario ancora provvisorio
+function chiusa(g){ return g.riprogrammare || g.provvisoria; }
+// Divisore tra l'anno in corso e il 2027/28 (le giornate arrivano già in ordine di data)
+function divisoreAnno(g, vista){
+  if (!g.anno || vista.anno === g.anno) return '';
+  vista.anno = g.anno;
+  return `<div class="anno-div"><span>Anno ${esc(g.anno)}</span>${g.provvisoria ? '<small>calendario provvisorio: iscrizioni chiuse finché non diventa definitivo</small>' : ''}</div>`;
+}
 function tuttiTurni(){ return S.dati.giornate.flatMap(g => g.turni.map(t => ({g, t}))); }
 function giornateVis(){ return S.dati.giornate.filter(g => !S.materia || g.materia === S.materia); }
 function turniVis(){ return giornateVis().flatMap(g => g.turni.map(t => ({g, t}))); }
@@ -418,8 +430,10 @@ function viewGiornate(){
   const lista = giornateVis().filter(g => futura(g) || S.passate);
   if (!lista.length) return h + '<div class="empty">Nessuna giornata.</div>';
   let mese = '';
+  const vista = {};
   h += '<div class="glist">';
   for (const g of lista){
+    h += divisoreAnno(g, vista);
     const m = g.data.slice(0,7);
     if (m !== mese){ mese = m; const d = dataObj(g.data); h += `<div class="month">${MESI[d.getMonth()]} ${d.getFullYear()}</div>`; }
     const d = dataObj(g.data);
@@ -446,9 +460,11 @@ function legenda(){
 
 function giornateHtml(giornate, filtroTurno, vuoto){
   let h = '', mese = '';
+  const vista = {};
   for (const g of giornate){
     const turni = filtroTurno ? g.turni.filter(filtroTurno) : g.turni;
     if (filtroTurno && !turni.length) continue;
+    h += divisoreAnno(g, vista);
     const m = g.data.slice(0,7);
     if (m !== mese){ mese = m; const d = dataObj(g.data); h += `<div class="month">${MESI[d.getMonth()]} ${d.getFullYear()}</div>`; }
     h += giornataHtml(g, turni);
@@ -471,8 +487,9 @@ function giornataHtml(g, turni){
       <div class="tags">
         ${!S.materia ? `<span class="tag mat-${esc(g.materia)}">${esc(nomeMateria(g.materia))}</span>` : ''}
         ${g.riprogrammare ? `<span class="tag resched">Da riprogrammare</span>` : ''}
-        ${nLib && !g.riprogrammare ? `<span class="tag free">${nLib} ${nLib===1?'posto libero':'posti liberi'}</span>` : ''}
-        ${nAff && !g.riprogrammare ? `<span class="tag aff">${nAff} da affiancare</span>` : ''}
+        ${g.provvisoria ? `<span class="tag prov">Provvisoria</span>` : ''}
+        ${nLib && !chiusa(g) ? `<span class="tag free">${nLib} ${nLib===1?'posto libero':'posti liberi'}</span>` : ''}
+        ${nAff && !chiusa(g) ? `<span class="tag aff">${nAff} da affiancare</span>` : ''}
         ${G ? `<button class="btn small" data-coppia="${g.materia}|${g.riga}">+ classe</button>` : ''}
       </div>
     </div>
@@ -505,12 +522,12 @@ function chipHtml(g, t, p, mioTurno){
   const futuro = futura(g);
 
   if (p.tipo === 'affiancare'){
-    const btn = !G && n && !S.dati.utente.solaLettura && futuro && !g.riprogrammare && !mioTurno ? `<button data-prendi="${key}" data-ora="${esc(t.orario)}" data-day="${g.data}">Affianco io</button>` : '';
+    const btn = !G && n && !S.dati.utente.solaLettura && futuro && !chiusa(g) && !mioTurno ? `<button data-prendi="${key}" data-ora="${esc(t.orario)}" data-day="${g.data}">Affianco io</button>` : '';
     return `<span class="${cls('aff')}"${editAttr}>${esc(p.persone.join(' + ') || 'Studente')} · da affiancare ${btn}</span>`;
   }
   if (p.tipo === 'libero'){
     const altri = p.persone.map(x => esc(x)).join(' + ');
-    const btn = !G && n && !S.dati.utente.solaLettura && futuro && !g.riprogrammare && !mioTurno ? `<button data-prendi="${key}" data-ora="${esc(t.orario)}" data-day="${g.data}">Prendo io</button>` : '';
+    const btn = !G && n && !S.dati.utente.solaLettura && futuro && !chiusa(g) && !mioTurno ? `<button data-prendi="${key}" data-ora="${esc(t.orario)}" data-day="${g.data}">Prendo io</button>` : '';
     return `<span class="${cls('free')}"${editAttr}>Posto libero${altri ? ' + '+altri : ''} ${btn}</span>`;
   }
   const c = p.tipo === 'team' ? 'team' : p.tipo === 'fsl' ? 'fsl' : 'altro';
