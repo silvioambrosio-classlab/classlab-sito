@@ -781,6 +781,8 @@ function ngAnteprima(){
     : pos.prec && pos.succ ? `Verrà inserita tra ${nomeG(pos.prec)} e ${nomeG(pos.succ)}.`
     : pos.succ ? `Verrà inserita prima di ${nomeG(pos.succ)}, all'inizio dell'elenco.`
     : pos.prec ? `Verrà inserita dopo ${nomeG(pos.prec)}, in fondo all'elenco.` : 'Sarà la prima giornata del foglio.';
+  if (pos && pos.succ && String(pos.succ.colore).toLowerCase() === pos.colore)
+    document.getElementById('ngPos').textContent += ' Le giornate successive si scambiano i due colori, per mantenere l\'alternanza.';
 }
 
 async function ngSalva(){
