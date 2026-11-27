@@ -160,10 +160,6 @@
   .ng-bdg{font-size:12px;padding:2px 8px;border-radius:999px;background:var(--aff-soft);color:var(--aff-ink)}
   .ng-av{font-size:13px;color:var(--aff-ink);margin:6px 0 0}
   .ng-err{font-size:13px;color:#b42318;margin:6px 0 0}
-  .ng-prev{border:1px solid var(--line);border-radius:8px;padding:6px;background:#fff;overflow-x:auto}
-  .ng-prev table{border-collapse:collapse;font-family:Calibri,Arial,sans-serif;font-size:11px;color:#111;width:100%;min-width:520px;table-layout:fixed}
-  .ng-prev td{height:18px;text-align:center;padding:0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .ng-prev .bd{border:1px solid #333}.ng-prev .bl{border:1px solid #333;border-right:0}.ng-prev .br{border:1px solid #333;border-left:0}
   @media (max-width:640px){
     .turno{grid-template-columns:1fr;gap:6px}
     .posti{justify-content:flex-start}
@@ -611,7 +607,6 @@ function modalGiornata(mat, riga){
    (anni 1-5 o 1-3) e non viene scritta nel foglio. */
 const NG_ESPERIMENTI = { bio: ['Epiteliali','DNA','Batteri','AIRC','Antibiotici','Digestione','Elettroforesi','Cipolla','Foglie'] };
 const NG_COLORI = { bio: ['#c9daf8','#a4c2f4'], fisica: ['#d9ead3','#93c47d'] }; // sfondi alternati delle giornate, come in Codice.js
-const NG_COLONNE = [3,6,9,12];
 const NG_MESI = ['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'];
 let NG = null;
 
@@ -751,8 +746,7 @@ function ngRender(){
     h += '</div>';
   });
   h += `<div style="margin-top:12px"><p class="ng-lb">Nota (facoltativa)</p><input type="text" id="ngNota" value="${esc(NG.nota)}" placeholder="Attenzione agli orari" style="width:100%"></div>
-    <p class="ng-lb" style="margin-top:14px">Anteprima nel foglio</p>
-    <div class="ng-prev" id="ngPrev"></div><p class="hint" id="ngPos"></p>
+    <p class="hint" id="ngPos" style="margin-top:12px"></p>
     ${NG.errori ? ngErrori().map(x => `<p class="ng-err">${esc(x)}</p>`).join('') : ''}
     <div class="acts"><button class="btn ghost" data-close>Annulla</button><button class="btn primary" data-ng="salva" id="ngSalva">Aggiungi giornata</button></div>`;
   const mod = document.getElementById('modal');
@@ -762,20 +756,9 @@ function ngRender(){
   ngAnteprima();
 }
 
+/* Dove verrà inserita la giornata (l'anteprima del foglio è stata tolta su richiesta di Silvio, 27/11/2026) */
 function ngAnteprima(){
   const pos = ngPosizione();
-  const bg = pos ? pos.colore : (NG_COLORI[NG.materia] || ['#eee'])[0];
-  const coppie = Math.max(1, ...NG.fasce.map(f => f.classi.length));
-  const cols = Math.max(11, NG_COLONNE[NG.fasce.length - 1] + 1);
-  const td = (t, cls, span) => `<td ${span ? 'colspan="2"' : ''} class="${cls||''}" style="background:${bg}">${t}</td>`;
-  const riga = fn => { let r = '', c = 0; while (c < cols){ const fi = [2,5,8,11].indexOf(c); if (fi >= 0 && fi < NG.fasce.length){ r += fn(fi, c); c += 2; } else { r += fn(-1, c); c++; } } return '<tr>' + r + '</tr>'; };
-  let t = riga((fi, c) => fi >= 0 ? td(esc(NG.fasce[fi].s + '-' + NG.fasce[fi].e), 'bd', 1) : td(c === 0 ? '<b>' + esc(pos ? pos.df.testo : '') + '</b>' : c === 1 ? esc(NG.scuola) : ''));
-  for (let k = 0; k < coppie; k++){
-    t += riga((fi, c) => { if (fi < 0) return td(k === 0 && c === 0 ? esc(NG.nota) : ''); return NG.fasce[fi].classi[k] ? `<td class="bl" style="background:${bg}">C</td><td class="br" style="background:${bg}"></td>` : td('') + td(''); });
-    t += riga(fi => { if (fi < 0) return td(''); const c = NG.fasce[fi].classi[k]; return c ? td(esc(ngTesto(c)), 'bd', 1) : td('', '', 1); });
-  }
-  t += riga(fi => fi >= 0 ? td('', '', 1) : td(''));
-  document.getElementById('ngPrev').innerHTML = '<table>' + t + '</table>';
   const nomeG = g => g ? `«${dataBreve(g.data)} ${g.scuola}»` : '';
   document.getElementById('ngPos').textContent = !pos ? 'Scegli la data per vedere dove verrà inserita.'
     : pos.prec && pos.succ ? `Verrà inserita tra ${nomeG(pos.prec)} e ${nomeG(pos.succ)}.`
